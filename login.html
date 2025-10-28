@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в админ-панель</title>
+    <link rel="stylesheet" href="https://unpkg.com/admin-lte@3.2.0/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f1620 0%, #1a2332 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 122, 0, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #ff7a00;
+            padding: 15px;
+            margin: 0 auto 15px;
+            display: block;
+        }
+        .login-logo a {
+            color: #ff7a00;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .card {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            padding: 12px 16px;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #ff7a00;
+            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2);
+        }
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .btn-primary {
+            background: #ff7a00;
+            border-color: #ff7a00;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: #e66a00;
+            border-color: #e66a00;
+            transform: translateY(-1px);
+        }
+        .input-group-text {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .text-center a {
+            color: #ff7a00;
+        }
+        .text-center a:hover {
+            color: #e66a00;
+            text-decoration: none;
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 122, 0, 0.1);
+            color: #ff7a00;
+        }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <div class="login-logo">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmZjdhMDAiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTIwIDVMMzUgMTVWMjVMMjAgMzVMNSAyNUw1IDE1TDIwIDVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjAgMTBMMzAgMTVWMjVMMjAgMzBMMTAgMjVMMTAgMTVMMjAgMTBaIiBmaWxsPSIjZmY3YTAwIi8+Cjwvc3ZnPgo8L3N2Zz4=" alt="ATC Logo">
+        <a href="#"><b>ATC</b> Admin</a>
+    </div>
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">Войдите для доступа к панели управления</p>
+
+            <div id="alert" class="alert" style="display: none;"></div>
+
+            <form id="loginForm">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="username" placeholder="Логин" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" id="password" placeholder="Пароль" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="index.html" class="text-white">
+                    <i class="fas fa-arrow-left"></i> Вернуться на сайт
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Handle login form
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const alertDiv = document.getElementById('alert');
+
+        try {
+            const response = await fetch('http://localhost:3003/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('adminToken', data.token);
+                window.location.href = 'admin.html';
+            } else {
+                alertDiv.textContent = data.error || 'Ошибка входа';
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.style.display = 'block';
+            }
+        } catch (error) {
+            alertDiv.textContent = 'Ошибка подключения к серверу';
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.style.display = 'block';
+        }
+    });
+
+    // Auto-focus on username field
+    document.getElementById('username').focus();
+</script>
+</body>
+</html>

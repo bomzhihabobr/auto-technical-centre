@@ -1,0 +1,12 @@
+numpy
+pandas
+scikit-learn
+nltk
+spacy
+python-dotenv
+aiogram>=3.0.0
+transformers>=4.30.0
+torch>=2.0.0
+sentence-transformers>=2.2.2
+pymorphy2
+pymorphy2-dicts-ru

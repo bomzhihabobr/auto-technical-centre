@@ -1,0 +1,512 @@
+const express = require('express');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const sqlite3 = require('sqlite3').verbose();
+const WebSocket = require('ws');
+const http = require('http');
+const path = require('path');
+const fs = require('fs');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// JWT Secret
+const JWT_SECRET = 'your-super-secret-jwt-key-change-this';
+
+// Database setup
+const db = new sqlite3.Database('./database.db');
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Static files middleware - serve HTML, CSS, JS files
+app.use(express.static(path.join(__dirname), { index: false }));
+
+// Static files for assets
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// Explicit routes for HTML files
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Advanced NLP Training System based on LP folder analysis
+class AdvancedBotTrainer {
+  constructor() {
+    this.intents = {};
+    this.responses = {};
+    this.trainingData = [];
+    this.loadAdvancedData();
+  }
+
+  // Load and adapt data from LP folder structure for technical inspection
+  loadAdvancedData() {
+    try {
+      // Load existing training data
+      const saved = fs.readFileSync('./chatbot-training.json', 'utf8');
+      this.responses = JSON.parse(saved);
+    } catch (error) {
+      // Default responses for technical inspection
+      this.responses = {
+        'привет': 'Здравствуйте! Я чат-бот Auto Technical Centre. Чем могу помочь?',
+        'здравствуйте': 'Добрый день! Я помогу вам с информацией о техосмотре.',
+        'техосмотр': 'Техосмотр в нашем центре занимает всего 17 минут! Мы работаем с автомобилями всех марок.',
+        'запись': 'Вы можете записаться на техосмотр по телефону +7 700 243 30 10 или через форму на сайте.',
+        'адрес': 'Мы находимся по адресу: г. Астана, Қобыз, 36.',
+        'время работы': 'Работаем ежедневно с 9:00 до 19:00 без выходных.',
+        'цены': 'Стоимость техосмотра от 3500 тенге. Подробности уточняйте по телефону.',
+        'документы': 'Для техосмотра нужны: техпаспорт, удостоверение личности, доверенность (если требуется).',
+        'спасибо': 'Пожалуйста! Если у вас есть еще вопросы, я с радостью отвечу.',
+        'пока': 'До свидания! Ждем вас в нашем центре техосмотра.',
+        'обучить': 'Используйте формат: "обучить: [вопрос] -> [ответ]" чтобы научить меня новому ответу.',
+        'помощь': 'Я могу отвечать на вопросы о техосмотре. Напишите "обучить: [вопрос] -> [ответ]" чтобы научить меня.',
+        'default': 'Спасибо за ваш вопрос! Для более подробной информации позвоните нам по телефону +7 700 243 30 10.'
+      };
+    }
+
+    // Initialize intent categories based on LP folder structure
+    this.intents = {
+      'greeting': [
+        'привет', 'здравствуйте', 'добрый день', 'доброе утро', 'добрый вечер',
+        'хай', 'приветствую', 'здравствуй', 'салют'
+      ],
+      'pricing': [
+        'сколько стоит', 'цена', 'стоимость', 'тариф', 'цены', 'оплата',
+        'денег', 'тенге', 'рублей', 'сколько денег', 'дорого'
+      ],
+      'booking': [
+        'запись', 'записаться', 'забронировать', 'зарезервировать',
+        'заказать', 'заявка', 'время', 'дата', 'когда', 'свободное время'
+      ],
+      'documents': [
+        'документы', 'бумаги', 'что нужно', 'какие документы',
+        'паспорт', 'техпаспорт', 'права', 'свидетельство'
+      ],
+      'location': [
+        'адрес', 'где', 'находитесь', 'локация', 'местоположение',
+        'как найти', 'как доехать', 'карта', 'место'
+      ],
+      'schedule': [
+        'время работы', 'часы работы', 'график', 'открыты',
+        'работаете', 'режим работы', 'выходные', 'праздники'
+      ],
+      'services': [
+        'техосмотр', 'то', 'технический осмотр', 'диагностика',
+        'компьютерная диагностика', 'осаго', 'страховка'
+      ],
+      'process': [
+        'как проходит', 'процесс', 'этапы', 'сколько времени',
+        'что делать', 'порядок', 'последовательность'
+      ]
+    };
+
+    // Create training data pairs for machine learning
+    this.generateTrainingData();
+  }
+
+  // Generate training data from intents and responses
+  generateTrainingData() {
+    this.trainingData = [];
+
+    // Generate positive examples from intents
+    for (const [intent, keywords] of Object.entries(this.intents)) {
+      for (const keyword of keywords) {
+        if (this.responses[keyword]) {
+          this.trainingData.push({
+            input: keyword,
+            intent: intent,
+            response: this.responses[keyword],
+            confidence: 1.0
+          });
+        }
+      }
+    }
+
+    // Generate negative examples and variations
+    this.generateVariations();
+  }
+
+  // Generate variations and negative examples for better training
+  generateVariations() {
+    const variations = {
+      'привет': ['приветствую', 'здравствуйте', 'добрый день', 'хай', 'салют'],
+      'сколько стоит': ['цена', 'стоимость', 'тариф', 'сколько денег', 'дорого ли'],
+      'запись': ['записаться', 'забронировать', 'зарезервировать', 'заказать время'],
+      'документы': ['что нужно', 'какие бумаги', 'список документов', 'требования'],
+      'адрес': ['где находитесь', 'местоположение', 'как найти', 'локация']
+    };
+
+    for (const [base, vars] of Object.entries(variations)) {
+      for (const variation of vars) {
+        if (this.responses[base]) {
+          this.trainingData.push({
+            input: variation,
+            intent: this.getIntentForKeyword(base),
+            response: this.responses[base],
+            confidence: 0.8
+          });
+        }
+      }
+    }
+  }
+
+  // Get intent category for a keyword
+  getIntentForKeyword(keyword) {
+    for (const [intent, keywords] of Object.entries(this.intents)) {
+      if (keywords.includes(keyword)) {
+        return intent;
+      }
+    }
+    return 'general';
+  }
+
+  // Advanced response matching using fuzzy logic
+  findBestResponse(input) {
+    const lowerInput = input.toLowerCase().trim();
+    let bestMatch = null;
+    let bestScore = 0;
+
+    // Exact match first
+    if (this.responses[lowerInput]) {
+      return {
+        response: this.responses[lowerInput],
+        confidence: 1.0,
+        method: 'exact'
+      };
+    }
+
+    // Intent-based matching
+    for (const [intent, keywords] of Object.entries(this.intents)) {
+      for (const keyword of keywords) {
+        if (lowerInput.includes(keyword)) {
+          const score = keyword.length / lowerInput.length;
+          if (score > bestScore && score > 0.3) {
+            bestScore = score;
+            bestMatch = {
+              response: this.responses[keyword] || this.responses['default'],
+              confidence: score,
+              method: 'intent',
+              intent: intent
+            };
+          }
+        }
+      }
+    }
+
+    // Fuzzy matching for typos and variations
+    if (!bestMatch) {
+      bestMatch = this.fuzzyMatch(lowerInput);
+    }
+
+    return bestMatch || {
+      response: this.responses['default'],
+      confidence: 0.1,
+      method: 'default'
+    };
+  }
+
+  // Fuzzy matching for typos and variations
+  fuzzyMatch(input) {
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const [keyword, response] of Object.entries(this.responses)) {
+      if (keyword === 'default') continue;
+
+      // Simple Levenshtein-like scoring
+      const score = this.calculateSimilarity(input, keyword);
+
+      if (score > bestScore && score > 0.6) {
+        bestScore = score;
+        bestMatch = {
+          response: response,
+          confidence: score,
+          method: 'fuzzy'
+        };
+      }
+    }
+
+    return bestMatch;
+  }
+
+  // Simple similarity calculation
+  calculateSimilarity(str1, str2) {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+
+    if (longer.length === 0) return 1.0;
+
+    const distance = this.levenshteinDistance(longer, shorter);
+    return (longer.length - distance) / longer.length;
+  }
+
+  // Levenshtein distance calculation
+  levenshteinDistance(str1, str2) {
+    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
+
+    for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+    for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+
+    for (let j = 1; j <= str2.length; j++) {
+      for (let i = 1; i <= str1.length; i++) {
+        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1,     // deletion
+          matrix[j - 1][i] + 1,     // insertion
+          matrix[j - 1][i - 1] + indicator  // substitution
+        );
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  }
+
+  // Add new training data
+  addTraining(input, response) {
+    this.responses[input.toLowerCase().trim()] = response;
+    this.saveTraining();
+    this.generateTrainingData(); // Regenerate training data
+  }
+
+  // Save training data
+  saveTraining() {
+    fs.writeFileSync('./chatbot-training.json', JSON.stringify(this.responses, null, 2));
+  }
+
+  // Process training command
+  processTraining(input) {
+    const match = input.match(/обучить:\s*(.+?)\s*->\s*(.+)/i);
+    if (match) {
+      const question = match[1].trim();
+      const answer = match[2].trim();
+      this.addTraining(question, answer);
+      return `✅ Обучен! Теперь на "${question}" я буду отвечать: "${answer}"`;
+    }
+    return 'Используйте формат: "обучить: [вопрос] -> [ответ]"';
+  }
+
+  // Get training statistics
+  getStats() {
+    return {
+      totalResponses: Object.keys(this.responses).length,
+      totalIntents: Object.keys(this.intents).length,
+      trainingExamples: this.trainingData.length,
+      intents: Object.keys(this.intents)
+    };
+  }
+}
+
+// Create advanced trainer instance
+const advancedTrainer = new AdvancedBotTrainer();
+
+// Initialize database
+db.serialize(() => {
+  // Users table
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT,
+    role TEXT DEFAULT 'admin'
+  )`);
+
+  // Content table for dynamic content
+  db.run(`CREATE TABLE IF NOT EXISTS content (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key_name TEXT UNIQUE,
+    value TEXT
+  )`);
+
+  // Messages table with enhanced fields
+  db.run(`CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
+    message TEXT,
+    response TEXT,
+    confidence REAL,
+    method TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Training statistics table
+  db.run(`CREATE TABLE IF NOT EXISTS training_stats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date DATE DEFAULT CURRENT_DATE,
+    total_responses INTEGER,
+    total_intents INTEGER,
+    training_examples INTEGER,
+    UNIQUE(date)
+  )`);
+
+  // Create default admin user
+  const hashedPassword = bcrypt.hashSync('admin123', 10);
+  db.run(`INSERT OR IGNORE INTO users (username, password, role) VALUES ('admin', ?, 'admin')`, [hashedPassword]);
+});
+
+// Log training statistics every hour
+setInterval(() => {
+  const stats = advancedTrainer.getStats();
+  db.run(`INSERT INTO training_stats (total_responses, total_intents, training_examples) VALUES (?, ?, ?)`,
+    [stats.totalResponses, stats.totalIntents, stats.trainingExamples],
+    (err) => {
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// API Routes
+
+// Login
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
+    if (err || !user) return res.status(401).json({ error: 'Неверные учетные данные' });
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) return res.status(401).json({ error: 'Неверные учетные данные' });
+
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET);
+    res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
+  });
+});
+
+// Get content
+app.get('/api/content', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM content', (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    const content = {};
+    rows.forEach(row => content[row.key] = row.value);
+    res.json(content);
+  });
+});
+
+// Update content
+app.put('/api/content', authenticateToken, (req, res) => {
+  const updates = req.body;
+
+  Object.keys(updates).forEach(key => {
+    const value = updates[key];
+    db.run('INSERT OR REPLACE INTO content (key, value) VALUES (?, ?)', [key, value], (err) => {
+      if (err) console.error(err);
+    });
+  });
+
+  res.json({ success: true });
+});
+
+// Get messages (admin only)
+app.get('/api/messages', authenticateToken, (req, res) => {
+  if (req.user.role !== 'admin') return res.sendStatus(403);
+
+  db.all('SELECT * FROM messages ORDER BY timestamp DESC', (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    res.json(rows);
+  });
+});
+
+// WebSocket for real-time updates
+wss.on('connection', (ws) => {
+  ws.on('message', (message) => {
+    const data = JSON.parse(message);
+
+    if (data.type === 'chat') {
+      const userMessage = data.message;
+      const userId = data.userId || 'anonymous_' + Date.now();
+
+      // Process message with advanced NLP trainer
+      const result = advancedTrainer.findBestResponse(userMessage);
+
+      // Process training commands
+      if (userMessage.toLowerCase().startsWith('обучить:')) {
+        const trainingResponse = advancedTrainer.processTraining(userMessage);
+        ws.send(JSON.stringify({
+          type: 'chat_response',
+          message: trainingResponse,
+          confidence: 1.0,
+          method: 'training',
+          timestamp: new Date().toISOString()
+        }));
+        return;
+      }
+
+      // Save to database
+      db.run('INSERT INTO messages (user_id, message, response, confidence, method) VALUES (?, ?, ?, ?, ?)',
+        [userId, userMessage, result.response, result.confidence, result.method]);
+
+      // Send response back
+      ws.send(JSON.stringify({
+        type: 'chat_response',
+        message: result.response,
+        confidence: result.confidence,
+        method: result.method,
+        intent: result.intent || 'general',
+        timestamp: new Date().toISOString()
+      }));
+    }
+
+    // Handle training statistics request
+    if (data.type === 'get_stats') {
+      const stats = advancedTrainer.getStats();
+      ws.send(JSON.stringify({
+        type: 'stats',
+        data: stats,
+        timestamp: new Date().toISOString()
+      }));
+    }
+
+    // Handle training data request
+    if (data.type === 'get_training_data') {
+      ws.send(JSON.stringify({
+        type: 'training_data',
+        data: advancedTrainer.trainingData.slice(0, 50), // Limit to 50 examples
+        timestamp: new Date().toISOString()
+      }));
+    }
+  });
+});
+
+// Start server
+const PORT = process.env.PORT || 3003;
+server.listen(PORT, () => {
+  console.log(`🚀 Backend server running on port ${PORT}`);
+  console.log(`📁 Serving files from: ${path.join(__dirname)}`);
+  console.log(`🔗 Admin panel: http://localhost:${PORT}/login.html`);
+  console.log(`🌐 Main site: http://localhost:${PORT}/index.html`);
+  console.log(`🤖 Simple NLP Chatbot: Ready for training`);
+
+  // Log training statistics every hour
+  setInterval(() => {
+    const stats = advancedTrainer.getStats();
+    db.run(`INSERT INTO training_stats (total_responses, total_intents, training_examples) VALUES (?, ?, ?)`,
+      [stats.totalResponses, stats.totalIntents, stats.trainingExamples],
+      (err) => {
+        if (err) console.error('Error saving training stats:', err);
+      });
+    console.log(`📊 Training Stats: ${stats.totalResponses} responses, ${stats.totalIntents} intents, ${stats.trainingExamples} examples`);
+  }, 60 * 60 * 1000);
+});
+
+module.exports = app;
