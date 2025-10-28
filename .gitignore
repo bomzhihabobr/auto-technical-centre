@@ -29,3 +29,22 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+# Virtual Environment
+lp/nlp_env/
+
+# Large files
+*.pth
+*.h5
+*.npy
+*.npz
+*.pt
+*.pkl
+*.bin
+*.dat
+*.tar
+*.zip
+*.gz
+*.7z
+*.rar
+*.iso
+*.dmg
