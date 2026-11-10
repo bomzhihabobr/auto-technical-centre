@@ -417,7 +417,7 @@
         <div class="map-container" data-aos="fadeInScale" data-aos-delay="180">
           <div class="map-heading"><div><span class="contact-kicker" data-i18n="contacts.map.kicker">Ждём вас в гости</span><h3 data-i18n="contacts.map.title">Карта проезда</h3></div><a href="https://2gis.kz/astana/search/%D2%9A%D0%BE%D0%B1%D1%8B%D0%B7%2036" target="_blank" rel="noopener" aria-label="Открыть адрес в 2ГИС" data-i18n-aria="contacts.map.open"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
           <div id="dgMap"></div>
-          <p class="map-info"><i class="fa-solid fa-location-dot"></i> <span data-site-address>г. Астана, Қобыз, 36</span></p>
+          <p class="map-info"><i class="fa-solid fa-location-dot"></i> <span data-site-address data-i18n="contacts.address">г. Астана, Қобыз, 36</span></p>
         </div>
         <div id="booking" class="booking" data-aos="slideInRight" data-aos-delay="260">
           <div class="booking-heading"><span class="contact-icon"><i class="fa-regular fa-calendar-check"></i></span><div><span class="contact-kicker" data-i18n="booking.kicker">Всего пара минут</span><h2 data-i18n="booking.title">Запись на техосмотр</h2></div></div>
@@ -436,9 +436,9 @@
               <label for="car" data-i18n="form.car">Марка и модель</label>
               <input id="car" name="car" type="text" placeholder="Напр.: Toyota Camry" data-i18n-placeholder="form.car.ph" />
             </div>
-            <div class="form-row two booking-select-row">
-              <div><label for="vehicleType" data-i18n="form.vehicleType">Тип транспорта</label><select id="vehicleType" name="vehicleType" required><option value="" data-i18n="form.vehicleType.choose">Выберите тип</option><option value="passenger" data-i18n="form.vehicleType.passenger">Легковой</option><option value="commercial" data-i18n="form.vehicleType.commercial">Грузовой</option><option value="bus" data-i18n="form.vehicleType.bus">Автобус</option><option value="motorcycle" data-i18n="form.vehicleType.motorcycle">Мотоцикл</option><option value="trailer" data-i18n="form.vehicleType.trailer">Прицеп</option></select></div>
-              <div><label for="serviceType" data-i18n="form.service">Услуга</label><select id="serviceType" name="serviceType" required><option value="" data-i18n="form.service.choose">Выберите услугу</option><option value="inspection" data-i18n="form.service.inspection">Техосмотр</option><option value="diagnostics" data-i18n="form.service.diagnostics">Диагностика</option><option value="insurance" data-i18n="form.service.insurance">ОСАГО</option><option value="tire-service" data-i18n="form.service.tire">Шиномонтаж</option></select></div>
+            <div class="form-row">
+              <label for="vehicleType" data-i18n="form.vehicleType">Тип транспорта</label>
+              <select id="vehicleType" name="vehicleType" required><option value="" data-i18n="form.vehicleType.choose">Выберите тип</option><option value="passenger" data-i18n="form.vehicleType.passenger">Легковой</option><option value="commercial" data-i18n="form.vehicleType.commercial">Грузовой</option><option value="bus" data-i18n="form.vehicleType.bus">Автобус</option><option value="motorcycle" data-i18n="form.vehicleType.motorcycle">Мотоцикл</option><option value="trailer" data-i18n="form.vehicleType.trailer">Прицеп</option></select>
             </div>
             <div class="form-row two">
               <div>
@@ -464,7 +464,7 @@
               <button type="submit" class="btn btn-primary"><i class="fa-regular fa-calendar-check"></i> <span class="t" data-i18n="form.submit">Отправить заявку</span></button>
               <button type="button" id="callBtn" class="btn btn-outline"><i class="fa-solid fa-phone"></i> <span class="t" data-i18n="form.call">Позвонить</span></button>
             </div>
-            <label class="policy-consent"><input id="consent" name="consent" type="checkbox" value="yes" required><span><span data-i18n="policy">Я согласен(на) на обработку данных для оформления записи.</span> <a href="privacy.html" target="_blank" rel="noopener" data-i18n="policy.link">Политика конфиденциальности</a></span></label>
+            <label class="policy-consent"><input id="consent" name="consent" type="checkbox" value="yes" required><span><span data-i18n="policy">Я согласен(на) на обработку данных для оформления записи.</span> <a href="/privacy" target="_blank" rel="noopener" data-i18n="policy.link">Политика конфиденциальности</a></span></label>
           </form>
           <div id="bookingResult" class="booking-result" role="status" aria-live="polite" hidden>
             <span class="booking-result-icon"><i class="fa-solid fa-check"></i></span>
@@ -483,7 +483,7 @@
         <a href="#home" class="logo footer-logo" aria-label="На главную" data-i18n-aria="footer.home.aria"><span class="logo-mark">ATC</span><span class="logo-copy"><strong>Auto Technical</strong><small data-i18n="brand.tagline">ЦЕНТР ТЕХОСМОТРА</small></span></a>
         <p data-i18n="footer.description">Профессиональный техосмотр в Астане. Быстро, удобно, по правилам.</p>
         <div class="footer-contacts"><a href="tel:+77072433010" data-site-phone-link data-site-phone-text>8 707 243 3010</a><a href="mailto:atc@at-c.kz" data-site-email>atc@at-c.kz</a><span data-site-address data-i18n="contacts.address">Қобыз, 36 · Астана</span></div>
-        <nav class="foot-nav" aria-label="Ссылки в подвале" data-i18n-aria="footer.links.aria"><a href="#services" data-i18n="nav.services">Услуги</a><a href="#faq" data-i18n="footer.faq">Вопросы и ответы</a><a href="#booking" data-i18n="nav.book">Записаться</a><a href="privacy.html" data-i18n="footer.privacy">Политика конфиденциальности</a></nav>
+        <nav class="foot-nav" aria-label="Ссылки в подвале" data-i18n-aria="footer.links.aria"><a href="#services" data-i18n="nav.services">Услуги</a><a href="#faq" data-i18n="footer.faq">Вопросы и ответы</a><a href="#booking" data-i18n="nav.book">Записаться</a><a href="/privacy" data-i18n="footer.privacy">Политика конфиденциальности</a></nav>
       </div>
       <div class="footer-bottom"><span>© <span id="year"></span> Auto Technical Centre</span><a href="#home" data-i18n="footer.top">Наверх ↑</a></div>
     </div>

@@ -4,8 +4,58 @@
   functions = "netlify/functions"
 
 [dev]
-  command = "npm run dev"
-  port = 3000
+  command = "npm start"
+  targetPort = 3003
+  port = 8888
   publish = "dist"
 
-# The production API and persistent database must be configured before booking is enabled.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Clean page URLs for Netlify; serve the existing HTML files without changing the address bar.
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/login.html"
+  to = "/login"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/admin.html"
+  to = "/admin"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy.html"
+  to = "/privacy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+  force = true
+
+# Configure Netlify Database and the required secrets before using production bookings.

@@ -82,12 +82,12 @@ app.post('/api/bookings', (req, res) => {
   const clean = (v, max) => typeof v === 'string' ? v.trim().slice(0, max) : '';
   const booking = {
     name: clean(req.body?.name, 120), phone: clean(req.body?.phone, 40),
-    car: clean(req.body?.car, 120), vehicleType: clean(req.body?.vehicleType, 50), serviceType: clean(req.body?.serviceType, 50), date: clean(req.body?.date, 20),
+    car: clean(req.body?.car, 120), vehicleType: clean(req.body?.vehicleType, 50), serviceType: 'inspection', date: clean(req.body?.date, 20),
     consent: req.body?.consent === true,
     time: clean(req.body?.time, 10), comment: clean(req.body?.comment, 1000)
   };
-  if (!booking.name || !booking.phone || !booking.vehicleType || !booking.serviceType || !booking.date || !booking.time) return res.status(400).json({ error: 'Заполните обязательные поля и выберите тип транспорта и услугу' });
-  if (!['passenger','commercial','bus','motorcycle','trailer'].includes(booking.vehicleType) || !['inspection','diagnostics','insurance','tire-service'].includes(booking.serviceType)) return res.status(400).json({ error: 'Выберите тип транспорта и услугу из списка' });
+  if (!booking.name || !booking.phone || !booking.vehicleType || !booking.date || !booking.time) return res.status(400).json({ error: 'Заполните обязательные поля и выберите тип транспорта' });
+  if (!['passenger','commercial','bus','motorcycle','trailer'].includes(booking.vehicleType)) return res.status(400).json({ error: 'Выберите тип транспорта из списка' });
   if (!booking.consent) return res.status(400).json({ error: 'Подтвердите согласие на обработку данных' });
   if (!/^\d{4}-\d{2}-\d{2}$/.test(booking.date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(booking.time)) return res.status(400).json({ error: 'Проверьте дату и время записи' });
   const parsedDate = new Date(`${booking.date}T00:00:00Z`);
@@ -276,17 +276,22 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/login.html', (req, res) => {
+app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
 });
+app.get('/login.html', (req, res) => res.redirect(301, '/login'));
 
-app.get('/admin.html', (req, res) => {
+app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
+app.get('/admin.html', (req, res) => res.redirect(301, '/admin'));
 
-app.get('/index.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get('/privacy', (req, res) => {
+  res.sendFile(path.join(__dirname, 'privacy.html'));
 });
+app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
+
+app.get('/index.html', (req, res) => res.redirect(301, '/'));
 
 const ADMIN_SETTING_DEFAULTS = { autoRefreshSeconds: 30, bookingLimit: 100 };
 function readAdminSettings(callback) {
@@ -381,8 +386,8 @@ const PORT = process.env.PORT || 3003;
 server.listen(PORT, () => {
   console.log(`🚀 Backend server running on port ${PORT}`);
   console.log(`📁 Serving files from: ${path.join(__dirname)}`);
-  console.log(`🔗 Admin panel: http://localhost:${PORT}/login.html`);
-  console.log(`🌐 Main site: http://localhost:${PORT}/index.html`);
+  console.log(`🔗 Admin panel: http://localhost:${PORT}/login`);
+  console.log(`🌐 Main site: http://localhost:${PORT}/`);
 });
 
 module.exports = app;

@@ -55,10 +55,10 @@ try {
 console.log('🔧 Инициализация базы данных...');
 console.log('👤 Создание пользователя admin:admin123');
 console.log('🌐 Сервер будет доступен на http://localhost:3003');
-console.log('🔐 Админ-панель: http://localhost:3003/login.html');
+console.log('🔐 Админ-панель: http://localhost:3003/login');
 console.log('');
 console.log('📋 Инструкции:');
-console.log('1. Откройте http://localhost:3003/login.html');
+console.log('1. Откройте http://localhost:3003/login');
 console.log('2. Войдите с логином: admin, паролем: admin123');
 console.log('3. Управляйте сайтом в реальном времени');
 console.log('');

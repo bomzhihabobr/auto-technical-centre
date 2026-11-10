@@ -48,3 +48,5 @@ lp/nlp_env/
 *.rar
 *.iso
 *.dmg
+# Local Netlify folder
+.netlify

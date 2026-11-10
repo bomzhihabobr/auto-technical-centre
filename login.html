@@ -148,7 +148,7 @@
             </form>
 
             <div class="text-center mt-3">
-                <a href="index.html" class="text-white">
+                <a href="/" class="text-white">
                     <i class="fas fa-arrow-left"></i> Вернуться на сайт
                 </a>
             </div>
@@ -179,7 +179,7 @@
 
             if (response.ok) {
                 localStorage.setItem('adminToken', data.token);
-                window.location.href = 'admin.html';
+                window.location.href = '/admin';
             } else {
                 alertDiv.textContent = data.error || 'Ошибка входа';
                 alertDiv.className = 'alert alert-danger';

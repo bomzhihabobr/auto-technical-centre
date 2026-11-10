@@ -203,6 +203,70 @@
       'privacy.note': 'Правила сбора и обработки данных регулируются законодательством Республики Казахстан. Перед публикацией владелец сайта должен проверить полное юридическое наименование оператора и актуальность этого текста.',
       'privacy.law': 'Закон РК «О персональных данных и их защите»',
       'privacy.back': 'Вернуться на сайт',
+      'contacts.address': 'г. Астана, Қобыз, 36',
+      'contacts.hours.value': 'Ежедневно с 09:00 до 19:00',
+      'extra.insurance': 'ОСАГО',
+      'pricing.passenger.title': 'Легковые / Мото',
+      'pricing.passenger.badge': 'Категории A, B',
+      'pricing.passenger.item1': 'Полная диагностика по регламенту',
+      'pricing.passenger.item2': 'Выдача диагностической карты',
+      'pricing.passenger.item3': 'Консультация по результатам',
+      'pricing.commercial.title': 'Коммерческий транспорт',
+      'pricing.commercial.badge': 'Такси, автобусы, грузовые',
+      'pricing.commercial.item1': 'Осмотр по требованиям для юрлиц',
+      'pricing.commercial.item2': 'Закрывающие документы',
+      'pricing.commercial.item3': 'Приоритетная запись',
+      'pricing.special.title': 'Специальные категории',
+      'pricing.special.badge': 'C1, D1, E и др.',
+      'pricing.special.item1': 'Индивидуальные условия',
+      'pricing.special.item2': 'Осмотр с учетом модификаций',
+      'pricing.special.item3': 'Сопровождение по вопросам ТО',
+      'testimonials.review1': 'Обслуживаюсь в данной компании довольно таки давно, персонал хорошо и четко знает свою работу. Ребята молодцы, всё делают быстро и качественно.',
+      'testimonials.author1': '— Клиент ATC',
+      'testimonials.review2': 'В Auto Technical Centre я прохожу техосмотр уже три года. Внимательное отношение и слаженные действия — всё без проволочек и бюрократии.',
+      'testimonials.author2': '— Постоянный клиент',
+      'testimonials.review3': 'Сервис нравится, отношение к клиентам доброжелательное. Прохождение ТО заняло совсем немного времени, спасибо!',
+      'testimonials.author3': '— Владелец авто',
+      'services.steering.title': 'Рулевое управление',
+      'services.steering.item1': 'Люфт рулевого колеса (до 5° для легковых)',
+      'services.steering.item2': 'Состояние рулевых тяг и наконечников',
+      'services.steering.item3': 'Плавность вращения руля (без рывков)',
+      'services.wheels.title': 'Колеса, шины, подвеска',
+      'services.wheels.item1': 'Состояние шаровых опор и их люфт',
+      'services.wheels.item2': 'Крепления и износ шин',
+      'services.wheels.item3': 'Крепление кардана (для заднеприводных)',
+      'services.chassis.title': 'Шасси и агрегаты',
+      'services.chassis.item1': 'Крепления узлов и агрегатов',
+      'services.chassis.item2': 'Отсутствие подтеков и повреждений',
+      'services.chassis.item3': 'Состояние двигателя и систем',
+      'services.equipment.title': 'Прочее оборудование',
+      'services.equipment.item1': 'Огнетушитель, аптечка, знак аварийной остановки',
+      'services.equipment.item2': 'Зеркала, стекла, стеклоочистители',
+      'services.equipment.item3': 'Ремни безопасности, звуковой сигнал',
+      'services.brakes.title': 'Тормозная система',
+      'services.brakes.item1': 'Удельная тормозная сила, равномерность',
+      'services.brakes.item2': 'Герметичность шлангов и приводов',
+      'services.brakes.item3': 'Срабатывание сигнализации привода',
+      'services.visibility.title': 'Обзорность и свет',
+      'services.visibility.item1': 'Светопропускание стекол по нормам',
+      'services.visibility.item2': 'Направление пучка, сила света фар',
+      'services.visibility.item3': 'Режимы работы и сигнализация',
+      'benefits.reliability.title': 'Надежность',
+      'benefits.reliability.text': 'Без посредников. Честные цены и прозрачный процесс.',
+      'benefits.official.title': 'Официально',
+      'benefits.official.text': 'Аккредитованный оператор ТО. Спецоборудование по стандартам.',
+      'benefits.speed.title': 'Скорость',
+      'benefits.speed.text': 'Работаем быстро, качественно и в срок — от 17 минут.',
+      'benefits.orgs.title': 'Для организаций',
+      'benefits.orgs.text': 'Сотрудничаем с юрлицами. Закрывающие документы.',
+      'benefits.value.title': 'Выгода',
+      'benefits.value.text': 'Оптимальные цены и акции для постоянных клиентов.',
+      'benefits.guarantee.title': 'Гарантии',
+      'benefits.guarantee.text': 'Выдача всех необходимых документов и консультация.',
+      'benefits.queue.title': 'Без очереди',
+      'benefits.queue.text': 'Онлайн-запись экономит ваше время.',
+      'contacts.title': 'Контакты',
+      'contacts.whatsapp': 'Написать в WhatsApp',
       'header.home.aria': 'На главную — Auto Technical Centre',
       'footer.home.aria': 'На главную',
       'footer.links.aria': 'Ссылки в подвале',
@@ -532,7 +596,7 @@
       $$('[data-site-description]').forEach(el => { el.textContent = siteSettings.siteDescription; });
     }
     if (siteSettings.address) {
-      const address = getLang() === 'kk' ? siteSettings.address.replace(/^г\.\s*/i, 'Астана қ., ') : siteSettings.address;
+      const address = getLang() === 'kk' ? siteSettings.address.replace(/^г\.\s*Астана,?\s*/i, 'Астана қ., ').replace(/^г\.\s*/i, 'Астана қ., ') : siteSettings.address;
       $$('[data-site-address]').forEach(el => { el.textContent = address; });
     }
     if (siteSettings.email) $$('[data-site-email]').forEach(el => { el.textContent = siteSettings.email; el.href = `mailto:${siteSettings.email}`; });
@@ -568,7 +632,6 @@
         setTimeout(() => { try { AOS.refreshHard(); } catch(_){} }, 100);
       });
     } else {
-      console.warn('AOS library not loaded, animations disabled');
       document.body.classList.add('no-aos');
     }
   }
@@ -714,8 +777,10 @@
     datePickerButton.addEventListener('click', openCalendar);
   }
 
+  let availabilityRequest = 0;
   async function loadAvailableTimes(date) {
     if (!timeSelect) return;
+    const requestId = ++availabilityRequest;
     timeSelect.disabled = true;
     timeSelect.replaceChildren(new Option(t('form.time.loading'), ''));
     if (!date) {
@@ -727,6 +792,7 @@
     try {
       const response = await apiFetch(`availability?date=${encodeURIComponent(date)}`);
       const result = await response.json();
+      if (requestId !== availabilityRequest) return;
       if (!response.ok) throw new Error(result.error || t('form.time.loadError'));
       const values = (result.availableTimes || []).filter(value => /^\d{2}:\d{2}$/.test(value));
       timeSelect.replaceChildren(new Option(values.length ? t('form.time.selectSlot', 'Выберите время') : t('form.time.none'), ''));
@@ -734,6 +800,7 @@
       timeSelect.disabled = !values.length;
       if (timeHint) timeHint.textContent = values.length ? `${t('form.time.available', 'Свободных вариантов')}: ${values.length}` : t('form.time.none');
     } catch (error) {
+      if (requestId !== availabilityRequest) return;
       timeSelect.replaceChildren(new Option(t('form.time.loadError'), ''));
       if (timeHint) timeHint.textContent = t('form.time.loadError');
     }
@@ -762,7 +829,7 @@
       const phone = $('#phone')?.value?.trim() || '';
       const car = $('#car')?.value?.trim() || '';
       const vehicleType = $('#vehicleType')?.value || '';
-      const serviceType = $('#serviceType')?.value || '';
+      const serviceType = 'inspection';
       const date = $('#date')?.value || '';
       const time = $('#time')?.value || '';
       if (!date) {

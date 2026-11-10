@@ -406,7 +406,7 @@
         return fetch(`${API_ROOT}/api/${String(path).replace(/^\/+/, '')}`, options).then(response => {
             if (response.status === 401 && token) {
                 localStorage.removeItem('adminToken');
-                window.location.replace('login.html');
+                window.location.replace('/login');
             }
             return response;
         });
@@ -414,7 +414,7 @@
 
     // Check authentication
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = '/login';
     }
 
     // Update live time
@@ -569,7 +569,7 @@
         const csv = '\uFEFF' + rows.map(row => row.map(value => `"${String(value ?? '').replace(/"/g,'""')}"`).join(';')).join('\r\n');
         const link = document.createElement('a'), url = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); link.href = url; link.download = 'atc-zayavki.csv'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
-    function previewSite() { window.open('index.html', '_blank', 'noopener'); }
+    function previewSite() { window.open('/', '_blank', 'noopener'); }
     function exportContent() {
         const data = Object.fromEntries(['mainTitle','siteDescription','mainPhone','address','email','workingHours'].map(key => [key, document.getElementById(key).value]));
         const link = document.createElement('a'), url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); link.href = url; link.download = 'atc-site-content.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -603,7 +603,8 @@
             const response = await apiFetch('admin/backup',{headers:{'Authorization':`Bearer ${token}`}});
             if (!response.ok) { const data=await response.json(); throw new Error(data.error || 'Не удалось создать копию'); }
             const blob=await response.blob(), url=URL.createObjectURL(blob), link=document.createElement('a');
-            link.href=url; link.download=`atc-backup-${new Date().toISOString().slice(0,10)}.db`; link.click();
+            const backupExt = response.headers.get('content-type')?.includes('json') ? 'json' : 'db';
+            link.href=url; link.download=`atc-backup-${new Date().toISOString().slice(0,10)}.${backupExt}`; link.click();
             setTimeout(()=>URL.revokeObjectURL(url),1000);
             status.textContent='Резервная копия скачана';
         } catch (error) { status.textContent=error.message || 'Не удалось скачать копию'; }
@@ -684,7 +685,7 @@
     // Logout
     function logout() {
         localStorage.removeItem('adminToken');
-        window.location.href = 'login.html';
+        window.location.href = '/login';
     }
 
     // Initialize
