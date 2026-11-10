@@ -1,0 +1,10 @@
+const fs = require('fs');
+const path = require('path');
+const root = __dirname;
+const output = path.join(root, 'dist');
+const pages = ['index.html', 'login.html', 'admin.html', 'privacy.html'];
+fs.rmSync(output, { recursive: true, force: true });
+fs.mkdirSync(output, { recursive: true });
+for (const page of pages) fs.copyFileSync(path.join(root, page), path.join(output, page));
+fs.cpSync(path.join(root, 'assets'), path.join(output, 'assets'), { recursive: true });
+console.log(`Prepared Netlify static site in ${output}`);

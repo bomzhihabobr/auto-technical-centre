@@ -2,6 +2,9 @@
 (function(){
   const $ = (s, p=document) => p.querySelector(s);
   const $$ = (s, p=document) => Array.from(p.querySelectorAll(s));
+  const localHost = ['localhost','127.0.0.1','::1',''].includes(window.location.hostname);
+  const API_ROOT = localHost && window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '';
+  const apiFetch = (path, options) => fetch(`${API_ROOT}/api/${String(path).replace(/^\/+/, '')}`, options);
 
   // i18n dictionary RU / KZ (kk)
   const i18n = {
@@ -18,8 +21,17 @@
       'nav.contacts': 'Контакты',
       'nav.book': 'Записаться',
 
-      'hero.title': 'Специализированный центр техосмотра в Астане',
-      'hero.lead': 'Официально, быстро и без очереди. Гарантированный результат за 17 минут.',
+      'hero.title': 'Техосмотр без лишнего ожидания',
+      'hero.lead': 'Проверим автомобиль по требованиям и подскажем, что подготовить. Выберите свободное время онлайн — обычно осмотр занимает около 17 минут.',
+      'hero.kicker': 'ОФИЦИАЛЬНЫЙ ЦЕНТР · АСТАНА',
+      'hero.visual.status': 'ЦЕНТР ПРИНИМАЕТ ЗАПИСИ',
+      'hero.visual.timeLabel': 'ОСМОТР ОТ',
+      'hero.visual.minutes': 'МИНУТ',
+      'hero.visual.official': 'ПО РЕГЛАМЕНТУ',
+      'hero.visual.result': 'Понятный результат',
+      'hero.proof.location': 'Астана · Қобыз, 36',
+      'hero.proof.process': '3 простых шага',
+      'hero.proof.booking': 'Свободное время онлайн',
       'hero.cta': 'Записаться на ТО',
       'hero.call': 'Позвонить',
       'hero.badge.official': 'Официальный оператор ТО',
@@ -52,7 +64,14 @@
 
       'benefits.title': 'Почему техосмотр нужно проходить у нас?',
 
-      'prepare.title': 'Подготовьтесь к техосмотру',
+      'prepare.title': 'Что взять на техосмотр',
+      'prepare.subtitle': 'Базовый комплект документов одинаковый: привезите транспортное средство и свидетельство о его регистрации.',
+      'prepare.passenger.title': 'Легковой автомобиль',
+      'prepare.commercial.title': 'Грузовой автомобиль или автобус',
+      'prepare.other.title': 'Мотоцикл или прицеп',
+      'prepare.vehicle.item': 'Транспортное средство для осмотра',
+      'prepare.registration.item': 'Свидетельство о государственной регистрации ТС',
+      'prepare.registration.unit': 'Регистрационный документ именно на это ТС',
       'prepare.car.title': 'Автомобиль',
       'prepare.car.text': 'Авто должно быть технически исправным по действующим нормам.',
       'prepare.pay.title': 'Оплата',
@@ -94,21 +113,68 @@
 
       'contacts.map.title': 'Карта проезда',
       'contacts.map.info': 'Нажмите на метку для подробной информации',
+      'contacts.headline': 'Приезжайте — мы рядом',
+      'contacts.subtitle': 'Ответим на вопросы и подберём удобное время для техосмотра.',
+      'contacts.kicker': 'Свяжитесь с нами',
+      'contacts.address.label': 'Адрес',
+      'contacts.phone.label': 'Позвоните нам',
+      'contacts.phone2.label': 'Дополнительный номер',
+      'contacts.email.label': 'Электронная почта',
+      'contacts.hours.label': 'Время работы',
+      'contacts.map.kicker': 'Ждём вас в гости',
+      'contacts.map.open': 'Открыть адрес в 2ГИС',
+      'contacts.note': 'Точная локация доступна в 2ГИС. Парковка для клиентов.',
 
       'booking.title': 'Запись на техосмотр',
+      'booking.kicker': 'Всего пара минут',
+      'booking.intro': 'Оставьте контакты — мы подтвердим удобное время.',
       'form.name': 'Имя',
       'form.name.ph': 'Ваше имя',
       'form.phone': 'Телефон',
-      'form.phone.ph': '+7 ___ ___ __ __',
+      'form.phone.ph': '+7 (___) ___-__-__',
       'form.car': 'Марка и модель',
       'form.car.ph': 'Напр.: Toyota Camry',
+      'form.vehicleType': 'Тип транспорта',
+      'form.vehicleType.choose': 'Выберите тип',
+      'form.vehicleType.passenger': 'Легковой автомобиль',
+      'form.vehicleType.commercial': 'Грузовой автомобиль',
+      'form.vehicleType.bus': 'Автобус',
+      'form.vehicleType.motorcycle': 'Мотоцикл',
+      'form.vehicleType.trailer': 'Прицеп',
+      'form.service': 'Услуга',
+      'form.service.choose': 'Выберите услугу',
+      'form.service.inspection': 'Технический осмотр',
+      'form.service.diagnostics': 'Диагностика',
+      'form.service.insurance': 'ОСАГО',
+      'form.service.tire': 'Шиномонтаж',
       'form.date': 'Дата',
+      'form.date.ph': 'ДД.ММ.ГГГГ',
+      'form.date.aria': 'Дата записи',
+      'form.date.pick': 'Выбрать дату',
+      'form.date.hint': 'Выберите дату в календаре',
+      'form.phone.hint': 'Формат: +7 (700) 123-45-67',
+      'form.phone.invalid': 'Введите номер полностью',
+      'form.date.required': 'Выберите дату',
+      'form.submit.error': 'Не удалось отправить заявку. Позвоните нам: 8 707 243 3010.',
+      'form.submit.connection': 'Не удалось связаться с сервером. Попробуйте ещё раз или позвоните: 8 707 243 3010.',
+      'form.success.title': 'Заявка отправлена',
+      'form.success.body': 'Мы скоро свяжемся с вами для подтверждения. Номер заявки:',
+      'form.success.new': 'Записать ещё один автомобиль',
+      'form.time.selectDate': 'Сначала выберите дату',
+      'form.time.loading': 'Загружаем свободное время…',
+      'form.time.none': 'На эту дату свободного времени нет',
+      'form.time.loadError': 'Не удалось загрузить время. Попробуйте выбрать дату ещё раз.',
+      'form.time.hint': 'Покажем свободное время после выбора даты',
+      'form.time.selectSlot': 'Выберите время',
+      'form.time.available': 'Свободных вариантов',
+      'form.submit.sending': 'Отправляем…',
       'form.time': 'Время',
       'form.comment': 'Комментарий',
       'form.comment.ph': 'Удобно после 18:00, нужны консультации и т.п.',
-      'form.submit': 'Отправить в WhatsApp',
+      'form.submit': 'Отправить заявку',
       'form.call': 'Позвонить',
-      'policy': 'Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.',
+      'policy': 'Я согласен(на) на обработку данных для оформления записи.',
+      'policy.link': 'Политика обработки данных',
 
       'msg.booking': 'Запись на техосмотр',
       'msg.name': 'Имя',
@@ -116,7 +182,31 @@
       'msg.car': 'Авто',
       'msg.desiredTime': 'Желаемое время',
       'msg.comment': 'Комментарий',
-      'msg.sentFrom': 'Отправлено с сайта at-c.kz'
+      'msg.sentFrom': 'Отправлено с сайта at-c.kz',
+      'footer.description': 'Профессиональный техосмотр в Астане. Быстро, удобно, по правилам.',
+      'footer.faq': 'Вопросы и ответы',
+      'footer.privacy': 'Политика обработки данных',
+      'footer.top': 'Наверх ↑',
+      'privacy.eyebrow': 'AUTO TECHNICAL CENTRE · АСТАНА',
+      'privacy.title': 'Политика обработки данных',
+      'privacy.intro': 'Здесь описано, какие данные нужны для записи на техосмотр, зачем они используются и как связаться с центром по вопросам обработки данных.',
+      'privacy.operator.title': 'Кто обрабатывает данные',
+      'privacy.operator.text': 'Заявки обрабатывает Auto Technical Centre. Для связи по вопросам записи и обработки данных используйте телефон или электронную почту ниже.',
+      'privacy.data.title': 'Какие данные мы получаем',
+      'privacy.data.text': 'При отправке заявки сайт получает имя, номер телефона, марку и модель автомобиля, тип транспорта, выбранную услугу, желаемые дату и время, а также комментарий, если вы его добавили.',
+      'privacy.purpose.title': 'Для чего нужны данные',
+      'privacy.purpose.text': 'Данные используются для регистрации и обработки записи, проверки доступности времени, связи с вами для подтверждения и ведения внутреннего учета заявок. Данные из формы не публикуются на сайте.',
+      'privacy.access.title': 'Доступ и хранение',
+      'privacy.access.text': 'Заявки хранятся в базе данных сайта и доступны сотрудникам, которым они нужны для обработки записи. Данные следует хранить только столько, сколько необходимо для этих целей и выполнения применимых требований законодательства.',
+      'privacy.rights.title': 'Ваши запросы',
+      'privacy.rights.text': 'Вы можете обратиться, чтобы уточнить, исправить или удалить данные, а также отозвать согласие, если это допускается применимым законодательством. Укажите номер заявки и удобный способ обратной связи.',
+      'privacy.note': 'Правила сбора и обработки данных регулируются законодательством Республики Казахстан. Перед публикацией владелец сайта должен проверить полное юридическое наименование оператора и актуальность этого текста.',
+      'privacy.law': 'Закон РК «О персональных данных и их защите»',
+      'privacy.back': 'Вернуться на сайт',
+      'header.home.aria': 'На главную — Auto Technical Centre',
+      'footer.home.aria': 'На главную',
+      'footer.links.aria': 'Ссылки в подвале',
+      'brand.tagline': 'ЦЕНТР ТЕХОСМОТРА'
     },
     kk: {
       'nav.services': 'Қызметтер',
@@ -131,8 +221,17 @@
       'nav.contacts': 'Байланыс',
       'nav.book': 'Жазылу',
 
-      'hero.title': 'Астанадағы техникалық байқау орталығы',
-      'hero.lead': 'Ресми, тез және кезексіз. Нәтиже 17 минутта.',
+      'hero.title': 'Техбайқаудан кезексіз өтіңіз',
+      'hero.lead': 'Көлікті талаптарға сай тексеріп, алдын ала не дайындау керегін түсіндіреміз. Бос уақытты онлайн таңдап, жазылыңыз.',
+      'hero.kicker': 'РЕСМИ ОРТАЛЫҚ · АСТАНА',
+      'hero.visual.status': 'ОРТАЛЫҚ ЖАЗЫЛЫМ ҚАБЫЛДАЙДЫ',
+      'hero.visual.timeLabel': 'ТЕКСЕРУ УАҚЫТЫ',
+      'hero.visual.minutes': 'МИНУТТАН',
+      'hero.visual.official': 'РЕГЛАМЕНТ БОЙЫНША',
+      'hero.visual.result': 'Түсінікті нәтиже',
+      'hero.proof.location': 'Астана · Қобыз, 36',
+      'hero.proof.process': '3 қарапайым қадам',
+      'hero.proof.booking': 'Бос уақытты онлайн таңдаңыз',
       'hero.cta': 'ТО-ға жазылу',
       'hero.call': 'Қоңырау шалу',
       'hero.badge.official': 'Ресми ТО операторы',
@@ -141,6 +240,30 @@
 
       'services.title': 'Нені тексереміз',
       'services.subtitle': 'ТО регламентіне сәйкес жүйелердің кешенді диагностикасы.',
+      'services.steering.title': 'Рульдік басқару',
+      'services.steering.item1': 'Руль дөңгелегінің бос жүрісі (жеңіл көлік үшін 5°-қа дейін)',
+      'services.steering.item2': 'Руль тартқыштары мен ұштарының күйі',
+      'services.steering.item3': 'Рульдің бірқалыпты айналуы (жұлқусыз)',
+      'services.wheels.title': 'Дөңгелектер, шиналар және аспа',
+      'services.wheels.item1': 'Шарлы тіректердің күйі және бос жүрісі',
+      'services.wheels.item2': 'Шиналардың бекітілуі мен тозуы',
+      'services.wheels.item3': 'Карданның бекітілуі (артқы жетекті көліктерде)',
+      'services.chassis.title': 'Шасси және агрегаттар',
+      'services.chassis.item1': 'Тораптар мен агрегаттардың бекітілуі',
+      'services.chassis.item2': 'Сұйықтық ағуы мен зақымдардың болмауы',
+      'services.chassis.item3': 'Қозғалтқыш пен жүйелердің күйі',
+      'services.equipment.title': 'Қосымша жабдықтар',
+      'services.equipment.item1': 'Өрт сөндіргіш, дәрі қобдишасы, апаттық тоқтау белгісі',
+      'services.equipment.item2': 'Айналар, әйнектер және әйнек тазалағыштар',
+      'services.equipment.item3': 'Қауіпсіздік белдіктері мен дыбыстық сигнал',
+      'services.brakes.title': 'Тежеу жүйесі',
+      'services.brakes.item1': 'Тежеу күші және біркелкілігі',
+      'services.brakes.item2': 'Шлангілер мен жетектердің герметикалығы',
+      'services.brakes.item3': 'Жетек дабылының іске қосылуы',
+      'services.visibility.title': 'Көріну және жарық',
+      'services.visibility.item1': 'Әйнектердің жарық өткізуі нормаларға сай',
+      'services.visibility.item2': 'Фара шоғының бағыты мен жарық күші',
+      'services.visibility.item3': 'Жұмыс режимдері мен сигнализация',
 
       'required.title': 'Техбайқау міндетті / қажет емес',
       'required.subtitle': 'Ақпарат ҚР қолданыстағы талаптарына сай.',
@@ -164,8 +287,29 @@
       'steps.3.text': 'Құжаттарды береміз және жөндеу бойынша кеңес береміз. Тез және ресми.',
 
       'benefits.title': 'Неліктен бізде техбайқаудан өту керек?',
+      'benefits.reliability.title': 'Сенімділік',
+      'benefits.reliability.text': 'Делдалсыз жұмыс. Әділ баға және ашық үдеріс.',
+      'benefits.official.title': 'Ресми қызмет',
+      'benefits.official.text': 'Аккредиттелген ТО операторы. Стандартқа сай арнайы жабдық.',
+      'benefits.speed.title': 'Жылдамдық',
+      'benefits.speed.text': 'Жылдам әрі сапалы қызмет — 17 минуттан бастап.',
+      'benefits.orgs.title': 'Ұйымдарға',
+      'benefits.orgs.text': 'Заңды тұлғалармен жұмыс істейміз. Қажетті құжаттарды береміз.',
+      'benefits.value.title': 'Тиімділік',
+      'benefits.value.text': 'Тұрақты клиенттерге тиімді баға мен жеңілдіктер.',
+      'benefits.guarantee.title': 'Кепілдік',
+      'benefits.guarantee.text': 'Қажетті құжаттар мен кеңес беріледі.',
+      'benefits.queue.title': 'Кезексіз',
+      'benefits.queue.text': 'Онлайн жазылу уақытыңызды үнемдейді.',
 
-      'prepare.title': 'Техбайқауға дайындалыңыз',
+      'prepare.title': 'Техбайқауға не әкелу керек',
+      'prepare.subtitle': 'Құжаттардың негізгі тізімі бірдей: көлікті және оның тіркеу куәлігін алып келіңіз.',
+      'prepare.passenger.title': 'Жеңіл көлік',
+      'prepare.commercial.title': 'Жүк көлігі немесе автобус',
+      'prepare.other.title': 'Мотоцикл немесе тіркеме',
+      'prepare.vehicle.item': 'Тексеруге арналған көлік құралы',
+      'prepare.registration.item': 'Көлік құралын мемлекеттік тіркеу туралы куәлік',
+      'prepare.registration.unit': 'Дәл осы көлік құралына берілген тіркеу құжаты',
       'prepare.car.title': 'Автокөлік',
       'prepare.car.text': 'Авто қолданыстағы нормаларға сай техникалық жарамды болуы керек.',
       'prepare.pay.title': 'Төлем',
@@ -188,6 +332,28 @@
 
       'testimonials.title': 'Клиент пікірлері',
       'testimonials.subtitle': 'Бізді жылдамдық, сапа және қамқорлық үшін ұсынады.',
+      'extra.insurance': 'Сақтандыру (ОСАГО)',
+      'pricing.passenger.title': 'Жеңіл көлік / мотоцикл',
+      'pricing.passenger.badge': 'A, B санаттары',
+      'pricing.passenger.item1': 'Регламент бойынша толық диагностика',
+      'pricing.passenger.item2': 'Диагностикалық карта беру',
+      'pricing.passenger.item3': 'Нәтижесі бойынша кеңес',
+      'pricing.commercial.title': 'Коммерциялық көлік',
+      'pricing.commercial.badge': 'Такси, автобус, жүк көлігі',
+      'pricing.commercial.item1': 'Заңды тұлғалар талаптарына сай тексеру',
+      'pricing.commercial.item2': 'Қажетті құжаттарды рәсімдеу',
+      'pricing.commercial.item3': 'Кезектен тыс жазылу',
+      'pricing.special.title': 'Арнайы санаттар',
+      'pricing.special.badge': 'C1, D1, E және т.б.',
+      'pricing.special.item1': 'Жеке шарттар',
+      'pricing.special.item2': 'Өзгертілген көлікті тексеру',
+      'pricing.special.item3': 'ТО мәселелері бойынша қолдау',
+      'testimonials.review1': 'Бұл компанияның қызметін көптен бері пайдаланамын. Қызметкерлер өз ісін жақсы біледі, бәрін жылдам әрі сапалы орындайды.',
+      'testimonials.author1': '— ATC клиенті',
+      'testimonials.review2': 'Auto Technical Centre-де үш жылдан бері техбайқаудан өтемін. Қызмет мұқият көрсетіледі, бәрі кідіріссіз және артық әуре-сарсаңсыз өтеді.',
+      'testimonials.author2': '— Тұрақты клиент',
+      'testimonials.review3': 'Қызмет ұнайды, мамандар клиенттерге жақсы қарайды. ТО аз уақытта аяқталды, рақмет!',
+      'testimonials.author3': '— Көлік иесі',
 
       'faq.title': 'Жиі қойылатын сұрақтар',
       'faq.q1': 'ТО-дан өту үшін қандай құжаттар керек?',
@@ -205,23 +371,74 @@
       'faq.q7': 'Ресей нөмірлі автоны Қазақстанда техбайқаудан өткізе аламын ба?',
       'faq.a7': 'Иә, болады.',
 
+      'contacts.title': 'Байланыс деректері',
+      'contacts.hours.value': 'Күн сайын 09:00-ден 19:00-ге дейін',
+      'contacts.address': 'Астана қ., Қобыз көшесі, 36',
+      'contacts.whatsapp': 'WhatsApp-қа жазу',
       'contacts.map.title': 'Келу картасы',
       'contacts.map.info': 'Толық ақпарат алу үшін белгіні басыңыз',
+      'contacts.headline': 'Келіңіз — біз жақынбыз',
+      'contacts.subtitle': 'Сұрақтарыңызға жауап беріп, техбайқауға қолайлы уақытты таңдаймыз.',
+      'contacts.kicker': 'Бізбен байланысыңыз',
+      'contacts.address.label': 'Мекенжай',
+      'contacts.phone.label': 'Қоңырау шалыңыз',
+      'contacts.phone2.label': 'Қосымша телефон',
+      'contacts.email.label': 'Электрондық пошта',
+      'contacts.hours.label': 'Жұмыс уақыты',
+      'contacts.map.kicker': 'Сізді күтеміз',
+      'contacts.map.open': 'Мекенжайды 2GIS-тен ашу',
+      'contacts.note': 'Нақты орналасқан жері 2GIS-те көрсетілген. Клиенттерге арналған тұрақ бар.',
 
       'booking.title': 'Техбайқауға жазылу',
+      'booking.kicker': 'Бар болғаны бірнеше минут',
+      'booking.intro': 'Байланыс деректерін қалдырыңыз — қолайлы уақытты растаймыз.',
       'form.name': 'Аты',
       'form.name.ph': 'Сіздің атыңыз',
       'form.phone': 'Телефон',
-      'form.phone.ph': '+7 ___ ___ __ __',
+      'form.phone.ph': '+7 (___) ___-__-__',
       'form.car': 'Марка және модель',
       'form.car.ph': 'Мысалы: Toyota Camry',
+      'form.vehicleType': 'Көлік түрі',
+      'form.vehicleType.choose': 'Түрін таңдаңыз',
+      'form.vehicleType.passenger': 'Жеңіл көлік',
+      'form.vehicleType.commercial': 'Жүк көлігі',
+      'form.vehicleType.bus': 'Автобус',
+      'form.vehicleType.motorcycle': 'Мотоцикл',
+      'form.vehicleType.trailer': 'Тіркеме',
+      'form.service': 'Қызмет',
+      'form.service.choose': 'Қызметті таңдаңыз',
+      'form.service.inspection': 'Техникалық байқау',
+      'form.service.diagnostics': 'Диагностика',
+      'form.service.insurance': 'ОСАГО',
+      'form.service.tire': 'Шина орнату',
       'form.date': 'Күні',
+      'form.date.ph': 'КК.АА.ЖЖЖЖ',
+      'form.date.aria': 'Жазылу күні',
+      'form.date.pick': 'Күнді таңдау',
+      'form.date.hint': 'Күнтізбеден күнді таңдаңыз',
+      'form.phone.hint': 'Үлгі: +7 (700) 123-45-67',
+      'form.phone.invalid': 'Телефон нөмірін толық енгізіңіз',
+      'form.date.required': 'Күнді таңдаңыз',
+      'form.submit.error': 'Өтінімді жіберу мүмкін болмады. Қоңырау шалыңыз: 8 707 243 3010.',
+      'form.submit.connection': 'Сервермен байланысу мүмкін болмады. Қайталап көріңіз немесе қоңырау шалыңыз: 8 707 243 3010.',
+      'form.success.title': 'Өтінім жіберілді',
+      'form.success.body': 'Растау үшін сізбен жақында хабарласамыз. Өтінім нөмірі:',
+      'form.success.new': 'Тағы бір көлікке жазылу',
+      'form.time.selectDate': 'Алдымен күнді таңдаңыз',
+      'form.time.loading': 'Бос уақыт тексерілуде…',
+      'form.time.none': 'Бұл күнге бос уақыт жоқ',
+      'form.time.loadError': 'Уақытты жүктеу мүмкін болмады. Күнді қайта таңдаңыз.',
+      'form.time.hint': 'Күнді таңдағаннан кейін бос уақытты көрсетеміз',
+      'form.time.selectSlot': 'Уақытты таңдаңыз',
+      'form.time.available': 'Бос уақыт нұсқалары',
+      'form.submit.sending': 'Жіберілуде…',
       'form.time': 'Уақыты',
       'form.comment': 'Пікір',
       'form.comment.ph': '18:00-ден кейін ыңғайлы, кеңес керек және т.б.',
-      'form.submit': 'WhatsApp-қа жіберу',
+      'form.submit': 'Өтінім жіберу',
       'form.call': 'Қоңырау шалу',
-      'policy': 'Түймені басу арқылы сіз дербес деректерді өңдеуге келісесіз.',
+      'policy': 'Жазылымды рәсімдеу үшін деректерімді өңдеуге келісемін.',
+      'policy.link': 'Деректерді өңдеу саясаты',
 
       'msg.booking': 'Техбайқауға жазылу',
       'msg.name': 'Аты',
@@ -229,10 +446,35 @@
       'msg.car': 'Авто',
       'msg.desiredTime': 'Қалаған уақыт',
       'msg.comment': 'Пікір',
-      'msg.sentFrom': 'at-c.kz сайтынан жіберілді'
+      'msg.sentFrom': 'at-c.kz сайтынан жіберілді',
+      'footer.description': 'Астанадағы кәсіби техбайқау. Жылдам, ыңғайлы және талапқа сай.',
+      'footer.faq': 'Сұрақтар мен жауаптар',
+      'footer.privacy': 'Деректерді өңдеу саясаты',
+      'footer.top': 'Жоғары ↑',
+      'privacy.eyebrow': 'AUTO TECHNICAL CENTRE · АСТАНА',
+      'privacy.title': 'Деректерді өңдеу саясаты',
+      'privacy.intro': 'Бұл бөлімде техбайқауға жазылу үшін қандай деректер қажет екені, олардың не үшін пайдаланылатыны және деректерді өңдеу мәселелері бойынша орталықпен қалай байланысуға болатыны жазылған.',
+      'privacy.operator.title': 'Деректерді кім өңдейді',
+      'privacy.operator.text': 'Өтінімдерді Auto Technical Centre өңдейді. Жазылым және деректерді өңдеу туралы сұрақтар бойынша төмендегі телефонға немесе электрондық поштаға хабарласыңыз.',
+      'privacy.data.title': 'Қандай деректер жиналады',
+      'privacy.data.text': 'Өтінімді жіберген кезде сайт аты-жөніңізді, телефон нөміріңізді, көліктің маркасы мен моделін, көлік түрін, таңдалған қызметті, қалаған күн мен уақытты және қосымша пікірді алады.',
+      'privacy.purpose.title': 'Деректер не үшін қажет',
+      'privacy.purpose.text': 'Деректер жазылымды тіркеу және өңдеу, бос уақытты тексеру, растау үшін сізбен байланысу және өтінімдерді ішкі есепке алу мақсатында пайдаланылады. Өтінімдегі деректер сайтта жарияланбайды.',
+      'privacy.access.title': 'Қолжетімділік және сақтау',
+      'privacy.access.text': 'Өтінімдер сайт дерекқорында сақталады және жазылымды өңдеуге жауапты қызметкерлерге қолжетімді. Деректер осы мақсаттарға және қолданыстағы заң талаптарына қажетті мерзімде ғана сақталуы тиіс.',
+      'privacy.rights.title': 'Сұрауларыңыз',
+      'privacy.rights.text': 'Қолданыстағы заңнамаға сәйкес деректерді нақтылау, түзету, жою немесе келісімді қайтарып алу туралы өтініш бере аласыз. Өтінім нөмірін және сізбен байланысу тәсілін көрсетіңіз.',
+      'privacy.note': 'Деректерді жинау және өңдеу Қазақстан Республикасының заңнамасымен реттеледі. Жарияламас бұрын сайт иесі оператордың толық заңды атауы мен осы мәтіннің өзектілігін тексеруі керек.',
+      'privacy.law': 'ҚР «Дербес деректер және оларды қорғау туралы» заңы',
+      'privacy.back': 'Сайтқа оралу',
+      'header.home.aria': 'Басты бет — Auto Technical Centre',
+      'footer.home.aria': 'Басты бетке',
+      'footer.links.aria': 'Төменгі бөлім сілтемелері',
+      'brand.tagline': 'ТЕХБАЙҚАУ ОРТАЛЫҒЫ'
     }
   };
 
+  let siteSettings = {};
   const getLang = () => localStorage.getItem('lang') || 'ru';
   const setLang = (lang) => {
     localStorage.setItem('lang', lang);
@@ -256,6 +498,20 @@
       if (!key) return;
       el.setAttribute('placeholder', t(key, el.getAttribute('placeholder') || ''));
     });
+    $$('[data-i18n-aria]').forEach(el => {
+      const key = el.getAttribute('data-i18n-aria');
+      if (key) el.setAttribute('aria-label', t(key, el.getAttribute('aria-label') || ''));
+    });
+    const calendarInput = $('#date');
+    if (calendarInput) calendarInput.lang = lang === 'kk' ? 'kk' : 'ru';
+    const phoneField = $('#phone');
+    if (phoneField?.value) {
+      const digits = phoneField.value.replace(/\D/g, '').slice(1);
+      phoneField.setCustomValidity(digits.length > 0 && digits.length < 10 ? t('form.phone.invalid') : '');
+    }
+    const dateField = $('#dateDisplay');
+    if (dateField) dateField.setCustomValidity($('#date')?.value ? '' : t('form.date.required'));
+    applySiteSettings();
     // Toggle button label: show the next language code
     const btn = $('#langToggle');
     if (btn) {
@@ -263,6 +519,40 @@
       btn.setAttribute('aria-label', lang === 'ru' ? 'Қазақ тіліне ауыстыру' : 'Переключить на русский');
     }
   };
+
+  function applySiteSettings() {
+    if (!siteSettings || !Object.keys(siteSettings).length) return;
+    if (siteSettings.mainTitle) {
+      document.title = siteSettings.mainTitle;
+      $$('[data-site-title]').forEach(el => { el.textContent = siteSettings.mainTitle; });
+    }
+    if (siteSettings.siteDescription) {
+      const meta = $('meta[name="description"]');
+      if (meta) meta.content = siteSettings.siteDescription;
+      $$('[data-site-description]').forEach(el => { el.textContent = siteSettings.siteDescription; });
+    }
+    if (siteSettings.address) {
+      const address = getLang() === 'kk' ? siteSettings.address.replace(/^г\.\s*/i, 'Астана қ., ') : siteSettings.address;
+      $$('[data-site-address]').forEach(el => { el.textContent = address; });
+    }
+    if (siteSettings.email) $$('[data-site-email]').forEach(el => { el.textContent = siteSettings.email; el.href = `mailto:${siteSettings.email}`; });
+    if (siteSettings.workingHours) $$('[data-site-hours]').forEach(el => {
+      const hours = getLang() === 'kk' ? siteSettings.workingHours.replace(/^Ежедневно\s*/i, 'Күн сайын ').replace(/^Каждый день\s*/i, 'Күн сайын ') : siteSettings.workingHours;
+      el.textContent = hours;
+    });
+    if (siteSettings.mainPhone) {
+      const digits = siteSettings.mainPhone.replace(/\D/g, '');
+      const international = digits.startsWith('8') ? `+7${digits.slice(1)}` : `+${digits.startsWith('7') ? digits : `7${digits}`}`;
+      const waNumber = international.replace(/\D/g, '');
+      $$('[data-site-phone-link]').forEach(el => { el.href = `tel:${international}`; });
+      $$('[data-site-phone-text]').forEach(el => { el.textContent = siteSettings.mainPhone; });
+      $$('[data-site-whatsapp]').forEach(el => { el.href = `https://wa.me/${waNumber}`; });
+    }
+  }
+
+  apiFetch('public-settings').then(response => response.ok ? response.json() : null)
+    .then(settings => { if (settings) { siteSettings = settings; applySiteSettings(); } })
+    .catch(() => {});
 
   // AOS animations (with graceful fallback)
   function initAOS() {
@@ -341,60 +631,182 @@
   const callBtn = $('#callBtn');
   if (callBtn) {
     callBtn.addEventListener('click', () => {
-      window.location.href = 'tel:+77002433010';
+      window.location.href = $('[data-site-phone-link]')?.href || 'tel:+77072433010';
     });
   }
 
-  // Simple KZ phone input formatter
+  // Progressive Kazakhstan phone mask: +7 (700) 123-45-67
   const phoneInput = $('#phone');
   if (phoneInput) {
-    const formatKZ = (v) => {
-      const d = v.replace(/\D/g, '');
-      let out = '+7 ';
-      let i = d.startsWith('7') ? 1 : (d.startsWith('8') ? 1 : 0);
-      if (d.length <= i) return out.trim();
-      if (d.length > i) out += d.slice(i, i+3);
-      if (d.length > i+3) out += ' ' + d.slice(i+3, i+6);
-      if (d.length > i+6) out += ' ' + d.slice(i+6, i+8);
-      if (d.length > i+8) out += ' ' + d.slice(i+8, i+10);
-      return out.trim();
+    const hasCountryPrefix = (value, digits) => (digits.startsWith('7') || digits.startsWith('8')) &&
+      (/^\s*\+/.test(value) || digits.length > 10);
+    const formatKZ = (value) => {
+      let digits = value.replace(/\D/g, '');
+      if (hasCountryPrefix(value, digits)) digits = digits.slice(1);
+      digits = digits.slice(0, 10);
+      if (!digits) return '';
+      let result = `+7 (${digits.slice(0, 3)}`;
+      if (digits.length >= 3) result += ')';
+      if (digits.length > 3) result += ` ${digits.slice(3, 6)}`;
+      if (digits.length > 6) result += `-${digits.slice(6, 8)}`;
+      if (digits.length > 8) result += `-${digits.slice(8, 10)}`;
+      return result;
+    };
+    const digitsBeforeCaret = (value, caret) => {
+      const before = value.slice(0, caret).replace(/\D/g, '');
+      const all = value.replace(/\D/g, '');
+      return Math.max(0, before.length - (hasCountryPrefix(value, all) ? 1 : 0));
+    };
+    const positionAfterDigit = (value, digitCount) => {
+      let seen = 0;
+      for (let i = 0; i < value.length; i += 1) {
+        if (/\d/.test(value[i])) seen += 1;
+        if (seen >= digitCount + 1) return i + 1; // Include the fixed country code.
+      }
+      return value.length;
     };
     phoneInput.addEventListener('input', () => {
-      const pos = phoneInput.selectionStart;
+      const localDigitsBeforeCaret = digitsBeforeCaret(phoneInput.value, phoneInput.selectionStart || 0);
       phoneInput.value = formatKZ(phoneInput.value);
-      phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+      const localDigits = phoneInput.value.replace(/\D/g, '').slice(1);
+      phoneInput.setCustomValidity(localDigits.length > 0 && localDigits.length < 10 ? t('form.phone.invalid') : '');
+      const caret = phoneInput.value ? positionAfterDigit(phoneInput.value, localDigitsBeforeCaret) : 0;
+      phoneInput.setSelectionRange(caret, caret);
     });
     phoneInput.addEventListener('focus', () => {
-      if (!phoneInput.value) phoneInput.value = '+7 ';
+      if (!phoneInput.value) {
+        phoneInput.value = '+7 (';
+        phoneInput.setCustomValidity(t('form.phone.invalid'));
+        phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+      }
+    });
+    phoneInput.addEventListener('blur', () => {
+      if (phoneInput.value.replace(/\D/g, '') === '7') {
+        phoneInput.value = '';
+        phoneInput.setCustomValidity('');
+      }
     });
   }
 
-  // Booking form -> WhatsApp
+  // Show a consistent Russian date while keeping an ISO value for the backend.
+  const dateInput = $('#date');
+  const dateDisplay = $('#dateDisplay');
+  const datePickerButton = $('#datePickerButton');
+  const timeSelect = $('#time');
+  const timeHint = $('#timeHint');
+  if (dateInput && dateDisplay && datePickerButton) {
+    dateDisplay.setCustomValidity(t('form.date.required'));
+    const today = new Date();
+    dateInput.min = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
+    dateInput.addEventListener('change', () => {
+      const [year, month, day] = dateInput.value.split('-');
+      dateDisplay.value = year ? `${day}.${month}.${year}` : '';
+      dateDisplay.setCustomValidity(dateInput.value ? '' : t('form.date.required'));
+      loadAvailableTimes(dateInput.value);
+    });
+    const openCalendar = () => {
+      try {
+        if (typeof dateInput.showPicker === 'function') dateInput.showPicker();
+        else dateInput.click();
+      } catch { dateInput.focus(); dateInput.click(); }
+    };
+    dateDisplay.addEventListener('click', openCalendar);
+    datePickerButton.addEventListener('click', openCalendar);
+  }
+
+  async function loadAvailableTimes(date) {
+    if (!timeSelect) return;
+    timeSelect.disabled = true;
+    timeSelect.replaceChildren(new Option(t('form.time.loading'), ''));
+    if (!date) {
+      timeSelect.replaceChildren(new Option(t('form.time.selectDate'), ''));
+      if (timeHint) timeHint.textContent = t('form.time.hint');
+      return;
+    }
+    if (timeHint) timeHint.textContent = t('form.time.loading');
+    try {
+      const response = await apiFetch(`availability?date=${encodeURIComponent(date)}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || t('form.time.loadError'));
+      const values = (result.availableTimes || []).filter(value => /^\d{2}:\d{2}$/.test(value));
+      timeSelect.replaceChildren(new Option(values.length ? t('form.time.selectSlot', 'Выберите время') : t('form.time.none'), ''));
+      values.forEach(value => timeSelect.add(new Option(value, value)));
+      timeSelect.disabled = !values.length;
+      if (timeHint) timeHint.textContent = values.length ? `${t('form.time.available', 'Свободных вариантов')}: ${values.length}` : t('form.time.none');
+    } catch (error) {
+      timeSelect.replaceChildren(new Option(t('form.time.loadError'), ''));
+      if (timeHint) timeHint.textContent = t('form.time.loadError');
+    }
+  }
+  $('#langToggle')?.addEventListener('click', () => {
+    if (dateInput?.value) loadAvailableTimes(dateInput.value);
+    else if (timeSelect) timeSelect.replaceChildren(new Option(t('form.time.selectDate'), ''));
+  });
+
+  // Send the booking to the centre and confirm it on this page.
   const form = $('#bookingForm');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('reset', () => setTimeout(() => {
+      if (dateInput && dateDisplay) {
+        dateDisplay.value = '';
+        dateDisplay.setCustomValidity(t('form.date.required'));
+      }
+      if (timeSelect) {
+        timeSelect.disabled = true;
+        timeSelect.replaceChildren(new Option(t('form.time.selectDate'), ''));
+      }
+    }, 0));
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = $('#name')?.value?.trim() || '';
       const phone = $('#phone')?.value?.trim() || '';
       const car = $('#car')?.value?.trim() || '';
+      const vehicleType = $('#vehicleType')?.value || '';
+      const serviceType = $('#serviceType')?.value || '';
       const date = $('#date')?.value || '';
       const time = $('#time')?.value || '';
+      if (!date) {
+        dateDisplay?.setCustomValidity(t('form.date.required'));
+        dateDisplay?.reportValidity();
+        return;
+      }
       const comment = $('#comment')?.value?.trim() || '';
 
-      const lines = [
-        t('msg.booking', 'Запись на техосмотр'),
-        `${t('msg.name', 'Имя')}: ${name}`,
-        `${t('msg.phone', 'Телефон')}: ${phone}`,
-        car ? `${t('msg.car', 'Авто')}: ${car}` : null,
-        (date || time) ? `${t('msg.desiredTime', 'Желаемое время')}: ${date || ''} ${time || ''}` : null,
-        comment ? `${t('msg.comment', 'Комментарий')}: ${comment}` : null,
-        '',
-        t('msg.sentFrom', 'Отправлено с сайта at-c.kz')
-      ].filter(Boolean);
-
-      const text = encodeURIComponent(lines.join('\n'));
-      const wa = `https://wa.me/77002433010?text=${text}`;
-      window.open(wa, '_blank');
+      const submitButton = form.querySelector('[type="submit"]');
+      if (submitButton.disabled) return;
+      submitButton.disabled = true;
+      const originalButtonContent = submitButton.innerHTML;
+      const errorBox = $('#bookingError');
+      if (errorBox) { errorBox.hidden = true; errorBox.textContent = ''; }
+      submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('form.submit.sending', 'Отправляем…')}`;
+      try {
+        const response = await apiFetch('bookings', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, car, vehicleType, serviceType, date, time, comment, consent: $('#consent')?.checked === true })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Не удалось отправить заявку');
+        $('#bookingId').textContent = result.id;
+        $('#bookingResult').hidden = false;
+        form.reset();
+        form.hidden = true;
+        $('#bookingResult').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        if (errorBox) {
+          errorBox.textContent = error instanceof TypeError ? t('form.submit.connection') : error.message || t('form.submit.error');
+          errorBox.hidden = false;
+          if (error?.message?.includes('заняли')) loadAvailableTimes(date);
+        } else alert(t('form.submit.error'));
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonContent;
+      }
+    });
+    $('#newBookingBtn')?.addEventListener('click', () => {
+      $('#bookingResult').hidden = true;
+      form.hidden = false;
+      form.reset();
+      $('#name')?.focus();
     });
   }
 
@@ -430,7 +842,7 @@
             <h3 style="margin: 0 0 8px; color: #ff7a00;">Auto Technical Centre</h3>
             <p style="margin: 0; color: #666; font-size: 14px;">Техосмотр автомобилей</p>
             <p style="margin: 8px 0; color: #333;"><strong>📍 Адрес:</strong> г. Астана, Қобыз, 36</p>
-            <p style="margin: 8px 0; color: #333;"><strong>📞 Телефоны:</strong><br>+7 700 243 30 10<br>+7 776 848 27 44</p>
+            <p style="margin: 8px 0; color: #333;"><strong>📞 Телефоны:</strong><br>8 707 243 3010<br>+7 776 848 27 44</p>
           </div>
         `);
 

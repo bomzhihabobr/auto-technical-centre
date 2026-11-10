@@ -1,13 +1,13 @@
 {
   "name": "auto-technical-centre-backend",
   "version": "1.0.0",
-  "description": "Backend server for Auto Technical Centre with admin panel and chatbot",
+  "description": "Auto Technical Centre booking website and admin backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node start-server.js",
     "setup": "node setup.js",
-    "build": "mkdir -p dist && cp -r *.html assets/ dist/"
+    "build": "node build.js"
   },
   "keywords": [
     "auto",
@@ -15,7 +15,6 @@
     "centre",
     "admin",
     "panel",
-    "chatbot",
     "backend"
   ],
   "author": "Auto Technical Centre",
@@ -25,8 +24,7 @@
     "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.2",
     "bcrypt": "^5.1.1",
-    "sqlite3": "^5.1.6",
-    "ws": "^8.14.2"
+    "sqlite3": "^5.1.6"
   },
   "engines": {
     "node": ">=14.0.0"

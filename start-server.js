@@ -6,7 +6,6 @@
  *
  * Функции:
  * - REST API для админ-панели
- * - WebSocket для чат-бота
  * - Аутентификация JWT
  * - SQLite база данных
  */
@@ -47,18 +46,16 @@ try {
     require('jsonwebtoken');
     require('bcrypt');
     require('sqlite3');
-    require('ws');
     console.log('✅ Зависимости установлены');
 } catch (error) {
     console.log('⚠️  Установите зависимости: npm install');
-    console.log('📦 Требуемые пакеты: express, cors, jsonwebtoken, bcrypt, sqlite3, ws');
+    console.log('📦 Требуемые пакеты: express, cors, jsonwebtoken, bcrypt, sqlite3');
 }
 
 console.log('🔧 Инициализация базы данных...');
 console.log('👤 Создание пользователя admin:admin123');
 console.log('🌐 Сервер будет доступен на http://localhost:3003');
 console.log('🔐 Админ-панель: http://localhost:3003/login.html');
-console.log('💬 Чат-бот WebSocket: ws://localhost:3003');
 console.log('');
 console.log('📋 Инструкции:');
 console.log('1. Откройте http://localhost:3003/login.html');
@@ -67,7 +64,6 @@ console.log('3. Управляйте сайтом в реальном време
 console.log('');
 console.log('🎯 Доступные функции:');
 console.log('- Редактирование контента сайта');
-console.log('- Управление ответами чат-бота');
 console.log('- Просмотр сообщений клиентов');
 console.log('- Аналитика и статистика');
 console.log('- Настройки системы');

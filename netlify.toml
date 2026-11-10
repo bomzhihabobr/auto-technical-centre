@@ -1,14 +1,11 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm run build"
   publish = "dist"
-  functions = "functions"
+  functions = "netlify/functions"
 
 [dev]
   command = "npm run dev"
   port = 3000
   publish = "dist"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# The production API and persistent database must be configured before booking is enabled.

@@ -94,6 +94,20 @@
             color: #ff7a00;
         }
     </style>
+    <style>
+        body { min-height:100vh; height:auto; margin:0; padding:20px; background:radial-gradient(ellipse at 50% 10%,rgba(255,122,0,.16),transparent 42%),linear-gradient(135deg,#0b0f14,#111a26); color:#e6edf6; }
+        .login-box { width:min(420px,calc(100vw - 32px)); padding:24px; background:linear-gradient(150deg,rgba(24,34,48,.96),rgba(13,19,28,.98)); border:1px solid rgba(255,255,255,.09); border-radius:22px; box-shadow:0 28px 80px rgba(0,0,0,.42); }
+        .login-logo { margin-bottom:20px; }
+        .login-logo img { border-radius:18px; box-shadow:0 10px 28px rgba(255,122,0,.2); }
+        .login-logo a { color:#f5f7fb; letter-spacing:-.03em; }
+        .login-card-body { color:#a8b3c7; }
+        .form-control { background:rgba(4,9,15,.38); border-color:rgba(255,255,255,.11); }
+        .form-control:focus { background:rgba(255,255,255,.05); }
+        .input-group-text { background:rgba(255,255,255,.035); border-color:rgba(255,255,255,.1); color:#a8b3c7; }
+        .btn-primary { background:linear-gradient(135deg,#ff8a1f,#ffb15f); border-color:#ff9b43; color:#20170e; }
+        .btn-primary:hover { background:linear-gradient(135deg,#ff9c44,#ffc27f); border-color:#ffb56c; }
+        .text-center a { color:#ffb56c; }
+    </style>
 </head>
 <body>
 <div class="login-box">
@@ -144,6 +158,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    const loginHost = ['localhost','127.0.0.1','::1',''].includes(window.location.hostname);
+    const LOGIN_API_ROOT = loginHost && window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '';
     // Handle login form
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -153,7 +169,7 @@
         const alertDiv = document.getElementById('alert');
 
         try {
-            const response = await fetch('http://localhost:3003/api/login', {
+            const response = await fetch(`${LOGIN_API_ROOT}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
