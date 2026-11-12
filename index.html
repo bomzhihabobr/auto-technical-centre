@@ -7,6 +7,7 @@
   <title>Техосмотр в Астане — Auto Technical Centre</title>
   <meta name="description" content="Специализированный центр техосмотра в Астане. Официально, быстро и без очереди. Гарантированный результат за 17 минут. Запишитесь онлайн или по телефону." />
   <meta name="theme-color" content="#111820" />
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('atc-theme')||'light';}catch{document.documentElement.dataset.theme='light';}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,6 +50,7 @@
         <a href="#faq" data-i18n="nav.faq">FAQ</a>
         <a href="#contacts" data-i18n="nav.contacts">Контакты</a>
         <button id="langToggle" class="btn btn-sm btn-outline lang-toggle" aria-label="Сменить язык">KZ</button>
+        <button id="themeToggle" class="btn btn-sm btn-outline theme-toggle" type="button" aria-label="Переключить на тёмную тему" aria-pressed="false" title="Переключить тему"><i id="themeToggleIcon" class="fa-solid fa-moon" aria-hidden="true"></i><span class="sr-only" id="themeToggleLabel">Тёмная тема</span></button>
         <a href="#booking" class="btn btn-sm btn-primary" data-i18n="nav.book">Записаться</a>
       </nav>
       <button class="burger" id="burger" aria-label="Открыть меню"><span></span><span></span><span></span></button>
@@ -70,7 +72,7 @@
           <div class="badges">
             <span class="badge"><i class="fa-solid fa-shield"></i> <span class="t" data-i18n="hero.badge.official">Официальный оператор ТО</span></span>
             <span class="badge"><i class="fa-solid fa-gauge-high"></i> <span class="t" data-i18n="hero.badge.fast">Быстро — от 17 минут</span></span>
-            <span class="badge"><i class="fa-solid fa-ticket"></i> <span class="t" data-i18n="hero.badge.promo">Акция: каждому 10-му −50%, 20-му — бесплатно</span></span>
+            <span id="promoHeroBadge" class="badge promo-badge" hidden><i class="fa-solid fa-ticket"></i> <span id="promoHeroText"></span></span>
           </div>
         </div>
         <div class="hero-art" data-aos="fadeInScale" data-aos-delay="250" aria-hidden="true">
@@ -168,8 +170,8 @@
           <div class="card">
             <h3><i class="fa-solid fa-circle-exclamation"></i> <span data-i18n="required.must">ТЕХОСМОТР ОБЯЗАТЕЛЕН</span></h3>
             <ul class="check-list">
-              <li data-i18n="required.items.1">Постановка на учет ТС старше 4 лет.</li>
-              <li data-i18n="required.items.2">Смена владельца ТС старше 4 лет.</li>
+              <li data-i18n="required.items.1">Постановка на учет ТС старше 7 лет.</li>
+              <li data-i18n="required.items.2">Смена владельца ТС старше 7 лет.</li>
               <li data-i18n="required.items.3">Изменение конструкции/замена основного компонента.</li>
               <li data-i18n="required.items.4">Такси, автобусы и грузовые автомобили.</li>
             </ul>
@@ -177,9 +179,9 @@
           <div class="card">
             <h3><i class="fa-regular fa-circle-check"></i> <span data-i18n="required.free">ТЕХОСМОТР НЕ ТРЕБУЕТСЯ</span></h3>
             <ul class="check-list">
-              <li data-i18n="free.items.1">Легковые авто, мото, прицепы до 3,5 т — до 4 лет включая год выпуска.</li>
-              <li data-i18n="free.items.2">Прицепы физ. лиц до 3,5 т — независимо от года выпуска.</li>
-              <li data-i18n="free.items.3">Личные легковые авто и мото, не используемые в коммерческих целях.</li>
+              <li data-i18n="free.items.1">Легковые автомобили категории M1 до 7 лет включительно, если не используются для предпринимательских перевозок.</li>
+              <li data-i18n="free.items.2">Для коммерческих автомобилей и других категорий исключение по возрасту не применяется.</li>
+              <li data-i18n="free.items.3">Если категория или срок неочевидны, уточните необходимость ТО у менеджера.</li>
             </ul>
           </div>
         </div>
@@ -195,17 +197,17 @@
         </div>
         <div class="grid three">
           <div class="step" data-aos="fade-up" data-aos-delay="0">
-            <span class="num">1</span>
+            <span class="num" aria-hidden="true">01</span>
             <h3 data-i18n="steps.1.title">Запишитесь на ТО</h3>
             <p data-i18n="steps.1.text">Оставьте заявку на сайте или позвоните по телефону. Выбирайте удобную дату и время.</p>
           </div>
           <div class="step" data-aos="fade-up" data-aos-delay="100">
-            <span class="num">2</span>
+            <span class="num" aria-hidden="true">02</span>
             <h3 data-i18n="steps.2.title">Предоставьте ТС для осмотра</h3>
             <p data-i18n="steps.2.text">Проведем техосмотр по регламенту в строго отведенное время. Без очереди.</p>
           </div>
           <div class="step" data-aos="fade-up" data-aos-delay="200">
-            <span class="num">3</span>
+            <span class="num" aria-hidden="true">03</span>
             <h3 data-i18n="steps.3.title">Получите карту ТО</h3>
             <p data-i18n="steps.3.text">Выдаем документы и консультируем по возможному ремонту. Быстро и официально.</p>
           </div>
@@ -260,12 +262,11 @@
       <div class="container">
         <div class="section-title" data-aos="fade-up">
           <h2 data-i18n="extra.title">Дополнительные услуги</h2>
-          <p data-i18n="extra.subtitle">Оформление страховки ОСАГО, шиномонтаж, компьютерная диагностика — по запросу.</p>
+          <p data-i18n="extra.subtitle">Помогаем с автострахованием и компьютерной диагностикой — проконсультируем по услуге до записи.</p>
         </div>
-        <div class="grid three">
-          <div class="service" data-aos="fade-up"><i class="fa-solid fa-shield"></i><h3 data-i18n="extra.insurance">ОСАГО</h3><a class="link" href="#contacts" data-i18n="extra.link">Оставить заявку</a></div>
-          <div class="service" data-aos="fade-up" data-aos-delay="100"><i class="fa-solid fa-screwdriver-wrench"></i><h3 data-i18n="extra.diagnostics">Диагностика</h3><a class="link" href="#contacts" data-i18n="extra.link">Оставить заявку</a></div>
-          <div class="service" data-aos="fade-up" data-aos-delay="200"><i class="fa-solid fa-compact-disc"></i><h3 data-i18n="extra.tire">Шиномонтаж</h3><a class="link" href="#contacts" data-i18n="extra.link">Оставить заявку</a></div>
+        <div class="grid two extra-services">
+          <article class="service extra-service-card" data-aos="fade-up"><span class="extra-service-icon"><i class="fa-solid fa-shield-halved"></i></span><h3 data-i18n="extra.insurance">ОГПО ВТС (автострахование)</h3><p data-i18n="extra.insurance.text">Помогаем оформить обязательный страховой полис для автомобиля и подскажем, какие данные понадобятся.</p><a class="link" href="#contacts" data-i18n="extra.link">Уточнить условия</a></article>
+          <article class="service extra-service-card" data-aos="fade-up" data-aos-delay="100"><span class="extra-service-icon"><i class="fa-solid fa-microchip"></i></span><h3 data-i18n="extra.diagnostics">Компьютерная диагностика</h3><p data-i18n="extra.diagnostics.text">Проверим электронные системы автомобиля и объясним результаты понятным языком.</p><a class="link" href="#contacts" data-i18n="extra.link">Уточнить условия</a></article>
         </div>
       </div>
     </section>
@@ -324,7 +325,7 @@
             </div>
           </div>
         </div>
-        <p class="policy" style="margin-top:10px" data-i18n="pricing.note">Актуальные цены уточняйте у менеджера — действуют акции: каждому 10‑му −50%, 20‑му — бесплатно.</p>
+        <p id="promoPricingNote" class="policy pricing-promo" hidden></p>
       </div>
     </section>
 

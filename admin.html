@@ -46,6 +46,12 @@
         .form-control { min-height:42px; border:1px solid var(--admin-line); border-radius:11px; background:rgba(4,9,15,.38); color:var(--admin-text); }
         .form-control:focus { border-color:rgba(255,157,65,.65); background:rgba(255,255,255,.05); color:#fff; box-shadow:0 0 0 3px rgba(255,122,0,.12); }
         .form-control::placeholder { color:#77869a; }
+        .promo-editor { margin-top:20px; padding:18px; border:1px solid rgba(255,157,65,.24); border-radius:15px; background:linear-gradient(145deg,rgba(255,138,31,.08),rgba(255,255,255,.015)); }
+        .promo-editor-heading { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; color:#ffc185; }
+        .promo-editor-heading > i { margin-top:3px; font-size:18px; }
+        .promo-editor-heading div { display:grid; gap:4px; }
+        .promo-editor-heading strong { color:#f1f4f7; font-size:14px; }
+        .promo-editor-heading small { color:#a8b3c7; line-height:1.5; }
         .btn { border-radius:10px; font-weight:650; transition:transform .18s ease,filter .18s ease,box-shadow .18s ease; }
         .btn:hover { transform:translateY(-1px); }
         .btn-primary, .btn-success { border-color:#ff9b43!important; background:linear-gradient(135deg,#ff8a1f,#ffb15f)!important; color:#20170e!important; box-shadow:0 8px 22px rgba(255,122,0,.15); }
@@ -321,6 +327,11 @@
                                         <label>Время работы</label>
                                         <input type="text" class="form-control" id="workingHours" placeholder="Ежедневно с 9:00 до 19:00">
                                     </div>
+                                    <div class="promo-editor">
+                                        <div class="promo-editor-heading"><i class="fas fa-bullhorn"></i><div><strong>Акция на сайте</strong><small>Оставьте поле пустым, если сейчас акций нет. Текст сразу появится в первом экране и рядом с прайсом.</small></div></div>
+                                        <div class="form-group"><label for="promoTextRu">Текст акции — русский</label><textarea class="form-control" id="promoTextRu" rows="2" maxlength="320" placeholder="Например: Скидка 10% на техосмотр до конца месяца"></textarea></div>
+                                        <div class="form-group mb-0"><label for="promoTextKk">Текст акции — қазақша</label><textarea class="form-control" id="promoTextKk" rows="2" maxlength="320" placeholder="Мысалы: Ай соңына дейін техбайқауға 10% жеңілдік"></textarea></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -496,6 +507,8 @@
         document.getElementById('address').value = data.address || 'г. Астана, Қобыз, 36';
         document.getElementById('email').value = data.email || 'atc@at-c.kz';
         document.getElementById('workingHours').value = data.workingHours || 'Ежедневно с 9:00 до 19:00';
+        document.getElementById('promoTextRu').value = data.promoTextRu || '';
+        document.getElementById('promoTextKk').value = data.promoTextKk || '';
     }
 
     // Load messages
@@ -571,7 +584,7 @@
     }
     function previewSite() { window.open('/', '_blank', 'noopener'); }
     function exportContent() {
-        const data = Object.fromEntries(['mainTitle','siteDescription','mainPhone','address','email','workingHours'].map(key => [key, document.getElementById(key).value]));
+        const data = Object.fromEntries(['mainTitle','siteDescription','mainPhone','address','email','workingHours','promoTextRu','promoTextKk'].map(key => [key, document.getElementById(key).value]));
         const link = document.createElement('a'), url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); link.href = url; link.download = 'atc-site-content.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
     async function resetContent() {
@@ -650,7 +663,9 @@
                 mainPhone: document.getElementById('mainPhone').value,
                 address: document.getElementById('address').value,
                 email: document.getElementById('email').value,
-                workingHours: document.getElementById('workingHours').value
+                workingHours: document.getElementById('workingHours').value,
+                promoTextRu: document.getElementById('promoTextRu').value,
+                promoTextKk: document.getElementById('promoTextKk').value
             };
 
             try {

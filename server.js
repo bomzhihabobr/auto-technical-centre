@@ -175,7 +175,7 @@ const SITE_DEFAULTS = {
   mainPhone: '8 707 243 3010',
   address: 'г. Астана, Қобыз, 36',
   email: 'atc@at-c.kz',
-  workingHours: 'Ежедневно с 09:00 до 19:00'
+  workingHours: 'Ежедневно с 09:00 до 19:00', promoTextRu: '', promoTextKk: ''
 };
 function readSiteSettings(callback) {
   db.all('SELECT key, value FROM content', [], (err, rows) => {
@@ -234,12 +234,14 @@ app.get('/api/content', requireAdmin, (req, res) => {
 
 app.put('/api/content', requireAdmin, async (req, res) => {
   const limits = { mainTitle: 140, siteDescription: 320, mainPhone: 40, address: 180, email: 160, workingHours: 120 };
+  const optionalLimits = { promoTextRu: 320, promoTextKk: 320 };
   const values = {};
   for (const [key, max] of Object.entries(limits)) {
     const value = typeof req.body?.[key] === 'string' ? req.body[key].trim().slice(0, max) : '';
     if (!value) return res.status(400).json({ error: `Заполните поле «${key}»` });
     values[key] = value;
   }
+  for (const [key, max] of Object.entries(optionalLimits)) values[key] = typeof req.body?.[key] === 'string' ? req.body[key].trim().slice(0, max) : '';
   try {
     await Promise.all(Object.entries(values).map(([key, value]) => new Promise((resolve, reject) => {
       db.run('INSERT OR REPLACE INTO content (key, value, type) VALUES (?, ?, ?)', [key, value, 'text'], err => err ? reject(err) : resolve());

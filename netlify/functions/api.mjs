@@ -7,7 +7,7 @@ const SITE_DEFAULTS = {
   mainTitle: "Техосмотр в Астане — Auto Technical Centre",
   siteDescription: "Специализированный центр техосмотра в Астане. Запишитесь онлайн или по телефону.",
   mainPhone: "8 707 243 3010", address: "г. Астана, Қобыз, 36",
-  email: "atc@at-c.kz", workingHours: "Ежедневно с 09:00 до 19:00",
+  email: "atc@at-c.kz", workingHours: "Ежедневно с 09:00 до 19:00", promoTextRu: "", promoTextKk: "",
 };
 const SETTING_DEFAULTS = { autoRefreshSeconds: 30, bookingLimit: 100 };
 const STATUSES = ["Новая", "В работе", "Завершена", "Отменена"];
@@ -151,6 +151,8 @@ export default async function handler(request) {
         values[key] = clean(body[key], max);
         if (!values[key]) return fail(`Заполните поле «${key}»`, 400);
       }
+      values.promoTextRu = clean(body.promoTextRu, 320);
+      values.promoTextKk = clean(body.promoTextKk, 320);
       for (const [key, value] of Object.entries(values)) await db.sql`INSERT INTO content (key, value, type) VALUES (${key}, ${value}, 'text') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, type = EXCLUDED.type`;
       return respond({ ok: true, settings: values });
     }

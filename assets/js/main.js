@@ -36,7 +36,8 @@
       'hero.call': 'Позвонить',
       'hero.badge.official': 'Официальный оператор ТО',
       'hero.badge.fast': 'Быстро — от 17 минут',
-      'hero.badge.promo': 'Акция: каждому 10-му −50%, 20-му — бесплатно',
+      'theme.toDark': 'Включить тёмную тему',
+      'theme.toLight': 'Включить светлую тему',
 
       'services.title': 'Что мы проверяем',
       'services.subtitle': 'Комплексная диагностика узлов и систем в соответствии с регламентом ТО.',
@@ -45,13 +46,13 @@
       'required.subtitle': 'Информация подготовлена по действующим требованиям РК.',
       'required.must': 'ТЕХОСМОТР ОБЯЗАТЕЛЕН',
       'required.free': 'ТЕХОСМОТР НЕ ТРЕБУЕТСЯ',
-      'required.items.1': 'Постановка на учет ТС старше 4 лет.',
-      'required.items.2': 'Смена владельца ТС старше 4 лет.',
+      'required.items.1': 'Постановка на учет ТС старше 7 лет.',
+      'required.items.2': 'Смена владельца ТС старше 7 лет.',
       'required.items.3': 'Изменение конструкции/замена основного компонента.',
       'required.items.4': 'Такси, автобусы и грузовые автомобили.',
-      'free.items.1': 'Легковые авто, мото, прицепы до 3,5 т — до 4 лет включая год выпуска.',
-      'free.items.2': 'Прицепы физ. лиц до 3,5 т — независимо от года выпуска.',
-      'free.items.3': 'Личные легковые авто и мото, не используемые в коммерческих целях.',
+      'free.items.1': 'Легковые автомобили категории M1 до 7 лет включительно, если не используются для предпринимательских перевозок.',
+      'free.items.2': 'Для коммерческих автомобилей и других категорий исключение по возрасту не применяется.',
+      'free.items.3': 'Если категория или срок неочевидны, уточните необходимость ТО у менеджера.',
 
       'steps.title': 'Процесс получения диагностической карты',
       'steps.subtitle': 'Всего 3 шага — прозрачно и удобно.',
@@ -80,14 +81,15 @@
       'prepare.docs.text': 'Свидетельство о регистрации ТС/ПТС и документ, удостоверяющий личность.',
 
       'extra.title': 'Дополнительные услуги',
-      'extra.subtitle': 'Оформление страховки ОСАГО, шиномонтаж, компьютерная диагностика — по запросу.',
-      'extra.link': 'Оставить заявку',
-      'extra.diagnostics': 'Диагностика',
-      'extra.tire': 'Шиномонтаж',
+      'extra.subtitle': 'Помогаем с автострахованием и компьютерной диагностикой — проконсультируем по услуге до записи.',
+      'extra.link': 'Уточнить условия',
+      'extra.insurance': 'ОГПО ВТС (автострахование)',
+      'extra.insurance.text': 'Помогаем оформить обязательный страховой полис для автомобиля и подскажем, какие данные понадобятся.',
+      'extra.diagnostics': 'Компьютерная диагностика',
+      'extra.diagnostics.text': 'Проверим электронные системы автомобиля и объясним результаты понятным языком.',
 
       'pricing.title': 'Прайс на наши услуги',
       'pricing.subtitle': 'Стоимость зависит от категории транспортного средства и регламента осмотра. Оставьте заявку — подберем оптимальный тариф.',
-      'pricing.note': 'Актуальные цены уточняйте у менеджера — действуют акции: каждому 10‑му −50%, 20‑му — бесплатно.',
       'cta.book': 'Записаться',
       'cta.askPrice': 'Уточнить цену',
       'cta.askList': 'Запросить прайс',
@@ -101,7 +103,7 @@
       'faq.q2': 'Я не уплатил налог на транспорт за прошлый год, могу ли я пройти ТО?',
       'faq.a2': 'Да, для прохождения ТО оплата налога необязательна.',
       'faq.q3': 'У меня новая машина — нужен ли мне ТО?',
-      'faq.a3': 'Автомобилям младше 7 лет включая год выпуска ТО необязателен (есть исключения для коммерческого транспорта).',
+      'faq.a3': 'Легковым автомобилям категории M1 возрастом до 7 лет включительно, не используемым для предпринимательских перевозок, ТО не требуется.',
       'faq.q4': 'Нужно ли проходить ТО перед продажей авто?',
       'faq.a4': 'Если срок ТО не истек — повторно проходить не требуется.',
       'faq.q5': 'Проходить ли заново ТО на купленном авто?',
@@ -205,7 +207,6 @@
       'privacy.back': 'Вернуться на сайт',
       'contacts.address': 'г. Астана, Қобыз, 36',
       'contacts.hours.value': 'Ежедневно с 09:00 до 19:00',
-      'extra.insurance': 'ОСАГО',
       'pricing.passenger.title': 'Легковые / Мото',
       'pricing.passenger.badge': 'Категории A, B',
       'pricing.passenger.item1': 'Полная диагностика по регламенту',
@@ -300,7 +301,8 @@
       'hero.call': 'Қоңырау шалу',
       'hero.badge.official': 'Ресми ТО операторы',
       'hero.badge.fast': 'Тез — 17 минуттан бастап',
-      'hero.badge.promo': 'Акция: әр 10-шы клиентке −50%, 20-шысы — тегін',
+      'theme.toDark': 'Қараңғы тақырыпты қосу',
+      'theme.toLight': 'Ашық тақырыпты қосу',
 
       'services.title': 'Нені тексереміз',
       'services.subtitle': 'ТО регламентіне сәйкес жүйелердің кешенді диагностикасы.',
@@ -333,13 +335,13 @@
       'required.subtitle': 'Ақпарат ҚР қолданыстағы талаптарына сай.',
       'required.must': 'ТЕХБАЙҚАУ МІНДЕТТІ',
       'required.free': 'ТЕХБАЙҚАУ ҚАЖЕТ ЕМЕС',
-      'required.items.1': 'Шығарылғанына 4 жылдан асқан КҚ есепке қою.',
-      'required.items.2': '4 жылдан асқан КҚ иесін ауыстыру.',
+      'required.items.1': 'Шығарылғанына 7 жылдан асқан КҚ есепке қою.',
+      'required.items.2': '7 жылдан асқан КҚ иесін ауыстыру.',
       'required.items.3': 'Құрылымды өзгерту/негізгі агрегатты ауыстыру.',
       'required.items.4': 'Такси, автобустар және жүк көліктері.',
-      'free.items.1': 'Жеңіл авто, мото, тіркемелер 3,5 т дейін — 4 жылға дейін, шығарылған жылын қоса.',
-      'free.items.2': 'Жеке тұлғалардың 3,5 т дейінгі тіркемелері — шығарылған жылына қарамастан.',
-      'free.items.3': 'Коммерциялық емес мақсатта қолданылатын жеңіл авто мен мото.',
+      'free.items.1': 'Кәсіпкерлік тасымалдауда пайдаланылмайтын, жасы шығарылған жылын қоса алғанда 7 жылға дейінгі M1 санатындағы жеңіл көліктер.',
+      'free.items.2': 'Коммерциялық көліктер мен басқа санаттарға жасына байланысты ерекшелік қолданылмайды.',
+      'free.items.3': 'Санаты немесе мерзімі түсініксіз болса, ТО қажеттілігін менеджерден нақтылаңыз.',
 
       'steps.title': 'Диагностикалық картаны алу үдерісі',
       'steps.subtitle': 'Барлығы 3 қадам — түсінікті және қолайлы.',
@@ -382,21 +384,21 @@
       'prepare.docs.text': 'КҚ тіркеу куәлігі/Техпаспорт және жеке куәлік.',
 
       'extra.title': 'Қосымша қызметтер',
-      'extra.subtitle': 'ОСАГО сақтандыруы, шиномонтаж, компьютерлік диагностика — сұрау бойынша.',
-      'extra.link': 'Өтініш қалдыру',
-      'extra.diagnostics': 'Диагностика',
-      'extra.tire': 'Шиномонтаж',
+      'extra.subtitle': 'Автосақтандыру және компьютерлік диагностика бойынша кеңес береміз.',
+      'extra.link': 'Шарттарын нақтылау',
+      'extra.insurance': 'КҚ ИАЖМС (автосақтандыру)',
+      'extra.insurance.text': 'Көлікке міндетті сақтандыру полисін рәсімдеуге көмектесіп, қажетті деректерді түсіндіреміз.',
+      'extra.diagnostics': 'Компьютерлік диагностика',
+      'extra.diagnostics.text': 'Көліктің электрондық жүйелерін тексеріп, нәтижесін түсінікті тілмен айтамыз.',
 
       'pricing.title': 'Біздің қызмет бағалары',
       'pricing.subtitle': 'Баға КҚ санатына және тексеру регламентіне байланысты. Өтінім қалдырыңыз — лайықты тариф ұсынамыз.',
-      'pricing.note': 'Нақты бағаларды менеджерден сұраңыз — акция бар: әр 10-шы клиентке −50%, 20-шысы — тегін.',
       'cta.book': 'Жазылу',
       'cta.askPrice': 'Бағаны нақтылау',
       'cta.askList': 'Прайсты сұрау',
 
       'testimonials.title': 'Клиент пікірлері',
       'testimonials.subtitle': 'Бізді жылдамдық, сапа және қамқорлық үшін ұсынады.',
-      'extra.insurance': 'Сақтандыру (ОСАГО)',
       'pricing.passenger.title': 'Жеңіл көлік / мотоцикл',
       'pricing.passenger.badge': 'A, B санаттары',
       'pricing.passenger.item1': 'Регламент бойынша толық диагностика',
@@ -425,7 +427,7 @@
       'faq.q2': 'Өткен жылдың көлік салығын төлемесем, ТО-дан өте аламын ба?',
       'faq.a2': 'Иә, ТО-дан өту үшін салықты төлеу міндетті емес.',
       'faq.q3': 'Жаңа көлікке ТО қажет пе?',
-      'faq.a3': 'Шығарылғанына 7 жыл толмаған автоға ТО міндетті емес (коммерциялық көліктер — ерекшелік).',
+      'faq.a3': 'Кәсіпкерлік тасымалдауда пайдаланылмайтын, жасы 7 жылдан аспайтын M1 санатындағы жеңіл көлікке ТО қажет емес.',
       'faq.q4': 'Автокөлікті сатар алдында ТО қажет пе?',
       'faq.a4': 'Егер ТО мерзімі өтпеген болса — қайта өту қажет емес.',
       'faq.q5': 'Сатып алынған автоға қайтадан ТО өту керек пе?',
@@ -540,6 +542,19 @@
 
   let siteSettings = {};
   const getLang = () => localStorage.getItem('lang') || 'ru';
+  const getTheme = () => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  const setTheme = (theme) => {
+    const value = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = value;
+    try { localStorage.setItem('atc-theme', value); } catch (_) {}
+    const button = $('#themeToggle');
+    const icon = $('#themeToggleIcon');
+    const label = value === 'light' ? t('theme.toDark') : t('theme.toLight');
+    if (button) { button.setAttribute('aria-label', label); button.setAttribute('aria-pressed', String(value === 'dark')); button.title = label; }
+    if (icon) icon.className = `fa-solid ${value === 'light' ? 'fa-moon' : 'fa-sun'}`;
+    const themeColor = $('meta[name="theme-color"]');
+    if (themeColor) themeColor.content = value === 'dark' ? '#0b1118' : '#f4f5f6';
+  };
   const setLang = (lang) => {
     localStorage.setItem('lang', lang);
     document.documentElement.lang = lang === 'kk' ? 'kk' : 'ru';
@@ -582,6 +597,7 @@
       btn.textContent = lang === 'ru' ? 'KZ' : 'RU';
       btn.setAttribute('aria-label', lang === 'ru' ? 'Қазақ тіліне ауыстыру' : 'Переключить на русский');
     }
+    setTheme(getTheme());
   };
 
   function applySiteSettings() {
@@ -612,6 +628,15 @@
       $$('[data-site-phone-text]').forEach(el => { el.textContent = siteSettings.mainPhone; });
       $$('[data-site-whatsapp]').forEach(el => { el.href = `https://wa.me/${waNumber}`; });
     }
+    const promo = getLang() === 'kk'
+      ? (siteSettings.promoTextKk || siteSettings.promoTextRu || '')
+      : (siteSettings.promoTextRu || siteSettings.promoTextKk || '');
+    const heroPromo = $('#promoHeroBadge');
+    const heroPromoText = $('#promoHeroText');
+    const pricingPromo = $('#promoPricingNote');
+    if (heroPromo) heroPromo.hidden = !promo;
+    if (heroPromoText) heroPromoText.textContent = promo;
+    if (pricingPromo) { pricingPromo.hidden = !promo; pricingPromo.textContent = promo; }
   }
 
   apiFetch('public-settings').then(response => response.ok ? response.json() : null)
@@ -671,6 +696,7 @@
       applyLang();
     });
   }
+  $('#themeToggle')?.addEventListener('click', () => setTheme(getTheme() === 'light' ? 'dark' : 'light'));
 
   // Close menu on link click and smooth scroll
   $$('.menu a[href^="#"]').forEach(a => {
