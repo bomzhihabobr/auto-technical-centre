@@ -9,6 +9,9 @@ const os = require('os');
 const fs = require('fs');
 const crypto = require('crypto');
 
+// Local-only secrets live outside the deployable site bundle.
+try { process.loadEnvFile(path.join(__dirname, 'secret', '.env')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+
 const app = express();
 const server = http.createServer(app);
 
@@ -48,6 +51,8 @@ db.run(`CREATE TABLE IF NOT EXISTS admin_settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 )`);
+db.run(`CREATE TABLE IF NOT EXISTS booking_slots (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, time TEXT NOT NULL, UNIQUE(date,time))`);
+db.run(`CREATE TABLE IF NOT EXISTS booking_metrics (id INTEGER PRIMARY KEY AUTOINCREMENT, vehicle_type TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
 
 // Middleware
 app.use(cors());
@@ -97,21 +102,29 @@ app.post('/api/bookings', (req, res) => {
     const times = buildAppointmentTimes(settings.workingHours);
     if (!times.includes(booking.time)) return res.status(400).json({ error: 'Выберите время из доступных интервалов' });
     if (!isFutureAppointment(booking.date, booking.time)) return res.status(400).json({ error: 'Выбранное время уже прошло' });
-    db.run(`INSERT INTO bookings (name, phone, car, vehicle_type, service_type, date, time, comment, consent_at)
-      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (
-        SELECT 1 FROM bookings WHERE date = ? AND time = ? AND status != 'Отменена'
-      )`,
-    [booking.name, booking.phone, booking.car, booking.vehicleType, booking.serviceType, booking.date, booking.time, booking.comment, new Date().toISOString(), booking.date, booking.time], function (err) {
-      if (err) return res.status(500).json({ error: 'Не удалось сохранить заявку. Попробуйте ещё раз.' });
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.CHAT_ID;
+    if (!token || !chatId) return res.status(503).json({ error: 'Приём заявок временно не настроен. Позвоните нам.' });
+    db.run(`INSERT INTO booking_slots (date,time) SELECT ?,? WHERE NOT EXISTS (SELECT 1 FROM bookings WHERE date=? AND time=? AND status!='Отменена')`, [booking.date, booking.time, booking.date, booking.time], async function (err) {
+      if (err) return res.status(500).json({ error: 'Не удалось принять заявку. Попробуйте ещё раз.' });
       if (!this.changes) return res.status(409).json({ error: 'Это время только что заняли. Выберите другой интервал.' });
       const bookingId = this.lastID;
-      db.run('INSERT INTO booking_activity (booking_id, action, new_status, actor) VALUES (?, ?, ?, ?)', [bookingId, 'created', 'Новая', 'client'], historyError => {
-        if (historyError) console.error('Could not record booking creation:', historyError.message);
+      const message = [`Новая заявка на техосмотр №${bookingId}`, `Имя: ${booking.name}`, `Телефон: ${booking.phone}`, `Автомобиль: ${booking.car || 'не указан'}`, `Категория: ${booking.vehicleType}`, `Дата и время: ${booking.date} ${booking.time}`, `Комментарий: ${booking.comment || 'нет'}`].join('\n');
+      try {
+        const telegram = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: message }) });
+        const result = await telegram.json();
+        if (!telegram.ok || !result.ok) throw new Error('Telegram rejected message');
+        db.run('INSERT INTO booking_metrics (vehicle_type) VALUES (?)', [booking.vehicleType]);
         res.status(201).json({ ok: true, id: bookingId });
-      });
+      } catch {
+        db.run('DELETE FROM booking_slots WHERE id = ?', [bookingId]);
+        res.status(502).json({ error: 'Не удалось отправить заявку. Попробуйте ещё раз или позвоните нам.' });
+      }
     });
   });
 });
+
+app.use('/api/bookings', requireAdmin, (req, res) => res.status(404).json({ error: 'Персональные заявки доступны только в Telegram' }));
 
 app.get('/api/bookings', requireAdmin, (req, res) => {
   const limit = Math.max(1, Math.min(500, Number.parseInt(req.query.limit, 10) || 100));
@@ -170,9 +183,9 @@ app.delete('/api/bookings/:id', requireAdmin, (req, res) => {
 });
 
 const SITE_DEFAULTS = {
-  mainTitle: 'Техосмотр в Астане — Auto Technical Centre',
-  siteDescription: 'Специализированный центр техосмотра в Астане. Запишитесь онлайн или по телефону.',
-  mainPhone: '8 707 243 3010',
+  mainTitle: 'Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre',
+  siteDescription: 'Пройдите техосмотр автомобиля в Астане по адресу Қобыз, 36. Выберите свободное время онлайн, посмотрите карту проезда и свяжитесь с Auto Technical Centre.',
+  mainPhone: '+7 776 848 27 44', whatsappPhone: '+7 776 848 27 44',
   address: 'г. Астана, Қобыз, 36',
   email: 'atc@at-c.kz',
   workingHours: 'Ежедневно с 09:00 до 19:00', promoTextRu: '', promoTextKk: ''
@@ -182,6 +195,8 @@ function readSiteSettings(callback) {
     if (err) return callback(err);
     const settings = { ...SITE_DEFAULTS };
     rows.forEach(row => { if (Object.prototype.hasOwnProperty.call(settings, row.key)) settings[row.key] = row.value; });
+    if (settings.mainTitle === 'Техосмотр в Астане — Auto Technical Centre') settings.mainTitle = SITE_DEFAULTS.mainTitle;
+    if (settings.siteDescription === 'Специализированный центр техосмотра в Астане. Запишитесь онлайн или по телефону.') settings.siteDescription = SITE_DEFAULTS.siteDescription;
     callback(null, settings);
   });
 }
@@ -207,7 +222,7 @@ app.get('/api/availability', (req, res) => {
   const date = typeof req.query.date === 'string' ? req.query.date : '';
   const parsedDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(`${date}T00:00:00Z`) : null;
   if (!parsedDate || Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== date) return res.status(400).json({ error: 'Укажите корректную дату' });
-  db.all("SELECT time FROM bookings WHERE date = ? AND status != 'Отменена'", [date], (err, rows) => {
+  db.all("SELECT time FROM bookings WHERE date = ? AND status != 'Отменена' UNION SELECT time FROM booking_slots WHERE date = ?", [date, date], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Не удалось проверить свободное время' });
     readSiteSettings((settingsError, settings) => {
       if (settingsError) return res.status(500).json({ error: 'Не удалось загрузить расписание' });
@@ -233,7 +248,7 @@ app.get('/api/content', requireAdmin, (req, res) => {
 });
 
 app.put('/api/content', requireAdmin, async (req, res) => {
-  const limits = { mainTitle: 140, siteDescription: 320, mainPhone: 40, address: 180, email: 160, workingHours: 120 };
+  const limits = { mainTitle: 140, siteDescription: 320, mainPhone: 40, whatsappPhone: 40, address: 180, email: 160, workingHours: 120 };
   const optionalLimits = { promoTextRu: 320, promoTextKk: 320 };
   const values = {};
   for (const [key, max] of Object.entries(limits)) {
@@ -254,16 +269,9 @@ app.put('/api/content', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/dashboard', requireAdmin, (req, res) => {
-  db.get(`SELECT COUNT(*) AS total,
-    SUM(CASE WHEN date(created_at) = date('now','localtime') THEN 1 ELSE 0 END) AS today,
-    SUM(CASE WHEN status IN ('Новая','В работе') THEN 1 ELSE 0 END) AS pending
-    FROM bookings`, [], (err, stats) => {
+  db.get(`SELECT COUNT(*) AS total, SUM(CASE WHEN date(created_at)=date('now','localtime') THEN 1 ELSE 0 END) AS today, SUM(CASE WHEN strftime('%Y-%m',created_at)=strftime('%Y-%m','now','localtime') THEN 1 ELSE 0 END) AS month FROM booking_metrics`, [], (err, stats) => {
     if (err) return res.status(500).json({ error: 'Не удалось загрузить сводку' });
-    db.all('SELECT id, name, phone, car, vehicle_type, service_type, date, time, status FROM bookings ORDER BY id DESC LIMIT 5', [], (recentErr, recent) => {
-      if (recentErr) return res.status(500).json({ error: 'Не удалось загрузить последние заявки' });
-      res.json({ today: stats.today || 0, total: stats.total || 0, pending: stats.pending || 0,
-        recent });
-    });
+    res.json({ today: stats.today || 0, total: stats.total || 0, pending: stats.month || 0 });
   });
 });
 
@@ -340,9 +348,9 @@ app.get('/api/analytics', requireAdmin, async (req, res) => {
   const get = (sql, params = []) => new Promise((resolve, reject) => db.get(sql, params, (err, row) => err ? reject(err) : resolve(row)));
   try {
     const [bookingDaily, bookingServices, bookingStatuses, bookingTotals] = await Promise.all([
-      all(`SELECT date AS day, COUNT(*) AS count FROM bookings
-        WHERE date >= date('now','-13 days') AND date <= date('now','+30 days')
-        AND status != 'Отменена' GROUP BY date ORDER BY date`),
+      all(`SELECT date(created_at) AS day, COUNT(*) AS count FROM bookings
+        WHERE date(created_at) >= date('now','-13 days') AND status != 'Отменена'
+        GROUP BY date(created_at) ORDER BY date(created_at)`),
       all(`SELECT service_type AS service, COUNT(*) AS count FROM bookings
         WHERE status != 'Отменена' GROUP BY service_type ORDER BY count DESC`),
       all('SELECT status, COUNT(*) AS count FROM bookings GROUP BY status ORDER BY count DESC'),
@@ -352,9 +360,19 @@ app.get('/api/analytics', requireAdmin, async (req, res) => {
         SUM(CASE WHEN status IN ('Новая','В работе') THEN 1 ELSE 0 END) AS active
         FROM bookings`)
     ]);
-    res.json({ bookingDaily, bookingServices, bookingStatuses,
-      bookingTotals: { total: bookingTotals.total || 0, today: bookingTotals.today || 0, completed: bookingTotals.completed || 0, active: bookingTotals.active || 0,
-        completionRate: bookingTotals.total ? Math.round((bookingTotals.completed || 0) * 100 / bookingTotals.total) : 0 } });
+    const [metricDays, metricServices, metricTotals] = await Promise.all([
+      all(`SELECT date(created_at) AS day, COUNT(*) AS count FROM booking_metrics WHERE date(created_at)>=date('now','-13 days') GROUP BY date(created_at)`),
+      all(`SELECT vehicle_type AS service, COUNT(*) AS count FROM booking_metrics GROUP BY vehicle_type`),
+      get(`SELECT COUNT(*) AS total, SUM(CASE WHEN date(created_at)=date('now','localtime') THEN 1 ELSE 0 END) AS today FROM booking_metrics`)
+    ]);
+    const dayCounts = new Map();
+    [...bookingDaily, ...metricDays].forEach(row => dayCounts.set(row.day, (dayCounts.get(row.day)||0)+Number(row.count)));
+    const serviceCounts = new Map();
+    [...bookingServices, ...metricServices].forEach(row => serviceCounts.set(row.service, (serviceCounts.get(row.service)||0)+Number(row.count)));
+    const total = Number(bookingTotals.total||0)+Number(metricTotals.total||0);
+    const today = Number(bookingTotals.today||0)+Number(metricTotals.today||0);
+    res.json({ bookingDaily:[...dayCounts].map(([day,count])=>({day,count})), bookingServices:[...serviceCounts].map(([service,count])=>({service,count})), bookingStatuses:[],
+      bookingTotals: { total, today, completed: bookingTotals.completed || 0, active: 0, completionRate: total ? Math.round((bookingTotals.completed || 0) * 100 / total) : 0 } });
   } catch (error) {
     console.error('Could not load analytics:', error.message);
     res.status(500).json({ error: 'Не удалось загрузить аналитику' });
@@ -362,6 +380,7 @@ app.get('/api/analytics', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/admin/backup', requireAdmin, (req, res) => {
+  return res.status(404).json({ error: 'В панели доступны только аналитика и настройки сайта' });
   const filename = `atc-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.db`;
   const backupPath = path.join(os.tmpdir(), `atc-${crypto.randomBytes(10).toString('hex')}.db`);
   db.backup(backupPath, error => {

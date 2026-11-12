@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS booking_slots (
+  id SERIAL PRIMARY KEY,
+  date DATE NOT NULL,
+  time TEXT NOT NULL,
+  UNIQUE (date, time)
+);
+
+CREATE TABLE IF NOT EXISTS booking_metrics (
+  id SERIAL PRIMARY KEY,
+  vehicle_type TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

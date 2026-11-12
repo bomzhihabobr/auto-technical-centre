@@ -21,7 +21,7 @@
       'nav.contacts': 'Контакты',
       'nav.book': 'Записаться',
 
-      'hero.title': 'Техосмотр без лишнего ожидания',
+      'hero.title': 'Техосмотр в Астане — быстро и без лишнего ожидания',
       'hero.lead': 'Проверим автомобиль по требованиям и подскажем, что подготовить. Выберите свободное время онлайн — обычно осмотр занимает около 17 минут.',
       'hero.kicker': 'ОФИЦИАЛЬНЫЙ ЦЕНТР · АСТАНА',
       'hero.visual.status': 'ЦЕНТР ПРИНИМАЕТ ЗАПИСИ',
@@ -46,8 +46,7 @@
       'required.subtitle': 'Информация подготовлена по действующим требованиям РК.',
       'required.must': 'ТЕХОСМОТР ОБЯЗАТЕЛЕН',
       'required.free': 'ТЕХОСМОТР НЕ ТРЕБУЕТСЯ',
-      'required.items.1': 'Постановка на учет ТС старше 7 лет.',
-      'required.items.2': 'Смена владельца ТС старше 7 лет.',
+      'required.items.1': 'Легковые автомобили категории M1 от 7 лет, включая год выпуска, если не используются для предпринимательских перевозок.',
       'required.items.3': 'Изменение конструкции/замена основного компонента.',
       'required.items.4': 'Такси, автобусы и грузовые автомобили.',
       'free.items.1': 'Легковые автомобили категории M1 до 7 лет включительно, если не используются для предпринимательских перевозок.',
@@ -157,8 +156,8 @@
       'form.phone.hint': 'Формат: +7 (700) 123-45-67',
       'form.phone.invalid': 'Введите номер полностью',
       'form.date.required': 'Выберите дату',
-      'form.submit.error': 'Не удалось отправить заявку. Позвоните нам: 8 707 243 3010.',
-      'form.submit.connection': 'Не удалось связаться с сервером. Попробуйте ещё раз или позвоните: 8 707 243 3010.',
+      'form.submit.error': 'Не удалось отправить заявку. Позвоните нам: +7 776 848 27 44.',
+      'form.submit.connection': 'Не удалось связаться с сервером. Попробуйте ещё раз или позвоните: +7 776 848 27 44.',
       'form.success.title': 'Заявка отправлена',
       'form.success.body': 'Мы скоро свяжемся с вами для подтверждения. Номер заявки:',
       'form.success.new': 'Записать ещё один автомобиль',
@@ -186,6 +185,13 @@
       'msg.comment': 'Комментарий',
       'msg.sentFrom': 'Отправлено с сайта at-c.kz',
       'footer.description': 'Профессиональный техосмотр в Астане. Быстро, удобно, по правилам.',
+      'footer.nav.title': 'Навигация',
+      'footer.contacts.title': 'Контакты',
+      'footer.visit.title': 'Мы рядом',
+      'footer.visit.heading': 'Запишитесь на техосмотр',
+      'footer.visit.text': 'Выберите свободное время — мы подтвердим запись.',
+      'footer.map.open': 'Открыть маршрут в 2ГИС',
+      'contacts.map.fallback': 'Карта не загрузилась. Откройте адрес в 2ГИС.',
       'footer.faq': 'Вопросы и ответы',
       'footer.privacy': 'Политика обработки данных',
       'footer.top': 'Наверх ↑',
@@ -286,7 +292,7 @@
       'nav.contacts': 'Байланыс',
       'nav.book': 'Жазылу',
 
-      'hero.title': 'Техбайқаудан кезексіз өтіңіз',
+      'hero.title': 'Астанада автокөлік техбайқауы — жылдам әрі кезексіз',
       'hero.lead': 'Көлікті талаптарға сай тексеріп, алдын ала не дайындау керегін түсіндіреміз. Бос уақытты онлайн таңдап, жазылыңыз.',
       'hero.kicker': 'РЕСМИ ОРТАЛЫҚ · АСТАНА',
       'hero.visual.status': 'ОРТАЛЫҚ ЖАЗЫЛЫМ ҚАБЫЛДАЙДЫ',
@@ -335,8 +341,7 @@
       'required.subtitle': 'Ақпарат ҚР қолданыстағы талаптарына сай.',
       'required.must': 'ТЕХБАЙҚАУ МІНДЕТТІ',
       'required.free': 'ТЕХБАЙҚАУ ҚАЖЕТ ЕМЕС',
-      'required.items.1': 'Шығарылғанына 7 жылдан асқан КҚ есепке қою.',
-      'required.items.2': '7 жылдан асқан КҚ иесін ауыстыру.',
+      'required.items.1': 'Шығарылған жылын қоса есептегенде 7 жылдан асқан, кәсіпкерлік тасымалдауда пайдаланылмайтын M1 санатындағы жеңіл автомобильдер.',
       'required.items.3': 'Құрылымды өзгерту/негізгі агрегатты ауыстыру.',
       'required.items.4': 'Такси, автобустар және жүк көліктері.',
       'free.items.1': 'Кәсіпкерлік тасымалдауда пайдаланылмайтын, жасы шығарылған жылын қоса алғанда 7 жылға дейінгі M1 санатындағы жеңіл көліктер.',
@@ -485,8 +490,8 @@
       'form.phone.hint': 'Үлгі: +7 (700) 123-45-67',
       'form.phone.invalid': 'Телефон нөмірін толық енгізіңіз',
       'form.date.required': 'Күнді таңдаңыз',
-      'form.submit.error': 'Өтінімді жіберу мүмкін болмады. Қоңырау шалыңыз: 8 707 243 3010.',
-      'form.submit.connection': 'Сервермен байланысу мүмкін болмады. Қайталап көріңіз немесе қоңырау шалыңыз: 8 707 243 3010.',
+      'form.submit.error': 'Өтінімді жіберу мүмкін болмады. Қоңырау шалыңыз: +7 776 848 27 44.',
+      'form.submit.connection': 'Сервермен байланысу мүмкін болмады. Қайталап көріңіз немесе қоңырау шалыңыз: +7 776 848 27 44.',
       'form.success.title': 'Өтінім жіберілді',
       'form.success.body': 'Растау үшін сізбен жақында хабарласамыз. Өтінім нөмірі:',
       'form.success.new': 'Тағы бір көлікке жазылу',
@@ -514,6 +519,13 @@
       'msg.comment': 'Пікір',
       'msg.sentFrom': 'at-c.kz сайтынан жіберілді',
       'footer.description': 'Астанадағы кәсіби техбайқау. Жылдам, ыңғайлы және талапқа сай.',
+      'footer.nav.title': 'Навигация',
+      'footer.contacts.title': 'Байланыс',
+      'footer.visit.title': 'Біз жақын жердеміз',
+      'footer.visit.heading': 'Техбайқауға жазылыңыз',
+      'footer.visit.text': 'Бос уақытты таңдаңыз — жазылымыңызды растаймыз.',
+      'footer.map.open': '2GIS-тен маршрутты ашу',
+      'contacts.map.fallback': 'Карта жүктелмеді. Мекенжайды 2GIS-тен ашыңыз.',
       'footer.faq': 'Сұрақтар мен жауаптар',
       'footer.privacy': 'Деректерді өңдеу саясаты',
       'footer.top': 'Жоғары ↑',
@@ -620,13 +632,22 @@
       const hours = getLang() === 'kk' ? siteSettings.workingHours.replace(/^Ежедневно\s*/i, 'Күн сайын ').replace(/^Каждый день\s*/i, 'Күн сайын ') : siteSettings.workingHours;
       el.textContent = hours;
     });
-    if (siteSettings.mainPhone) {
-      const digits = siteSettings.mainPhone.replace(/\D/g, '');
+    const contactPhone = siteSettings.whatsappPhone || siteSettings.mainPhone;
+    if (contactPhone) {
+      const digits = contactPhone.replace(/\D/g, '');
       const international = digits.startsWith('8') ? `+7${digits.slice(1)}` : `+${digits.startsWith('7') ? digits : `7${digits}`}`;
-      const waNumber = international.replace(/\D/g, '');
       $$('[data-site-phone-link]').forEach(el => { el.href = `tel:${international}`; });
-      $$('[data-site-phone-text]').forEach(el => { el.textContent = siteSettings.mainPhone; });
+      $$('[data-site-phone-text]').forEach(el => { el.textContent = contactPhone; });
+      const businessSchema = $('script[type="application/ld+json"]');
+      if (businessSchema) {
+        try { const schema = JSON.parse(businessSchema.textContent); schema.telephone = international; businessSchema.textContent = JSON.stringify(schema); } catch (_) {}
+      }
+    }
+    if (contactPhone) {
+      const digits = contactPhone.replace(/\D/g, '');
+      const waNumber = digits.startsWith('8') ? `7${digits.slice(1)}` : digits;
       $$('[data-site-whatsapp]').forEach(el => { el.href = `https://wa.me/${waNumber}`; });
+      $$('[data-site-whatsapp-phone]').forEach(el => { el.textContent = contactPhone; });
     }
     const promo = getLang() === 'kk'
       ? (siteSettings.promoTextKk || siteSettings.promoTextRu || '')
@@ -720,7 +741,7 @@
   const callBtn = $('#callBtn');
   if (callBtn) {
     callBtn.addEventListener('click', () => {
-      window.location.href = $('[data-site-phone-link]')?.href || 'tel:+77072433010';
+      window.location.href = $('[data-site-phone-link]')?.href || 'tel:+77768482744';
     });
   }
 
@@ -904,12 +925,15 @@
   }
 
   // Initialize Leaflet map (free, no API key required)
-  const initMap = () => {
+  let mapInitialized = false;
+  const initMap = (retryCount = 0) => {
+    if (mapInitialized) return;
     if (typeof L !== 'undefined' && $('#dgMap')) {
       try {
+        mapInitialized = true;
         // Initialize the map
         const map = L.map('dgMap', {
-          center: [51.13630235746184, 71.5208673477173],
+          center: [51.134938, 71.519846],
           zoom: 16,
           zoomControl: true
         });
@@ -917,7 +941,10 @@
         // Add OpenStreetMap tiles (free)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          maxZoom: 19
+          maxZoom: 19,
+          updateWhenIdle: true,
+          updateWhenZooming: false,
+          keepBuffer: 1
         }).addTo(map);
 
         // Custom marker icon
@@ -929,13 +956,13 @@
         });
 
         // Add marker with popup
-        const marker = L.marker([51.13630235746184, 71.5208673477173], { icon: customIcon }).addTo(map);
+        const marker = L.marker([51.134938, 71.519846], { icon: customIcon }).addTo(map);
         marker.bindPopup(`
           <div style="text-align: center; font-family: Inter, sans-serif;">
             <h3 style="margin: 0 0 8px; color: #ff7a00;">Auto Technical Centre</h3>
             <p style="margin: 0; color: #666; font-size: 14px;">Техосмотр автомобилей</p>
             <p style="margin: 8px 0; color: #333;"><strong>📍 Адрес:</strong> г. Астана, Қобыз, 36</p>
-            <p style="margin: 8px 0; color: #333;"><strong>📞 Телефоны:</strong><br>8 707 243 3010<br>+7 776 848 27 44</p>
+            <p style="margin: 8px 0; color: #333;"><strong>📞 Телефон:</strong><br>+7 776 848 27 44</p>
           </div>
         `);
 
@@ -956,7 +983,6 @@
       }
     } else {
       // Retry if Leaflet is not loaded yet
-      const retryCount = arguments[1] || 0;
       if (retryCount < 5) {
         setTimeout(() => initMap(retryCount + 1), 1000);
       } else {
@@ -966,10 +992,31 @@
     }
   };
 
-  // Start trying to initialize map
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMap);
+  function showMapFallback() {
+    const element = $('#dgMap');
+    if (!element) return;
+    const link = document.createElement('a');
+    link.className = 'map-fallback';
+    link.href = 'https://2gis.kz/astana/search/%D2%9A%D0%BE%D0%B1%D1%8B%D0%B7%2036';
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.innerHTML = '<i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span></span>';
+    link.querySelector('span').textContent = t('contacts.map.fallback');
+    element.replaceChildren(link);
+  }
+
+  const mapElement = $('#dgMap');
+  const startMap = () => initMap();
+  if (mapElement && 'IntersectionObserver' in window) {
+    const mapObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        mapObserver.disconnect();
+        startMap();
+      }
+    }, { rootMargin: '360px 0px' });
+    mapObserver.observe(mapElement);
   } else {
-    initMap();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startMap, { once:true });
+    else startMap();
   }
 })();

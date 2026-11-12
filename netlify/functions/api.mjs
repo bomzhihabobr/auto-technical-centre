@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 
 const TIME_ZONE = "Asia/Qyzylorda";
 const SITE_DEFAULTS = {
-  mainTitle: "Техосмотр в Астане — Auto Technical Centre",
-  siteDescription: "Специализированный центр техосмотра в Астане. Запишитесь онлайн или по телефону.",
-  mainPhone: "8 707 243 3010", address: "г. Астана, Қобыз, 36",
+  mainTitle: "Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre",
+  siteDescription: "Пройдите техосмотр автомобиля в Астане по адресу Қобыз, 36. Выберите свободное время онлайн, посмотрите карту проезда и свяжитесь с Auto Technical Centre.",
+  mainPhone: "+7 776 848 27 44", whatsappPhone: "+7 776 848 27 44", address: "г. Астана, Қобыз, 36",
   email: "atc@at-c.kz", workingHours: "Ежедневно с 09:00 до 19:00", promoTextRu: "", promoTextKk: "",
 };
 const SETTING_DEFAULTS = { autoRefreshSeconds: 30, bookingLimit: 100 };
@@ -44,6 +44,8 @@ async function siteSettings(db) {
   const rows = await db.sql`SELECT key, value FROM content`;
   const value = { ...SITE_DEFAULTS };
   for (const row of rows) if (Object.hasOwn(value, row.key)) value[row.key] = row.value;
+  if (value.mainTitle === "Техосмотр в Астане — Auto Technical Centre") value.mainTitle = SITE_DEFAULTS.mainTitle;
+  if (value.siteDescription === "Специализированный центр техосмотра в Астане. Запишитесь онлайн или по телефону.") value.siteDescription = SITE_DEFAULTS.siteDescription;
   return value;
 }
 async function seedAdmin(db) {
@@ -92,7 +94,7 @@ export default async function handler(request) {
       const date = url.searchParams.get("date") || "";
       if (!validDate(date)) return fail("Укажите корректную дату", 400);
       const [busy, settings] = await Promise.all([
-        db.sql`SELECT time FROM bookings WHERE date = ${date}::date AND status <> 'Отменена'`, siteSettings(db),
+        db.sql`SELECT time FROM bookings WHERE date = ${date}::date AND status <> 'Отменена' UNION SELECT time FROM booking_slots WHERE date = ${date}::date`, siteSettings(db),
       ]);
       const used = new Set(busy.map(row => row.time));
       return respond({ date, intervalMinutes: 30, availableTimes: timeSlots(settings.workingHours).filter(t => !used.has(t) && isFuture(date, t)) });
@@ -109,16 +111,27 @@ export default async function handler(request) {
       if (!validDate(b.date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(b.time)) return fail("Проверьте дату и время записи", 400);
       if (!isFuture(b.date, b.time)) return fail("Выбранное время уже прошло", 400);
       if (!timeSlots((await siteSettings(db)).workingHours).includes(b.time)) return fail("Выберите время из доступных интервалов", 400);
-      const saved = await db.sql`INSERT INTO bookings (name, phone, car, vehicle_type, service_type, date, time, comment, consent_at)
-        VALUES (${b.name}, ${b.phone}, ${b.car}, ${b.vehicleType}, ${b.serviceType}, ${b.date}::date, ${b.time}, ${b.comment}, ${new Date().toISOString()})
-        ON CONFLICT (date, time) WHERE status <> 'Отменена' DO NOTHING RETURNING id`;
-      if (!saved.length) return fail("Это время только что заняли. Выберите другой интервал.", 409);
-      const id = saved[0].id;
-      await db.sql`INSERT INTO booking_activity (booking_id, action, new_status, actor) VALUES (${id}, 'created', 'Новая', 'client')`;
+      const token = process.env.TELEGRAM_BOT_TOKEN, chatId = process.env.CHAT_ID;
+      if (!token || !chatId) return fail("Приём заявок временно не настроен. Позвоните нам.", 503);
+      const reserved = await db.sql`INSERT INTO booking_slots (date,time) VALUES (${b.date}::date,${b.time}) ON CONFLICT (date,time) DO NOTHING RETURNING id`;
+      if (!reserved.length) return fail("Это время только что заняли. Выберите другой интервал.", 409);
+      const id = reserved[0].id;
+      const message = [`Новая заявка на техосмотр №${id}`, `Имя: ${b.name}`, `Телефон: ${b.phone}`, `Автомобиль: ${b.car || "не указан"}`, `Категория: ${b.vehicleType}`, `Дата и время: ${b.date} ${b.time}`, `Комментарий: ${b.comment || "нет"}`].join("\n");
+      try {
+        const telegram = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: message }) });
+        const result = await telegram.json();
+        if (!telegram.ok || !result.ok) throw new Error("Telegram rejected message");
+        await db.sql`INSERT INTO booking_metrics (vehicle_type) VALUES (${b.vehicleType})`;
+      } catch {
+        await db.sql`DELETE FROM booking_slots WHERE id = ${id}`;
+        return fail("Не удалось отправить заявку. Попробуйте ещё раз или позвоните нам.", 502);
+      }
       return respond({ ok: true, id }, 201);
     }
 
     const admin = getAdmin(request);
+    if (path === "/bookings" || /^\/bookings\/\d+(?:\/history)?$/.test(path)) return fail("Персональные заявки доступны только в Telegram", 404);
+    if (path === "/admin/backup") return fail("В панели доступны только аналитика и настройки сайта", 404);
     if (method === "GET" && path === "/bookings") {
       const limit = Math.max(1, Math.min(500, Number.parseInt(url.searchParams.get("limit"), 10) || 100));
       return respond(await db.sql`SELECT id, name, phone, car, vehicle_type, service_type, date::text AS date, time, comment, consent_at, status, created_at::text AS created_at FROM bookings ORDER BY id DESC LIMIT ${limit}`);
@@ -146,7 +159,7 @@ export default async function handler(request) {
     }
     if (method === "GET" && path === "/content") return respond(await siteSettings(db));
     if (method === "PUT" && path === "/content") {
-      const limits = { mainTitle: 140, siteDescription: 320, mainPhone: 40, address: 180, email: 160, workingHours: 120 }, values = {};
+      const limits = { mainTitle: 140, siteDescription: 320, mainPhone: 40, whatsappPhone: 40, address: 180, email: 160, workingHours: 120 }, values = {};
       for (const [key, max] of Object.entries(limits)) {
         values[key] = clean(body[key], max);
         if (!values[key]) return fail(`Заполните поле «${key}»`, 400);
@@ -158,11 +171,8 @@ export default async function handler(request) {
     }
     if (method === "GET" && path === "/dashboard") {
       const today = siteNow().date;
-      const [stats, recent] = await Promise.all([
-        db.sql`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Qyzylorda')::date = ${today}::date)::int AS today, COUNT(*) FILTER (WHERE status IN ('Новая','В работе'))::int AS pending FROM bookings`,
-        db.sql`SELECT id, name, phone, car, vehicle_type, service_type, date::text AS date, time, status FROM bookings ORDER BY id DESC LIMIT 5`,
-      ]);
-      return respond({ ...stats[0], recent });
+      const stats = await db.sql`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Qyzylorda')::date = ${today}::date)::int AS today, COUNT(*) FILTER (WHERE date_trunc('month',created_at AT TIME ZONE 'Asia/Qyzylorda') = date_trunc('month',${today}::date::timestamp))::int AS month FROM booking_metrics`;
+      return respond({ ...stats[0], pending: stats[0]?.month || 0 });
     }
     if (method === "GET" && path === "/settings") {
       const rows = await db.sql`SELECT key, value FROM admin_settings`, settings = { ...SETTING_DEFAULTS };
@@ -177,14 +187,19 @@ export default async function handler(request) {
     }
     if (method === "GET" && path === "/analytics") {
       const today = siteNow().date;
-      const [bookingDaily, bookingServices, bookingStatuses, totals] = await Promise.all([
-        db.sql`SELECT date::text AS day, COUNT(*)::int AS count FROM bookings WHERE date BETWEEN (${today}::date - 13) AND (${today}::date + 30) AND status <> 'Отменена' GROUP BY date ORDER BY date`,
+      const [oldDaily, oldServices, totals, metricDaily, metricServices, metricTotals] = await Promise.all([
+        db.sql`SELECT (created_at AT TIME ZONE 'Asia/Qyzylorda')::date::text AS day, COUNT(*)::int AS count FROM bookings WHERE (created_at AT TIME ZONE 'Asia/Qyzylorda')::date BETWEEN (${today}::date - 13) AND ${today}::date AND status <> 'Отменена' GROUP BY 1 ORDER BY 1`,
         db.sql`SELECT service_type AS service, COUNT(*)::int AS count FROM bookings WHERE status <> 'Отменена' GROUP BY service_type ORDER BY count DESC`,
-        db.sql`SELECT status, COUNT(*)::int AS count FROM bookings GROUP BY status ORDER BY count DESC`,
         db.sql`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Qyzylorda')::date = ${today}::date)::int AS today, COUNT(*) FILTER (WHERE status = 'Завершена')::int AS completed, COUNT(*) FILTER (WHERE status IN ('Новая','В работе'))::int AS active FROM bookings`,
+        db.sql`SELECT (created_at AT TIME ZONE 'Asia/Qyzylorda')::date::text AS day, COUNT(*)::int AS count FROM booking_metrics WHERE (created_at AT TIME ZONE 'Asia/Qyzylorda')::date BETWEEN (${today}::date - 13) AND ${today}::date GROUP BY 1`,
+        db.sql`SELECT vehicle_type AS service, COUNT(*)::int AS count FROM booking_metrics GROUP BY vehicle_type`,
+        db.sql`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Qyzylorda')::date = ${today}::date)::int AS today FROM booking_metrics`,
       ]);
-      const t = totals[0] || {};
-      return respond({ bookingDaily, bookingServices, bookingStatuses, bookingTotals: { total: t.total || 0, today: t.today || 0, completed: t.completed || 0, active: t.active || 0, completionRate: t.total ? Math.round(t.completed * 100 / t.total) : 0 } });
+      const t = totals[0] || {}, mt = metricTotals[0] || {}, byDay = new Map(), byService = new Map();
+      [...oldDaily, ...metricDaily].forEach(x => byDay.set(x.day, (byDay.get(x.day)||0)+x.count));
+      [...oldServices, ...metricServices].forEach(x => byService.set(x.service, (byService.get(x.service)||0)+x.count));
+      const total = (t.total||0)+(mt.total||0);
+      return respond({ bookingDaily:[...byDay].map(([day,count])=>({day,count})), bookingServices:[...byService].map(([service,count])=>({service,count})), bookingStatuses:[], bookingTotals: { total, today: (t.today||0)+(mt.today||0), completed: t.completed || 0, active: 0, completionRate: total ? Math.round((t.completed||0)*100/total) : 0 } });
     }
     if (method === "GET" && path === "/admin/backup") {
       const [bookings, activity, content, settings] = await Promise.all([

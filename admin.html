@@ -210,12 +210,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('messages')">
-                            <i class="nav-icon fas fa-envelope text-orange"></i>
-                            <p>Сообщения клиентов</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="#" class="nav-link" onclick="showSection('analytics')">
                             <i class="nav-icon fas fa-chart-bar text-orange"></i>
                             <p>Аналитика</p>
@@ -283,7 +277,7 @@
                             <div class="small-box bg-warning">
                                 <div class="inner">
                                     <h3 id="pendingBookings">0</h3>
-                                    <p>Заявок в работе</p>
+                                    <p>Заявок в этом месяце</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fas fa-users"></i>
@@ -291,7 +285,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card"><div class="card-header"><h3 class="card-title">Последние записи</h3><button class="btn btn-sm btn-outline-primary float-right" onclick="showSection('messages')">Все заявки</button></div><div class="card-body" id="recent-bookings"><p class="text-muted mb-0">Загрузка…</p></div></div>
+                    <div class="card"><div class="card-body"><h3 class="card-title">Обращения направляются в Telegram</h3><p class="mb-0 text-muted">В панели отображается только обезличенная статистика. Персональные данные клиентов не сохраняются в аналитике.</p></div></div>
                 </div>
 
                 <!-- Content Editor -->
@@ -305,15 +299,15 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label>Название во вкладке браузера</label>
-                                        <input type="text" class="form-control" id="mainTitle" placeholder="Техосмотр в Астане — Auto Technical Centre">
+                                        <input type="text" class="form-control" id="mainTitle" placeholder="Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre">
                                     </div>
                                     <div class="form-group">
                                         <label>Описание для поисковых систем</label>
                                         <textarea class="form-control" id="siteDescription" rows="3" placeholder="Специализированный центр техосмотра в Астане..."></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <label>Основной телефон</label>
-                                        <input type="text" class="form-control" id="mainPhone" placeholder="8 707 243 3010">
+                                        <label>Телефон для звонков и WhatsApp</label>
+                                        <input type="tel" class="form-control" id="whatsappPhone" placeholder="+7 776 848 27 44"><small class="text-muted">Этот номер автоматически используется для звонка и WhatsApp на сайте.</small>
                                     </div>
                                     <div class="form-group">
                                         <label>Адрес</label>
@@ -375,8 +369,8 @@
                 <!-- Analytics -->
                 <div id="analytics-section" class="section" style="display: none;">
                     <div class="card">
-                        <div class="card-header"><h3 class="card-title">Записи: загрузка и результат</h3></div>
-                        <div class="card-body"><div class="analytics-summary" id="booking-analytics-summary"></div><div class="row"><div class="col-lg-8"><canvas id="bookingChart" style="min-height:270px;height:270px;max-height:270px;width:100%;"></canvas></div><div class="col-lg-4"><h4 class="analytics-subtitle">Популярные услуги</h4><div id="booking-service-stats"></div><h4 class="analytics-subtitle mt-4">Статусы заявок</h4><div id="booking-status-stats"></div></div></div></div>
+                        <div class="card-header"><h3 class="card-title">Аналитика обращений</h3></div>
+                        <div class="card-body"><div class="analytics-summary" id="booking-analytics-summary"></div><div class="row"><div class="col-lg-8"><canvas id="bookingChart" style="min-height:270px;height:270px;max-height:270px;width:100%;"></canvas></div><div class="col-lg-4"><h4 class="analytics-subtitle">Категории транспорта</h4><div id="booking-service-stats"></div><h4 class="analytics-subtitle mt-4">Доставка заявок</h4><div id="booking-status-stats"></div></div></div></div>
                     </div>
                 </div>
 
@@ -387,8 +381,8 @@
                             <h3 class="card-title">Настройки системы</h3>
                         </div>
                         <div class="card-body">
-                            <p class="text-muted">Автообновление списка заявок и число записей на странице.</p>
-                            <div class="form-row"><div class="form-group col-md-6"><label for="autoRefreshSeconds">Автообновление заявок</label><select id="autoRefreshSeconds" class="form-control"><option value="0">Выключено</option><option value="30">Каждые 30 секунд</option><option value="60">Каждую минуту</option></select></div><div class="form-group col-md-6"><label for="bookingLimit">Заявок в списке</label><select id="bookingLimit" class="form-control"><option>25</option><option>50</option><option>100</option><option>250</option><option>500</option></select></div></div><div class="settings-actions"><button class="btn btn-primary" onclick="saveChanges()"><i class="fas fa-save"></i> Сохранить настройки</button><button class="btn btn-outline-primary" onclick="downloadDatabaseBackup()"><i class="fas fa-database"></i> Скачать резервную копию</button><span id="settings-status" class="ml-3 text-muted"></span></div>
+                            <p class="text-muted">Настройте частоту обновления обезличенной статистики.</p>
+                            <div class="form-row"><div class="form-group col-md-6"><label for="autoRefreshSeconds">Обновление аналитики</label><select id="autoRefreshSeconds" class="form-control"><option value="0">Вручную</option><option value="30">Каждые 30 секунд</option><option value="60">Каждую минуту</option></select></div><input id="bookingLimit" type="hidden" value="100"></div><div class="settings-actions"><button class="btn btn-primary" onclick="saveChanges()"><i class="fas fa-save"></i> Сохранить настройки</button><span id="settings-status" class="ml-3 text-muted"></span></div>
                         </div>
                     </div>
                 </div>
@@ -481,7 +475,6 @@
                 document.getElementById('todayMessages').textContent = data.today || 0;
                 document.getElementById('totalMessages').textContent = data.total || 0;
                 document.getElementById('pendingBookings').textContent = data.pending || 0;
-                renderRecentBookings(data.recent || []);
             } else if (section === 'content') {
                 loadContentData(data);
             } else if (section === 'messages') {
@@ -501,9 +494,9 @@
 
     // Load content data
     function loadContentData(data) {
-        document.getElementById('mainTitle').value = data.mainTitle || 'Техосмотр в Астане — Auto Technical Centre';
-        document.getElementById('siteDescription').value = data.siteDescription || 'Специализированный центр техосмотра в Астане...';
-        document.getElementById('mainPhone').value = data.mainPhone || '8 707 243 3010';
+        document.getElementById('mainTitle').value = data.mainTitle || 'Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre';
+        document.getElementById('siteDescription').value = data.siteDescription || 'Пройдите техосмотр автомобиля в Астане по адресу Қобыз, 36. Онлайн-запись, свободное время и карта проезда.';
+        document.getElementById('whatsappPhone').value = data.whatsappPhone || data.mainPhone || '+7 776 848 27 44';
         document.getElementById('address').value = data.address || 'г. Астана, Қобыз, 36';
         document.getElementById('email').value = data.email || 'atc@at-c.kz';
         document.getElementById('workingHours').value = data.workingHours || 'Ежедневно с 9:00 до 19:00';
@@ -584,7 +577,8 @@
     }
     function previewSite() { window.open('/', '_blank', 'noopener'); }
     function exportContent() {
-        const data = Object.fromEntries(['mainTitle','siteDescription','mainPhone','address','email','workingHours','promoTextRu','promoTextKk'].map(key => [key, document.getElementById(key).value]));
+        const data = Object.fromEntries(['mainTitle','siteDescription','whatsappPhone','address','email','workingHours','promoTextRu','promoTextKk'].map(key => [key, document.getElementById(key).value]));
+        data.mainPhone = data.whatsappPhone;
         const link = document.createElement('a'), url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); link.href = url; link.download = 'atc-site-content.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
     async function resetContent() {
@@ -634,14 +628,14 @@
     }
     function renderAnalytics(data) {
         const bookingTotals = data.bookingTotals || {};
-        document.getElementById('booking-analytics-summary').innerHTML = `<span>Всего заявок: <b>${bookingTotals.total||0}</b></span><span>Сегодня: <b>${bookingTotals.today||0}</b></span><span>В работе: <b>${bookingTotals.active||0}</b></span><span>Завершено: <b>${bookingTotals.completionRate||0}%</b></span>`;
+        document.getElementById('booking-analytics-summary').innerHTML = `<span>Всего обращений: <b>${bookingTotals.total||0}</b></span><span>Сегодня: <b>${bookingTotals.today||0}</b></span><span>Успешно передано: <b>${bookingTotals.total||0}</b></span>`;
         const days = Array.from({length:14}, (_,i) => { const d=new Date(); d.setDate(d.getDate()-13+i); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; });
         const bookingCounts = Object.fromEntries((data.bookingDaily||[]).map(row=>[row.day,row.count]));
         if (bookingChart) bookingChart.destroy();
         bookingChart = new Chart(document.getElementById('bookingChart'),{type:'bar',data:{labels:days.map(d=>d.slice(5).split('-').reverse().join('.')),datasets:[{label:'Записи по дате осмотра',data:days.map(d=>bookingCounts[d]||0),backgroundColor:'rgba(232,135,68,.72)',hoverBackgroundColor:'#dc7839',borderRadius:6,maxBarThickness:24}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#8390a0'}},y:{beginAtZero:true,ticks:{precision:0,color:'#8390a0'},grid:{color:'rgba(23,36,50,.07)'}}}}});
-        const serviceLabels={inspection:'Техосмотр',diagnostics:'Диагностика',insurance:'ОСАГО','tire-service':'Шиномонтаж'};
+        const serviceLabels={inspection:'Техосмотр',passenger:'Легковые',commercial:'Грузовые',bus:'Автобусы',motorcycle:'Мотоциклы',trailer:'Прицепы',diagnostics:'Диагностика',insurance:'Автострахование'};
         document.getElementById('booking-service-stats').innerHTML=(data.bookingServices||[]).length?data.bookingServices.map(row=>`<div class="popular-row"><span>${escapeHtml(serviceLabels[row.service]||'Другое')}</span><b>${row.count}</b></div>`).join(''):'<p class="text-muted">Пока нет записей.</p>';
-        document.getElementById('booking-status-stats').innerHTML=(data.bookingStatuses||[]).length?data.bookingStatuses.map(row=>`<div class="popular-row"><span>${escapeHtml(row.status)}</span><b>${row.count}</b></div>`).join(''):'<p class="text-muted">Пока нет записей.</p>';
+        document.getElementById('booking-status-stats').innerHTML='<p class="text-muted">Заявки направляются в Telegram.</p>';
     }
     function loadAdminSettings(data) {
         adminSettings = {...adminSettings,...data};
@@ -651,7 +645,7 @@
     function setupRefresh() {
         clearInterval(refreshTimer);
         const seconds = Number(adminSettings.autoRefreshSeconds);
-        if (seconds > 0) refreshTimer = setInterval(() => { if (currentSection === 'messages') loadSectionData('messages',{silent:true}); }, seconds * 1000);
+        if (seconds > 0) refreshTimer = setInterval(() => { if (currentSection === 'analytics' || currentSection === 'dashboard') loadSectionData(currentSection,{silent:true}); }, seconds * 1000);
     }
 
     // Save changes
@@ -660,7 +654,8 @@
             const data = {
                 mainTitle: document.getElementById('mainTitle').value,
                 siteDescription: document.getElementById('siteDescription').value,
-                mainPhone: document.getElementById('mainPhone').value,
+                mainPhone: document.getElementById('whatsappPhone').value,
+                whatsappPhone: document.getElementById('whatsappPhone').value,
                 address: document.getElementById('address').value,
                 email: document.getElementById('email').value,
                 workingHours: document.getElementById('workingHours').value,
