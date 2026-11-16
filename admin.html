@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+    <link rel="apple-touch-icon" href="assets/img/favicon.svg" />
     <title>Админ-панель - Auto Technical Centre</title>
     <link rel="stylesheet" href="https://unpkg.com/admin-lte@3.2.0/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -163,6 +165,19 @@
         .booking-toast::before { content:'Новая заявка'; display:block; margin-bottom:4px; color:#bd642b; font-size:9px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
         .booking-toast[hidden] { display:none; }
         .settings-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+        .price-editor { display:grid; gap:10px; }
+        .price-row { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) minmax(0,.8fr) auto; gap:10px; align-items:end; padding:12px; border:1px solid var(--admin-line); border-radius:12px; background:rgba(255,255,255,.03); }
+        .price-row .form-group { margin:0; }
+        .price-row .price-delete { margin-bottom:2px; }
+        @media(max-width:767px) { .price-row { grid-template-columns:1fr; } .price-row .price-delete { justify-self:start; } }
+        .schedule-editor { display:grid; gap:8px; }
+        .schedule-row { display:grid; grid-template-columns:110px 1fr auto auto auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid var(--admin-line); border-radius:12px; background:rgba(255,255,255,.03); }
+        .schedule-row .day-name { font-weight:600; font-size:13px; }
+        .schedule-row .day-times { display:flex; gap:8px; align-items:center; }
+        .schedule-row input[type="time"] { width:110px; }
+        .schedule-row .day-closed { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--admin-muted,#a8b3c7); white-space:nowrap; }
+        .schedule-row.is-closed .day-times input { opacity:.4; pointer-events:none; }
+        @media(max-width:767px) { .schedule-row { grid-template-columns:1fr; } .schedule-row .day-times { flex-wrap:wrap; } }
         @media(max-width:767px) { .card-body { padding:16px; } .booking-actions { justify-content:flex-start; flex-wrap:wrap; } .booking-row { align-items:flex-start; flex-direction:column; gap:5px; } }
     </style>
 </head>
@@ -192,7 +207,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="#" class="brand-link">
             <span class="brand-emblem">ATC</span>
-            <span class="brand-text">Auto Technical <small class="d-block text-muted" style="font-size:9px;letter-spacing:.13em">ПАНЕЛЬ УПРАВЛЕНИЯ</small></span>
+            <span class="brand-text">Auto Technical Centre <small class="d-block text-muted" style="font-size:9px;letter-spacing:.13em">ПАНЕЛЬ УПРАВЛЕНИЯ</small></span>
         </a>
         <div class="sidebar">
             <nav class="mt-2">
@@ -318,13 +333,27 @@
                                         <input type="email" class="form-control" id="email" placeholder="atc@at-c.kz">
                                     </div>
                                     <div class="form-group">
-                                        <label>Время работы</label>
-                                        <input type="text" class="form-control" id="workingHours" placeholder="Ежедневно с 9:00 до 19:00">
+                                        <label>Время работы — текст для сайта (русский)</label>
+                                        <input type="text" class="form-control" id="workingHours" placeholder="Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Время работы — текст для сайта (қазақша)</label>
+                                        <input type="text" class="form-control" id="workingHoursKk" placeholder="Дс–Жм 09:00–20:00, сенбі 10:00–20:00, жексенбі 10:00–18:00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Расписание онлайн-записи по дням</label>
+                                        <div id="scheduleEditor" class="schedule-editor"></div>
+                                        <small class="text-muted">Слоты создаются каждые 30 минут. Отметьте «Выходной», чтобы в этот день нельзя было записаться онлайн. Изменение расписания не отменяет уже созданные заявки.</small>
                                     </div>
                                     <div class="promo-editor">
                                         <div class="promo-editor-heading"><i class="fas fa-bullhorn"></i><div><strong>Акция на сайте</strong><small>Оставьте поле пустым, если сейчас акций нет. Текст сразу появится в первом экране и рядом с прайсом.</small></div></div>
-                                        <div class="form-group"><label for="promoTextRu">Текст акции — русский</label><textarea class="form-control" id="promoTextRu" rows="2" maxlength="320" placeholder="Например: Скидка 10% на техосмотр до конца месяца"></textarea></div>
-                                        <div class="form-group mb-0"><label for="promoTextKk">Текст акции — қазақша</label><textarea class="form-control" id="promoTextKk" rows="2" maxlength="320" placeholder="Мысалы: Ай соңына дейін техбайқауға 10% жеңілдік"></textarea></div>
+                                        <div class="form-group"><label for="promoTextRu">Текст акции — русский</label><textarea class="form-control" id="promoTextRu" rows="2" maxlength="320" placeholder="Оставьте пустым, если акции нет. Пример: Скидка 10% на техосмотр до конца месяца"></textarea></div>
+                                        <div class="form-group mb-0"><label for="promoTextKk">Текст акции — қазақша</label><textarea class="form-control" id="promoTextKk" rows="2" maxlength="320" placeholder="Жарнама жоқ болса бос қалдырыңыз. Мысалы: Ай соңына дейін техбайқауға 10% жеңілдік"></textarea></div>
+                                    </div>
+                                    <div class="promo-editor">
+                                        <div class="promo-editor-heading"><i class="fas fa-tags"></i><div><strong>Прайс на техосмотр</strong><small>Название позиции на русском и казахском, цена в тенге. После сохранения цены сразу появятся на сайте.</small></div></div>
+                                        <div id="priceListEditor"></div>
+                                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addPriceRow()"><i class="fas fa-plus"></i> Добавить позицию</button>
                                     </div>
                                 </div>
                             </div>
@@ -385,6 +414,19 @@
                             <div class="form-row"><div class="form-group col-md-6"><label for="autoRefreshSeconds">Обновление аналитики</label><select id="autoRefreshSeconds" class="form-control"><option value="0">Вручную</option><option value="30">Каждые 30 секунд</option><option value="60">Каждую минуту</option></select></div><input id="bookingLimit" type="hidden" value="100"></div><div class="settings-actions"><button class="btn btn-primary" onclick="saveChanges()"><i class="fas fa-save"></i> Сохранить настройки</button><span id="settings-status" class="ml-3 text-muted"></span></div>
                         </div>
                     </div>
+                    <div class="card card-warning mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-key"></i> Смена пароля</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Измените пароль для входа в админ-панель.</p>
+                            <div class="form-group"><label for="currentPassword">Текущий пароль</label><input type="password" class="form-control" id="currentPassword" placeholder="Введите текущий пароль"></div>
+                            <div class="form-group"><label for="newPassword">Новый пароль</label><input type="password" class="form-control" id="newPassword" placeholder="Введите новый пароль (минимум 6 символов)"></div>
+                            <div class="form-group"><label for="confirmPassword">Подтверждение пароля</label><input type="password" class="form-control" id="confirmPassword" placeholder="Повторите новый пароль"></div>
+                            <button class="btn btn-warning" onclick="changePassword()"><i class="fas fa-key"></i> Сменить пароль</button>
+                            <span id="password-status" class="ml-3 text-muted"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -406,7 +448,40 @@
     let refreshTimer;
     let bookingChart;
     const localHost = ['localhost','127.0.0.1','::1',''].includes(window.location.hostname);
-    const API_ROOT = localHost && window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '';
+    const API_ROOT = localHost
+      ? (window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '')
+      : 'https://at-c.netlify.app';
+    function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+    const DEFAULT_PRICE_ITEMS = [
+        {nameRu:'Автомобиль легковой',nameKk:'Жеңіл автомобиль',price:'10 000'},
+        {nameRu:'Внедорожник, кроссовер (повышенная проходимость)',nameKk:'Джип, кроссовер (жоғары өтімділік)',price:'12 000'},
+        {nameRu:'Микроавтобус (до 16 мест)',nameKk:'Микроавтобус (16 орынға дейін)',price:'15 000'},
+        {nameRu:'Грузовое ТС (до 3,5 т)',nameKk:'Жүк көлігі (3,5 т-ға дейін)',price:'15 000'},
+        {nameRu:'Грузовое ТС (категория C1)',nameKk:'Жүк көлігі (C1 санаты)',price:'20 000'},
+        {nameRu:'Прицеп',nameKk:'Тіркеме',price:'9 000'},
+        {nameRu:'Мототранспортное средство',nameKk:'Мотокөлік құралы',price:'9 000'}
+    ];
+    function priceRowHtml(item) {
+        return `<div class="price-row">
+            <div class="form-group"><label>Название (RU)</label><input class="form-control price-name-ru" maxlength="160" value="${escapeHtml(item.nameRu)}"></div>
+            <div class="form-group"><label>Название (KZ)</label><input class="form-control price-name-kk" maxlength="160" value="${escapeHtml(item.nameKk)}"></div>
+            <div class="form-group"><label>Цена, ₸</label><input class="form-control price-value" maxlength="30" value="${escapeHtml(item.price)}"></div>
+            <button type="button" class="btn btn-outline-danger btn-sm price-delete" onclick="this.closest('.price-row').remove()" title="Удалить позицию"><i class="fas fa-trash"></i></button>
+        </div>`;
+    }
+    function renderPriceRows(items) {
+        document.getElementById('priceListEditor').innerHTML = (Array.isArray(items) && items.length ? items : DEFAULT_PRICE_ITEMS).map(priceRowHtml).join('');
+    }
+    function addPriceRow() {
+        document.getElementById('priceListEditor').insertAdjacentHTML('beforeend', priceRowHtml({nameRu:'',nameKk:'',price:''}));
+    }
+    function collectPriceList() {
+        return JSON.stringify([...document.querySelectorAll('#priceListEditor .price-row')].map(row => ({
+            nameRu: row.querySelector('.price-name-ru').value.trim(),
+            nameKk: row.querySelector('.price-name-kk').value.trim(),
+            price: row.querySelector('.price-value').value.trim()
+        })).filter(item => item.nameRu && item.price));
+    }
     function apiFetch(path, options = {}) {
         return fetch(`${API_ROOT}/api/${String(path).replace(/^\/+/, '')}`, options).then(response => {
             if (response.status === 401 && token) {
@@ -492,6 +567,58 @@
         }
     }
 
+    // Working-hours schedule editor (per weekday)
+    const SCHEDULE_DAY_NAMES = { 1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 6: 'Суббота', 0: 'Воскресенье' };
+    const SCHEDULE_DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+    function defaultSchedule() {
+        const schedule = {};
+        for (const day of SCHEDULE_DAY_ORDER) schedule[day] = (day === 6) ? { open: '10:00', close: '20:00' } : (day === 0) ? { open: '10:00', close: '18:00' } : { open: '09:00', close: '20:00' };
+        return schedule;
+    }
+    function parseSchedule(raw) {
+        try {
+            const parsed = JSON.parse(raw || '');
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                const schedule = defaultSchedule();
+                for (const day of SCHEDULE_DAY_ORDER) {
+                    const entry = parsed[String(day)];
+                    if (entry && entry.closed === true) schedule[day] = { closed: true };
+                    else if (entry && /^([01]\d|2[0-3]):[0-5]\d$/.test(entry.open || '') && /^([01]\d|2[0-3]):[0-5]\d$/.test(entry.close || '') && entry.open < entry.close) schedule[day] = { open: entry.open, close: entry.close };
+                }
+                return schedule;
+            }
+        } catch (_) {}
+        return defaultSchedule();
+    }
+    function renderScheduleEditor(schedule) {
+        const container = document.getElementById('scheduleEditor');
+        if (!container) return;
+        container.innerHTML = SCHEDULE_DAY_ORDER.map(day => {
+            const entry = schedule[day] || {};
+            const closed = entry.closed === true;
+            return `<div class="schedule-row ${closed ? 'is-closed' : ''}" data-day="${day}">
+                <span class="day-name">${SCHEDULE_DAY_NAMES[day]}</span>
+                <span class="day-times"><input type="time" class="form-control form-control-sm sched-open" value="${closed ? '09:00' : (entry.open || '09:00')}" ${closed ? 'disabled' : ''}><span>—</span><input type="time" class="form-control form-control-sm sched-close" value="${closed ? '20:00' : (entry.close || '20:00')}" ${closed ? 'disabled' : ''}></span>
+                <label class="day-closed"><input type="checkbox" class="sched-closed" ${closed ? 'checked' : ''}> Выходной</label>
+            </div>`;
+        }).join('');
+        container.querySelectorAll('.sched-closed').forEach(box => box.addEventListener('change', () => {
+            const row = box.closest('.schedule-row');
+            const closed = box.checked;
+            row.classList.toggle('is-closed', closed);
+            row.querySelectorAll('input[type="time"]').forEach(input => { input.disabled = closed; });
+        }));
+    }
+    function collectSchedule() {
+        const schedule = {};
+        document.querySelectorAll('#scheduleEditor .schedule-row').forEach(row => {
+            const day = Number(row.dataset.day);
+            const closed = row.querySelector('.sched-closed').checked;
+            schedule[day] = closed ? { closed: true } : { open: row.querySelector('.sched-open').value, close: row.querySelector('.sched-close').value };
+        });
+        return schedule;
+    }
+
     // Load content data
     function loadContentData(data) {
         document.getElementById('mainTitle').value = data.mainTitle || 'Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre';
@@ -499,9 +626,14 @@
         document.getElementById('whatsappPhone').value = data.whatsappPhone || data.mainPhone || '+7 776 848 27 44';
         document.getElementById('address').value = data.address || 'г. Астана, Қобыз, 36';
         document.getElementById('email').value = data.email || 'atc@at-c.kz';
-        document.getElementById('workingHours').value = data.workingHours || 'Ежедневно с 9:00 до 19:00';
+        document.getElementById('workingHours').value = data.workingHours || 'Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00';
+        document.getElementById('workingHoursKk').value = data.workingHoursKk || '';
+        renderScheduleEditor(parseSchedule(data.schedule));
         document.getElementById('promoTextRu').value = data.promoTextRu || '';
         document.getElementById('promoTextKk').value = data.promoTextKk || '';
+        let priceItems = [];
+        try { priceItems = JSON.parse(data.priceList || '[]'); } catch (_) {}
+        renderPriceRows(priceItems);
     }
 
     // Load messages
@@ -577,8 +709,10 @@
     }
     function previewSite() { window.open('/', '_blank', 'noopener'); }
     function exportContent() {
-        const data = Object.fromEntries(['mainTitle','siteDescription','whatsappPhone','address','email','workingHours','promoTextRu','promoTextKk'].map(key => [key, document.getElementById(key).value]));
+        const data = Object.fromEntries(['mainTitle','siteDescription','whatsappPhone','address','email','workingHours','workingHoursKk','promoTextRu','promoTextKk'].map(key => [key, document.getElementById(key).value]));
         data.mainPhone = data.whatsappPhone;
+        data.priceList = collectPriceList();
+        data.schedule = JSON.stringify(collectSchedule());
         const link = document.createElement('a'), url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); link.href = url; link.download = 'atc-site-content.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
     async function resetContent() {
@@ -659,8 +793,11 @@
                 address: document.getElementById('address').value,
                 email: document.getElementById('email').value,
                 workingHours: document.getElementById('workingHours').value,
+                workingHoursKk: document.getElementById('workingHoursKk').value,
+                schedule: JSON.stringify(collectSchedule()),
                 promoTextRu: document.getElementById('promoTextRu').value,
-                promoTextKk: document.getElementById('promoTextKk').value
+                promoTextKk: document.getElementById('promoTextKk').value,
+                priceList: collectPriceList()
             };
 
             try {
@@ -689,6 +826,51 @@
                 const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Не удалось сохранить настройки');
                 adminSettings = result.settings; setupRefresh(); status.textContent = 'Настройки сохранены';
             } catch (error) { status.textContent = error.message || 'Ошибка сохранения'; }
+        }
+    }
+
+    // Change password
+    async function changePassword() {
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const status = document.getElementById('password-status');
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            status.textContent = 'Заполните все поля';
+            status.style.color = '#dc3545';
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            status.textContent = 'Пароли не совпадают';
+            status.style.color = '#dc3545';
+            return;
+        }
+        if (newPassword.length < 6) {
+            status.textContent = 'Пароль должен быть не менее 6 символов';
+            status.style.color = '#dc3545';
+            return;
+        }
+
+        status.textContent = 'Меняю пароль…';
+        status.style.color = '#ffc107';
+
+        try {
+            const response = await apiFetch('change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Не удалось сменить пароль');
+            status.textContent = 'Пароль успешно изменён';
+            status.style.color = '#28a745';
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        } catch (error) {
+            status.textContent = error.message || 'Ошибка смены пароля';
+            status.style.color = '#dc3545';
         }
     }
 

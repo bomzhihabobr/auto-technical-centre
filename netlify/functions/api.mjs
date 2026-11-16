@@ -27,8 +27,8 @@ const SITE_DEFAULTS = {
     5: { open: "09:00", close: "20:00" },
     6: { open: "10:00", close: "20:00" },
   }),
-  promoTextRu: "Акция: каждому десятому клиенту предоставляется скидка 50%, каждому двадцатому — бесплатный техосмотр!",
-  promoTextKk: "Акция: әр оныншы клиентке 50% жеңілдік беріледі, әр жыйырманшыға — тегін техбайқау!",
+  promoTextRu: "",
+  promoTextKk: "",
   priceList: JSON.stringify(DEFAULT_PRICE_LIST),
 };
 function normalizePriceList(raw) {
@@ -255,6 +255,19 @@ export default async function handler(request) {
     if (method === "DELETE" && bookingRoute) {
       const rows = await db.sql`DELETE FROM bookings WHERE id = ${Number(bookingRoute[1])} RETURNING id`;
       return rows.length ? respond({ ok: true }) : fail("Заявка не найдена", 404);
+    }
+    if (method === "POST" && path === "/change-password") {
+      const currentPassword = clean(body.currentPassword, 300);
+      const newPassword = clean(body.newPassword, 300);
+      if (!currentPassword || !newPassword) return fail("Заполните оба поля пароля", 400);
+      if (newPassword.length < 6) return fail("Новый пароль должен быть не менее 6 символов", 400);
+      if (currentPassword === newPassword) return fail("Новый пароль не должен совпадать со старым", 400);
+      const rows = await db.sql`SELECT id, username, password FROM users WHERE username = ${clean(admin.username, 80)} LIMIT 1`;
+      const user = rows[0];
+      if (!user || !(await bcrypt.compare(currentPassword, user.password))) return fail("Текущий пароль неверен", 401);
+      const hash = await bcrypt.hash(newPassword, 10);
+      await db.sql`UPDATE users SET password = ${hash} WHERE id = ${user.id}`;
+      return respond({ ok: true });
     }
     if (method === "GET" && path === "/content") return respond(await siteSettings(db));
     if (method === "PUT" && path === "/content") {

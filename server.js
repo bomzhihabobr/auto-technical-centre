@@ -14,6 +14,7 @@ try { process.loadEnvFile(path.join(__dirname, 'secret', '.env')); } catch (erro
 
 const app = express();
 const server = http.createServer(app);
+app.disable('x-powered-by');
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
@@ -51,12 +52,72 @@ db.run(`CREATE TABLE IF NOT EXISTS admin_settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 )`);
+db.run(`CREATE TABLE IF NOT EXISTS content (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  type TEXT DEFAULT 'text'
+)`);
+db.run(`CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT DEFAULT 'admin'
+)`);
 db.run(`CREATE TABLE IF NOT EXISTS booking_slots (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, time TEXT NOT NULL, UNIQUE(date,time))`);
 db.run(`CREATE TABLE IF NOT EXISTS booking_metrics (id INTEGER PRIMARY KEY AUTOINCREMENT, vehicle_type TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '32kb' }));
+
+// Security headers on every response
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+  next();
+});
+
+// Global API rate limit: blunts scraping and abuse before route handlers
+app.use('/api', (req, res, next) => {
+  const key = `${req.method}:${req.ip || req.socket.remoteAddress || 'unknown'}`;
+  const now = Date.now();
+  if (globalApiBuckets.size > 20000) globalApiBuckets.clear();
+  let bucket = globalApiBuckets.get(key);
+  if (!bucket || now - bucket.start > 60 * 1000) {
+    bucket = { start: now, count: 0 };
+    globalApiBuckets.set(key, bucket);
+  }
+  bucket.count += 1;
+  res.setHeader('X-RateLimit-Limit', '240');
+  res.setHeader('X-RateLimit-Remaining', Math.max(0, 240 - bucket.count));
+  if (bucket.count > 240) {
+    res.setHeader('Retry-After', '60');
+    return res.status(429).json({ error: 'Слишком много запросов. Попробуйте через минуту.' });
+  }
+  next();
+});
+const globalApiBuckets = new Map();
+
+// Simple per-IP rate limiting for sensitive endpoints
+const rateBuckets = new Map();
+function rateLimit(scope, windowMs, max) {
+  return (req, res, next) => {
+    const key = `${scope}:${req.ip || req.socket.remoteAddress || 'unknown'}`;
+    const now = Date.now();
+    if (rateBuckets.size > 10000) rateBuckets.clear();
+    let bucket = rateBuckets.get(key);
+    if (!bucket || now - bucket.start > windowMs) {
+      bucket = { start: now, count: 0 };
+      rateBuckets.set(key, bucket);
+    }
+    bucket.count += 1;
+    if (bucket.count > max) return res.status(429).json({ error: 'Слишком много запросов. Попробуйте через минуту.' });
+    next();
+  };
+}
 
 function requireAdmin(req, res, next) {
   const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
@@ -68,7 +129,7 @@ function requireAdmin(req, res, next) {
   }
 }
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', rateLimit('login', 60 * 1000, 10), (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return res.status(400).json({ error: 'Введите логин и пароль' });
   db.get('SELECT id, username, password, role FROM users WHERE username = ?', [String(username).slice(0, 80)], async (err, user) => {
@@ -83,7 +144,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-app.post('/api/bookings', (req, res) => {
+app.post('/api/bookings', rateLimit('bookings', 60 * 1000, 20), (req, res) => {
   const clean = (v, max) => typeof v === 'string' ? v.trim().slice(0, max) : '';
   const booking = {
     name: clean(req.body?.name, 120), phone: clean(req.body?.phone, 40),
@@ -99,14 +160,17 @@ app.post('/api/bookings', (req, res) => {
   if (Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== booking.date) return res.status(400).json({ error: 'Указана некорректная дата' });
   readSiteSettings((settingsError, settings) => {
     if (settingsError) return res.status(500).json({ error: 'Не удалось проверить расписание' });
-    const times = buildAppointmentTimes(settings.workingHours);
+    const times = scheduleSlots(settings, booking.date);
     if (!times.includes(booking.time)) return res.status(400).json({ error: 'Выберите время из доступных интервалов' });
     if (!isFutureAppointment(booking.date, booking.time)) return res.status(400).json({ error: 'Выбранное время уже прошло' });
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.CHAT_ID;
     if (!token || !chatId) return res.status(503).json({ error: 'Приём заявок временно не настроен. Позвоните нам.' });
     db.run(`INSERT INTO booking_slots (date,time) SELECT ?,? WHERE NOT EXISTS (SELECT 1 FROM bookings WHERE date=? AND time=? AND status!='Отменена')`, [booking.date, booking.time, booking.date, booking.time], async function (err) {
-      if (err) return res.status(500).json({ error: 'Не удалось принять заявку. Попробуйте ещё раз.' });
+      if (err) {
+        if (/UNIQUE/i.test(err.message || '')) return res.status(409).json({ error: 'Это время только что заняли. Выберите другой интервал.' });
+        return res.status(500).json({ error: 'Не удалось принять заявку. Попробуйте ещё раз.' });
+      }
       if (!this.changes) return res.status(409).json({ error: 'Это время только что заняли. Выберите другой интервал.' });
       const bookingId = this.lastID;
       const message = [`Новая заявка на техосмотр №${bookingId}`, `Имя: ${booking.name}`, `Телефон: ${booking.phone}`, `Автомобиль: ${booking.car || 'не указан'}`, `Категория: ${booking.vehicleType}`, `Дата и время: ${booking.date} ${booking.time}`, `Комментарий: ${booking.comment || 'нет'}`].join('\n');
@@ -182,14 +246,70 @@ app.delete('/api/bookings/:id', requireAdmin, (req, res) => {
   });
 });
 
+app.post('/api/change-password', requireAdmin, async (req, res) => {
+  const currentPassword = String(req.body?.currentPassword || '').slice(0, 300);
+  const newPassword = String(req.body?.newPassword || '').slice(0, 300);
+  if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Заполните оба поля пароля' });
+  if (newPassword.length < 6) return res.status(400).json({ error: 'Новый пароль должен быть не менее 6 символов' });
+  if (currentPassword === newPassword) return res.status(400).json({ error: 'Новый пароль не должен совпадать со старым' });
+  db.get('SELECT id, username, password FROM users WHERE username = ?', [String(req.admin.username || 'admin').slice(0, 80)], async (err, user) => {
+    if (err) return res.status(500).json({ error: 'Не удалось найти пользователя' });
+    if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
+    try {
+      const valid = await bcrypt.compare(currentPassword, user.password);
+      if (!valid) return res.status(401).json({ error: 'Текущий пароль неверен' });
+      const hash = await bcrypt.hash(newPassword, 10);
+      db.run('UPDATE users SET password = ? WHERE id = ?', [hash, user.id], updateErr => {
+        if (updateErr) return res.status(500).json({ error: 'Не удалось обновить пароль' });
+        res.json({ ok: true });
+      });
+    } catch { res.status(500).json({ error: 'Не удалось обновить пароль' }); }
+  });
+});
+
+const DEFAULT_PRICE_LIST = [
+  { nameRu: 'Автомобиль легковой', nameKk: 'Жеңіл автомобиль', price: '10 000' },
+  { nameRu: 'Внедорожник, S-class, кроссовер', nameKk: 'Джип, S-класс, кроссовер', price: '12 000' },
+  { nameRu: 'Микроавтобус (до 16 мест)', nameKk: 'Микроавтобус (16 орынға дейін)', price: '15 000' },
+  { nameRu: 'Грузовое ТС (до 3,5 т)', nameKk: 'Жүк көлігі (3,5 т-ға дейін)', price: '15 000' },
+  { nameRu: 'Грузовое ТС (категория C1)', nameKk: 'Жүк көлігі (C1 санаты)', price: '20 000' },
+  { nameRu: 'Прицеп', nameKk: 'Тіркеме', price: '9 000' },
+  { nameRu: 'Мототранспортное средство', nameKk: 'Мотокөлік құралы', price: '9 000' }
+];
 const SITE_DEFAULTS = {
   mainTitle: 'Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre',
   siteDescription: 'Пройдите техосмотр автомобиля в Астане по адресу Қобыз, 36. Выберите свободное время онлайн, посмотрите карту проезда и свяжитесь с Auto Technical Centre.',
   mainPhone: '+7 776 848 27 44', whatsappPhone: '+7 776 848 27 44',
   address: 'г. Астана, Қобыз, 36',
   email: 'atc@at-c.kz',
-  workingHours: 'Ежедневно с 09:00 до 19:00', promoTextRu: '', promoTextKk: ''
+  workingHours: 'Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00',
+  workingHoursKk: 'Дс–Жм 09:00–20:00, сенбі 10:00–20:00, жексенбі 10:00–18:00',
+  schedule: JSON.stringify({
+    0: { open: '10:00', close: '18:00' },
+    1: { open: '09:00', close: '20:00' },
+    2: { open: '09:00', close: '20:00' },
+    3: { open: '09:00', close: '20:00' },
+    4: { open: '09:00', close: '20:00' },
+    5: { open: '09:00', close: '20:00' },
+    6: { open: '10:00', close: '20:00' }
+  }),
+  promoTextRu: '',
+  promoTextKk: '',
+  priceList: JSON.stringify(DEFAULT_PRICE_LIST)
 };
+function normalizePriceList(raw) {
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  try {
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items) || items.length === 0 || items.length > 50) return null;
+    const cleanItems = items.map(item => ({
+      nameRu: String(item?.nameRu || '').trim().slice(0, 160),
+      nameKk: String(item?.nameKk || '').trim().slice(0, 160),
+      price: String(item?.price || '').trim().slice(0, 30)
+    })).filter(item => item.nameRu && item.price);
+    return cleanItems.length ? JSON.stringify(cleanItems) : null;
+  } catch { return null; }
+}
 function readSiteSettings(callback) {
   db.all('SELECT key, value FROM content', [], (err, rows) => {
     if (err) return callback(err);
@@ -205,9 +325,43 @@ function buildAppointmentTimes(workingHours) {
   const matches = String(workingHours || '').match(/(\d{1,2}):([0-5]\d).*?(\d{1,2}):([0-5]\d)/);
   const start = matches ? Number(matches[1]) * 60 + Number(matches[2]) : 9 * 60;
   const end = matches ? Number(matches[3]) * 60 + Number(matches[4]) : 19 * 60;
+  return minutesToSlots(start, end);
+}
+
+function minutesToSlots(start, end) {
   const slots = [];
   for (let minute = start; minute < end; minute += 30) slots.push(`${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`);
   return slots;
+}
+
+function normalizeSchedule(raw) {
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch { return null; }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+  const schedule = {};
+  const timeOk = value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '');
+  for (let day = 0; day <= 6; day++) {
+    const entry = parsed[String(day)];
+    if (!entry || typeof entry !== 'object' || entry.closed === true) { schedule[String(day)] = { closed: true }; continue; }
+    if (!timeOk(entry.open) || !timeOk(entry.close) || entry.open >= entry.close) return null;
+    schedule[String(day)] = { open: entry.open, close: entry.close };
+  }
+  return JSON.stringify(schedule);
+}
+
+function scheduleSlots(settings, date) {
+  try {
+    const schedule = normalizeSchedule(settings.schedule);
+    if (schedule) {
+      const day = new Date(`${date}T12:00:00Z`).getUTCDay();
+      const entry = JSON.parse(schedule)[String(day)];
+      if (!entry || entry.closed) return [];
+      const toMin = value => { const [h, m] = value.split(':').map(Number); return h * 60 + m; };
+      return minutesToSlots(toMin(entry.open), toMin(entry.close));
+    }
+  } catch { /* fall back to workingHours text */ }
+  return buildAppointmentTimes(settings.workingHours);
 }
 
 function isFutureAppointment(date, time) {
@@ -227,8 +381,10 @@ app.get('/api/availability', (req, res) => {
     readSiteSettings((settingsError, settings) => {
       if (settingsError) return res.status(500).json({ error: 'Не удалось загрузить расписание' });
       const busy = new Set(rows.map(row => row.time));
-      const availableTimes = buildAppointmentTimes(settings.workingHours).filter(time => !busy.has(time) && isFutureAppointment(date, time));
-      res.json({ date, availableTimes, intervalMinutes: 30 });
+      const allTimes = scheduleSlots(settings, date);
+      const availableTimes = allTimes.filter(time => !busy.has(time) && isFutureAppointment(date, time));
+      const bookedTimes = allTimes.filter(time => busy.has(time));
+      res.json({ date, availableTimes, bookedTimes, intervalMinutes: 30 });
     });
   });
 });
@@ -249,7 +405,7 @@ app.get('/api/content', requireAdmin, (req, res) => {
 
 app.put('/api/content', requireAdmin, async (req, res) => {
   const limits = { mainTitle: 140, siteDescription: 320, mainPhone: 40, whatsappPhone: 40, address: 180, email: 160, workingHours: 120 };
-  const optionalLimits = { promoTextRu: 320, promoTextKk: 320 };
+  const optionalLimits = { promoTextRu: 320, promoTextKk: 320, workingHoursKk: 120 };
   const values = {};
   for (const [key, max] of Object.entries(limits)) {
     const value = typeof req.body?.[key] === 'string' ? req.body[key].trim().slice(0, max) : '';
@@ -257,6 +413,14 @@ app.put('/api/content', requireAdmin, async (req, res) => {
     values[key] = value;
   }
   for (const [key, max] of Object.entries(optionalLimits)) values[key] = typeof req.body?.[key] === 'string' ? req.body[key].trim().slice(0, max) : '';
+  const priceList = normalizePriceList(req.body?.priceList);
+  if (req.body?.priceList !== undefined && !priceList) return res.status(400).json({ error: 'Некорректный список цен. Проверьте название и цену каждой позиции.' });
+  if (priceList) values.priceList = priceList;
+  if (req.body?.schedule !== undefined) {
+    const schedule = normalizeSchedule(req.body.schedule);
+    if (!schedule) return res.status(400).json({ error: 'Некорректное расписание. Проверьте время открытия и закрытия для каждого дня.' });
+    values.schedule = schedule;
+  }
   try {
     await Promise.all(Object.entries(values).map(([key, value]) => new Promise((resolve, reject) => {
       db.run('INSERT OR REPLACE INTO content (key, value, type) VALUES (?, ?, ?)', [key, value, 'text'], err => err ? reject(err) : resolve());
@@ -275,10 +439,8 @@ app.get('/api/dashboard', requireAdmin, (req, res) => {
   });
 });
 
-// Static files middleware - serve HTML, CSS, JS files
-app.use(express.static(path.join(__dirname), { index: false }));
-
-// Static files for assets
+// Static files: serve only public assets, never the project root
+// (prevents exposure of server.js, database.db, package.json and other internals)
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Explicit routes for HTML files
@@ -302,6 +464,9 @@ app.get('/privacy', (req, res) => {
 app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
 
 app.get('/index.html', (req, res) => res.redirect(301, '/'));
+
+app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
+app.get('/sitemap.xml', (req, res) => res.sendFile(path.join(__dirname, 'sitemap.xml')));
 
 const ADMIN_SETTING_DEFAULTS = { autoRefreshSeconds: 30, bookingLimit: 100 };
 function readAdminSettings(callback) {

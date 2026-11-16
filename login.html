@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+    <link rel="apple-touch-icon" href="assets/img/favicon.svg" />
     <title>Вход в админ-панель</title>
     <link rel="stylesheet" href="https://unpkg.com/admin-lte@3.2.0/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -10,148 +12,221 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f1620 0%, #1a2332 100%);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height:100vh;
+            margin:0;
+            padding:20px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:radial-gradient(ellipse at 50% 10%,rgba(255,122,0,.18),transparent 42%),radial-gradient(ellipse at 80% 80%,rgba(255,122,0,.08),transparent 40%),linear-gradient(135deg,#0b0f14 0%,#111a26 50%,#0b0f14 100%);
+            color:#e6edf6;
         }
         .login-box {
-            width: 400px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 122, 0, 0.2);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width:min(440px,calc(100vw - 32px));
+            padding:0;
+            background:linear-gradient(160deg,#16202c 0%,#0d141d 100%);
+            border:1px solid rgba(255,157,65,.25);
+            border-radius:24px;
+            box-shadow:0 40px 100px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.06);
+            overflow:hidden;
         }
+        .login-visual {
+            position:relative;
+            padding:36px 32px 28px;
+            text-align:center;
+            background:radial-gradient(ellipse at 50% 0%,rgba(255,150,50,.28),transparent 55%),linear-gradient(165deg,#2a1a0c,#171008 70%);
+            border-bottom:1px solid rgba(255,157,65,.2);
+        }
+        .login-visual::before, .login-visual::after {
+            content:'';
+            position:absolute;
+            border-radius:50%;
+            filter:blur(30px);
+            opacity:.5;
+        }
+        .login-visual::before { width:140px; height:140px; top:-30px; left:-20px; background:#ff8a1f; }
+        .login-visual::after { width:160px; height:160px; bottom:-40px; right:-30px; background:#ffc178; opacity:.3; }
         .login-logo {
-            text-align: center;
-            margin-bottom: 30px;
+            position:relative;
+            margin-bottom:16px;
         }
-        .login-logo img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #ff7a00;
-            padding: 15px;
-            margin: 0 auto 15px;
-            display: block;
+        .login-logo-mark {
+            display:inline-grid;
+            width:72px;
+            height:72px;
+            place-items:center;
+            border-radius:20px;
+            font-size:28px;
+            font-weight:800;
+            letter-spacing:-.02em;
+            color:#fff;
+            background:linear-gradient(145deg,#f28b45,#d95f00);
+            box-shadow:0 18px 40px rgba(255,122,0,.4),inset 0 2px rgba(255,255,255,.35),inset 0 -3px rgba(0,0,0,.2);
+            transform:rotate(-4deg);
         }
-        .login-logo a {
-            color: #ff7a00;
-            font-size: 24px;
-            font-weight: 600;
+        .login-title {
+            position:relative;
+            margin:0 0 6px;
+            color:#fff;
+            font-size:22px;
+            font-weight:700;
+            letter-spacing:-.01em;
         }
-        .card {
-            background: transparent;
-            border: none;
-            box-shadow: none;
+        .login-subtitle {
+            position:relative;
+            margin:0;
+            color:#ffc178;
+            font-size:12px;
+            font-weight:700;
+            letter-spacing:.12em;
+            text-transform:uppercase;
+        }
+        .login-body {
+            padding:28px 32px 32px;
+        }
+        .login-desc {
+            margin:0 0 24px;
+            color:#8b9bab;
+            font-size:14px;
+            line-height:1.6;
+            text-align:center;
+        }
+        .form-group { margin-bottom:18px; }
+        .form-label {
+            display:block;
+            margin-bottom:8px;
+            color:#b9c6d4;
+            font-size:12px;
+            font-weight:600;
+            letter-spacing:.04em;
+            text-transform:uppercase;
+        }
+        .input-wrap {
+            position:relative;
+            display:flex;
+            align-items:center;
+        }
+        .input-wrap i {
+            position:absolute;
+            left:16px;
+            color:#6b7b8b;
+            font-size:15px;
+            pointer-events:none;
         }
         .form-control {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            padding: 12px 16px;
+            width:100%;
+            padding:14px 16px 14px 46px;
+            border:1px solid rgba(255,255,255,.12);
+            border-radius:12px;
+            color:#eef3f8;
+            background:rgba(255,255,255,.05);
+            font-size:14px;
+            transition:border-color .2s,background .2s,box-shadow .2s;
         }
+        .form-control::placeholder { color:#6b7b8b; }
         .form-control:focus {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: #ff7a00;
-            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2);
+            outline:none;
+            border-color:#f28b45;
+            background:rgba(255,255,255,.08);
+            box-shadow:0 0 0 3px rgba(242,139,69,.15);
         }
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+        .btn-login {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            width:100%;
+            padding:15px 24px;
+            border:none;
+            border-radius:12px;
+            color:#1c1208;
+            font-size:15px;
+            font-weight:700;
+            cursor:pointer;
+            background:linear-gradient(135deg,#f28b45,#ffc178);
+            box-shadow:0 10px 25px rgba(242,139,69,.3),inset 0 1px rgba(255,255,255,.3);
+            transition:transform .2s,box-shadow .2s,filter .2s;
         }
-        .btn-primary {
-            background: #ff7a00;
-            border-color: #ff7a00;
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-weight: 600;
-            width: 100%;
+        .btn-login:hover {
+            transform:translateY(-2px);
+            box-shadow:0 14px 32px rgba(242,139,69,.4),inset 0 1px rgba(255,255,255,.3);
+            filter:brightness(1.05);
         }
-        .btn-primary:hover {
-            background: #e66a00;
-            border-color: #e66a00;
-            transform: translateY(-1px);
+        .btn-login:active { transform:translateY(0); }
+        .btn-login:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+        .login-footer {
+            margin-top:24px;
+            padding-top:20px;
+            border-top:1px solid rgba(255,255,255,.08);
+            text-align:center;
         }
-        .input-group-text {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
+        .login-footer a {
+            color:#8b9bab;
+            font-size:13px;
+            text-decoration:none;
+            transition:color .2s;
         }
-        .text-center a {
-            color: #ff7a00;
-        }
-        .text-center a:hover {
-            color: #e66a00;
-            text-decoration: none;
-        }
+        .login-footer a:hover { color:#ffc178; }
         .alert {
-            border-radius: 10px;
-            border: none;
-            background: rgba(255, 122, 0, 0.1);
-            color: #ff7a00;
+            margin-bottom:20px;
+            padding:12px 16px;
+            border-radius:10px;
+            font-size:13px;
+            border:1px solid;
         }
-    </style>
-    <style>
-        body { min-height:100vh; height:auto; margin:0; padding:20px; background:radial-gradient(ellipse at 50% 10%,rgba(255,122,0,.16),transparent 42%),linear-gradient(135deg,#0b0f14,#111a26); color:#e6edf6; }
-        .login-box { width:min(420px,calc(100vw - 32px)); padding:24px; background:linear-gradient(150deg,rgba(24,34,48,.96),rgba(13,19,28,.98)); border:1px solid rgba(255,255,255,.09); border-radius:22px; box-shadow:0 28px 80px rgba(0,0,0,.42); }
-        .login-logo { margin-bottom:20px; }
-        .login-logo img { border-radius:18px; box-shadow:0 10px 28px rgba(255,122,0,.2); }
-        .login-logo a { color:#f5f7fb; letter-spacing:-.03em; }
-        .login-card-body { color:#a8b3c7; }
-        .form-control { background:rgba(4,9,15,.38); border-color:rgba(255,255,255,.11); }
-        .form-control:focus { background:rgba(255,255,255,.05); }
-        .input-group-text { background:rgba(255,255,255,.035); border-color:rgba(255,255,255,.1); color:#a8b3c7; }
-        .btn-primary { background:linear-gradient(135deg,#ff8a1f,#ffb15f); border-color:#ff9b43; color:#20170e; }
-        .btn-primary:hover { background:linear-gradient(135deg,#ff9c44,#ffc27f); border-color:#ffb56c; }
-        .text-center a { color:#ffb56c; }
+        .alert-danger {
+            color:#fca5a5;
+            background:rgba(239,68,68,.12);
+            border-color:rgba(239,68,68,.3);
+        }
+        .alert-success {
+            color:#86efac;
+            background:rgba(34,197,94,.12);
+            border-color:rgba(34,197,94,.3);
+        }
+        @media (max-width:480px) {
+            .login-box { border-radius:20px; }
+            .login-visual { padding:28px 24px 22px; }
+            .login-body { padding:24px 24px 28px; }
+        }
     </style>
 </head>
 <body>
 <div class="login-box">
-    <div class="login-logo">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmZjdhMDAiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTIwIDVMMzUgMTVWMjVMMjAgMzVMNSAyNUw1IDE1TDIwIDVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjAgMTBMMzAgMTVWMjVMMjAgMzBMMTAgMjVMMTAgMTVMMjAgMTBaIiBmaWxsPSIjZmY3YTAwIi8+Cjwvc3ZnPgo8L3N2Zz4=" alt="ATC Logo">
-        <a href="#"><b>ATC</b> Admin</a>
+    <div class="login-visual">
+        <div class="login-logo">
+            <div class="login-logo-mark">ATC</div>
+        </div>
+        <h1 class="login-title">Auto Technical Centre</h1>
+        <p class="login-subtitle">Панель управления</p>
     </div>
-    <div class="card">
-        <div class="card-body login-card-body">
-            <p class="login-box-msg">Войдите для доступа к панели управления</p>
+    <div class="login-body">
+        <p class="login-desc">Войдите для доступа к панели управления сайтом</p>
 
-            <div id="alert" class="alert" style="display: none;"></div>
+        <div id="alert" class="alert" style="display: none;"></div>
 
-            <form id="loginForm">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="username" placeholder="Логин" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-user"></span>
-                        </div>
-                    </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="username">Логин</label>
+                <div class="input-wrap">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-control" id="username" placeholder="Введите логин" required>
                 </div>
-                <div class="input-group mb-3">
-                    <input type="password" class="form-control" id="password" placeholder="Пароль" required>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt"></i> Войти
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <div class="text-center mt-3">
-                <a href="/" class="text-white">
-                    <i class="fas fa-arrow-left"></i> Вернуться на сайт
-                </a>
             </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Пароль</label>
+                <div class="input-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" id="password" placeholder="Введите пароль" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <a href="/"><i class="fas fa-arrow-left"></i> Вернуться на сайт</a>
         </div>
     </div>
 </div>
@@ -159,7 +234,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     const loginHost = ['localhost','127.0.0.1','::1',''].includes(window.location.hostname);
-    const LOGIN_API_ROOT = loginHost && window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '';
+    const LOGIN_API_ROOT = loginHost
+      ? (window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '')
+      : 'https://at-c.netlify.app';
     // Handle login form
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
