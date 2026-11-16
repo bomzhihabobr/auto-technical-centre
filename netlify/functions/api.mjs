@@ -3,18 +3,80 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 const TIME_ZONE = "Asia/Qyzylorda";
+const DEFAULT_PRICE_LIST = [
+  { nameRu: "Автомобиль легковой", nameKk: "Жеңіл автомобиль", price: "10 000" },
+  { nameRu: "Внедорожник, S-class, кроссовер", nameKk: "Джип, S-класс, кроссовер", price: "12 000" },
+  { nameRu: "Микроавтобус (до 16 мест)", nameKk: "Микроавтобус (16 орынға дейін)", price: "15 000" },
+  { nameRu: "Грузовое ТС (до 3,5 т)", nameKk: "Жүк көлігі (3,5 т-ға дейін)", price: "15 000" },
+  { nameRu: "Грузовое ТС (категория C1)", nameKk: "Жүк көлігі (C1 санаты)", price: "20 000" },
+  { nameRu: "Прицеп", nameKk: "Тіркеме", price: "9 000" },
+  { nameRu: "Мототранспортное средство", nameKk: "Мотокөлік құралы", price: "9 000" },
+];
 const SITE_DEFAULTS = {
   mainTitle: "Техосмотр в Астане — Қобыз, 36 | Auto Technical Centre",
   siteDescription: "Пройдите техосмотр автомобиля в Астане по адресу Қобыз, 36. Выберите свободное время онлайн, посмотрите карту проезда и свяжитесь с Auto Technical Centre.",
   mainPhone: "+7 776 848 27 44", whatsappPhone: "+7 776 848 27 44", address: "г. Астана, Қобыз, 36",
-  email: "atc@at-c.kz", workingHours: "Ежедневно с 09:00 до 19:00", promoTextRu: "", promoTextKk: "",
+  email: "atc@at-c.kz", workingHours: "Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00",
+  workingHoursKk: "Дс–Жм 09:00–20:00, сенбі 10:00–20:00, жексенбі 10:00–18:00",
+  schedule: JSON.stringify({
+    0: { open: "10:00", close: "18:00" },
+    1: { open: "09:00", close: "20:00" },
+    2: { open: "09:00", close: "20:00" },
+    3: { open: "09:00", close: "20:00" },
+    4: { open: "09:00", close: "20:00" },
+    5: { open: "09:00", close: "20:00" },
+    6: { open: "10:00", close: "20:00" },
+  }),
+  promoTextRu: "Акция: каждому 10-му клиенту — скидка 50%, каждому 20-му — техосмотр бесплатно!",
+  promoTextKk: "Акция: әр 10-шы клиентке — 50% жеңілдік, әр 20-шіге — тегін техбайқау!",
+  priceList: JSON.stringify(DEFAULT_PRICE_LIST),
 };
+function normalizePriceList(raw) {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  try {
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items) || items.length === 0 || items.length > 50) return null;
+    const cleanItems = items.map(item => ({
+      nameRu: String(item?.nameRu || "").trim().slice(0, 160),
+      nameKk: String(item?.nameKk || "").trim().slice(0, 160),
+      price: String(item?.price || "").trim().slice(0, 30),
+    })).filter(item => item.nameRu && item.price);
+    return cleanItems.length ? JSON.stringify(cleanItems) : null;
+  } catch { return null; }
+}
 const SETTING_DEFAULTS = { autoRefreshSeconds: 30, bookingLimit: 100 };
 const STATUSES = ["Новая", "В работе", "Завершена", "Отменена"];
 const VEHICLES = ["passenger", "commercial", "bus", "motorcycle", "trailer"];
 
-const respond = (data, status = 200, headers = {}) => Response.json(data, { status, headers: { "Cache-Control": "no-store", ...headers } });
+const SECURITY_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
+const respond = (data, status = 200, headers = {}) => Response.json(data, { status, headers: { "Cache-Control": "no-store", ...SECURITY_HEADERS, ...headers } });
 const fail = (message, status = 500) => respond({ error: message }, status);
+
+// Simple per-IP rate limiting for sensitive endpoints (per function instance)
+const rateBuckets = new Map();
+function rateLimited(request, scope, windowMs, max) {
+  const ip = request.headers.get("x-nf-client-connection-ip")
+    || (request.headers.get("x-forwarded-for") || "").split(",")[0].trim()
+    || "unknown";
+  const key = `${scope}:${ip}`;
+  const now = Date.now();
+  if (rateBuckets.size > 10000) rateBuckets.clear();
+  let bucket = rateBuckets.get(key);
+  if (!bucket || now - bucket.start > windowMs) {
+    bucket = { start: now, count: 0 };
+    rateBuckets.set(key, bucket);
+  }
+  bucket.count += 1;
+  return bucket.count > max;
+}
 const clean = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
 function siteNow() {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date()).map(x => [x.type, x.value]));
@@ -39,6 +101,38 @@ function timeSlots(hours) {
     const n = start + i * 30;
     return `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
   });
+}
+function normalizeSchedule(raw) {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch { return null; }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+  const schedule = {};
+  const timeOk = value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value || "");
+  for (let day = 0; day <= 6; day++) {
+    const entry = parsed[String(day)];
+    if (!entry || typeof entry !== "object" || entry.closed === true) { schedule[String(day)] = { closed: true }; continue; }
+    if (!timeOk(entry.open) || !timeOk(entry.close) || entry.open >= entry.close) return null;
+    schedule[String(day)] = { open: entry.open, close: entry.close };
+  }
+  return JSON.stringify(schedule);
+}
+function scheduleSlots(settings, date) {
+  try {
+    const schedule = normalizeSchedule(settings.schedule);
+    if (schedule) {
+      const day = new Date(`${date}T12:00:00Z`).getUTCDay();
+      const entry = JSON.parse(schedule)[String(day)];
+      if (!entry || entry.closed) return [];
+      const toMin = value => { const [h, m] = value.split(":").map(Number); return h * 60 + m; };
+      const start = toMin(entry.open), end = toMin(entry.close);
+      return Array.from({ length: Math.max(0, Math.ceil((end - start) / 30)) }, (_, i) => {
+        const n = start + i * 30;
+        return `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+      });
+    }
+  } catch { /* fall back to workingHours text */ }
+  return timeSlots(settings.workingHours);
 }
 async function siteSettings(db) {
   const rows = await db.sql`SELECT key, value FROM content`;
@@ -70,15 +164,18 @@ function getAdmin(request) {
 }
 
 export default async function handler(request) {
-  if (request.method === "OPTIONS") return new Response(null, { status: 204 });
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS", ...SECURITY_HEADERS } });
   try {
     const db = getDatabase();
     const url = new URL(request.url);
     const path = url.pathname.replace(/^\/\.netlify\/functions\/api/, "").replace(/^\/api/, "") || "/";
     const method = request.method.toUpperCase();
+    if (Number(request.headers.get("content-length") || 0) > 64 * 1024) return fail("Слишком большой запрос", 413);
+    if (rateLimited(request, "global", 60 * 1000, 240)) return fail("Слишком много запросов. Попробуйте через минуту.", 429);
     const body = ["POST", "PUT", "PATCH"].includes(method) ? await request.json().catch(() => ({})) : {};
 
     if (method === "POST" && path === "/login") {
+      if (rateLimited(request, "login", 60 * 1000, 10)) return fail("Слишком много попыток. Попробуйте через минуту.", 429);
       if (!process.env.JWT_SECRET) return fail("Панель администратора не настроена", 503);
       if (!(await seedAdmin(db))) return fail("Добавьте ADMIN_PASSWORD_HASH в переменные Netlify", 503);
       const username = clean(body.username, 80), password = clean(body.password, 300);
@@ -97,9 +194,11 @@ export default async function handler(request) {
         db.sql`SELECT time FROM bookings WHERE date = ${date}::date AND status <> 'Отменена' UNION SELECT time FROM booking_slots WHERE date = ${date}::date`, siteSettings(db),
       ]);
       const used = new Set(busy.map(row => row.time));
-      return respond({ date, intervalMinutes: 30, availableTimes: timeSlots(settings.workingHours).filter(t => !used.has(t) && isFuture(date, t)) });
+      const allTimes = scheduleSlots(settings, date);
+      return respond({ date, intervalMinutes: 30, availableTimes: allTimes.filter(t => !used.has(t) && isFuture(date, t)), bookedTimes: allTimes.filter(t => used.has(t)) });
     }
     if (method === "POST" && path === "/bookings") {
+      if (rateLimited(request, "bookings", 60 * 1000, 20)) return fail("Слишком много запросов. Попробуйте через минуту.", 429);
       const b = {
         name: clean(body.name, 120), phone: clean(body.phone, 40), car: clean(body.car, 120),
         vehicleType: clean(body.vehicleType, 50), serviceType: "inspection",
@@ -110,7 +209,7 @@ export default async function handler(request) {
       if (!b.consent) return fail("Подтвердите согласие на обработку данных", 400);
       if (!validDate(b.date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(b.time)) return fail("Проверьте дату и время записи", 400);
       if (!isFuture(b.date, b.time)) return fail("Выбранное время уже прошло", 400);
-      if (!timeSlots((await siteSettings(db)).workingHours).includes(b.time)) return fail("Выберите время из доступных интервалов", 400);
+      if (!scheduleSlots(await siteSettings(db), b.date).includes(b.time)) return fail("Выберите время из доступных интервалов", 400);
       const token = process.env.TELEGRAM_BOT_TOKEN, chatId = process.env.CHAT_ID;
       if (!token || !chatId) return fail("Приём заявок временно не настроен. Позвоните нам.", 503);
       const reserved = await db.sql`INSERT INTO booking_slots (date,time) VALUES (${b.date}::date,${b.time}) ON CONFLICT (date,time) DO NOTHING RETURNING id`;
@@ -166,6 +265,15 @@ export default async function handler(request) {
       }
       values.promoTextRu = clean(body.promoTextRu, 320);
       values.promoTextKk = clean(body.promoTextKk, 320);
+      values.workingHoursKk = clean(body.workingHoursKk, 120);
+      if (body.schedule !== undefined) {
+        const schedule = normalizeSchedule(body.schedule);
+        if (!schedule) return fail("Некорректное расписание. Проверьте время открытия и закрытия для каждого дня.", 400);
+        values.schedule = schedule;
+      }
+      const priceList = normalizePriceList(body.priceList);
+      if (body.priceList !== undefined && !priceList) return fail("Некорректный список цен. Проверьте название и цену каждой позиции.", 400);
+      if (priceList) values.priceList = priceList;
       for (const [key, value] of Object.entries(values)) await db.sql`INSERT INTO content (key, value, type) VALUES (${key}, ${value}, 'text') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, type = EXCLUDED.type`;
       return respond({ ok: true, settings: values });
     }
