@@ -964,8 +964,8 @@ body { color:#172432; background:#f4f5f6; font-family:Inter,system-ui,sans-serif
 .header.scrolled { background:rgba(13,20,28,.97); }
 .nav { height:72px; }
 .logo-mark { border-radius:13px; box-shadow:0 6px 20px rgba(242,139,69,.3); }
-.logo-img { width:44px; height:44px; object-fit:contain; border-radius:10px; }
-.footer .logo-img { width:36px; height:36px; }
+.logo-img { height:40px; width:auto; max-width:150px; object-fit:contain; border-radius:0; }
+.footer .logo-img { height:32px; width:auto; max-width:120px; }
 .logo-copy strong { letter-spacing:-.04em; }
 .logo-copy small { color:#92a0af; font-size:9px; letter-spacing:.15em; }
 .menu { gap:clamp(3px,.55vw,10px); }
