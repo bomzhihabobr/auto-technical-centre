@@ -1,0 +1,27 @@
+# Auto Technical Centre — Apache config for shared hosting (equhost.kz)
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Clean URLs (legacy — nginx handles via folder structure)
+  RewriteRule ^index\.html$ / [R=301,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://at-c.netlify.app https://unpkg.com https://www.google-analytics.com https://analytics.google.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# Block access to sensitive/backup files
+<FilesMatch "(^\.|\.(sql|log|md|yml|yaml|env|ini|bak|old|zip|tar|gz)$)">
+  Require all denied
+</FilesMatch>

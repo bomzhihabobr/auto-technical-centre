@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script>if (window.location.pathname.endsWith('.html')) { window.location.replace('/login/'); }</script>
+    <!-- Google Tag Manager -->
+    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-KHNWFZX5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
@@ -192,6 +201,9 @@
     </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KHNWFZX5" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <div class="login-box">
     <div class="login-visual">
         <div class="login-logo">
@@ -256,7 +268,7 @@
 
             if (response.ok) {
                 localStorage.setItem('adminToken', data.token);
-                window.location.href = '/admin';
+                window.location.href = '/admin/';
             } else {
                 alertDiv.textContent = data.error || 'Ошибка входа';
                 alertDiv.className = 'alert alert-danger';

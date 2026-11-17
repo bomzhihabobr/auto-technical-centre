@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script>if (window.location.pathname.endsWith('.html')) { window.location.replace('/login/'); }</script>
+    <!-- Google Tag Manager -->
+    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-KHNWFZX5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+    <link rel="apple-touch-icon" href="assets/img/favicon.svg" />
+    <title>Вход в админ-панель</title>
+    <link rel="stylesheet" href="https://unpkg.com/admin-lte@3.2.0/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height:100vh;
+            margin:0;
+            padding:20px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:radial-gradient(ellipse at 50% 10%,rgba(255,122,0,.18),transparent 42%),radial-gradient(ellipse at 80% 80%,rgba(255,122,0,.08),transparent 40%),linear-gradient(135deg,#0b0f14 0%,#111a26 50%,#0b0f14 100%);
+            color:#e6edf6;
+        }
+        .login-box {
+            width:min(440px,calc(100vw - 32px));
+            padding:0;
+            background:linear-gradient(160deg,#16202c 0%,#0d141d 100%);
+            border:1px solid rgba(255,157,65,.25);
+            border-radius:24px;
+            box-shadow:0 40px 100px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.06);
+            overflow:hidden;
+        }
+        .login-visual {
+            position:relative;
+            padding:36px 32px 28px;
+            text-align:center;
+            background:radial-gradient(ellipse at 50% 0%,rgba(255,150,50,.28),transparent 55%),linear-gradient(165deg,#2a1a0c,#171008 70%);
+            border-bottom:1px solid rgba(255,157,65,.2);
+        }
+        .login-visual::before, .login-visual::after {
+            content:'';
+            position:absolute;
+            border-radius:50%;
+            filter:blur(30px);
+            opacity:.5;
+        }
+        .login-visual::before { width:140px; height:140px; top:-30px; left:-20px; background:#ff8a1f; }
+        .login-visual::after { width:160px; height:160px; bottom:-40px; right:-30px; background:#ffc178; opacity:.3; }
+        .login-logo {
+            position:relative;
+            margin-bottom:16px;
+        }
+        .login-logo-mark {
+            display:inline-grid;
+            width:72px;
+            height:72px;
+            place-items:center;
+            border-radius:20px;
+            font-size:28px;
+            font-weight:800;
+            letter-spacing:-.02em;
+            color:#fff;
+            background:linear-gradient(145deg,#f28b45,#d95f00);
+            box-shadow:0 18px 40px rgba(255,122,0,.4),inset 0 2px rgba(255,255,255,.35),inset 0 -3px rgba(0,0,0,.2);
+            transform:rotate(-4deg);
+        }
+        .login-title {
+            position:relative;
+            margin:0 0 6px;
+            color:#fff;
+            font-size:22px;
+            font-weight:700;
+            letter-spacing:-.01em;
+        }
+        .login-subtitle {
+            position:relative;
+            margin:0;
+            color:#ffc178;
+            font-size:12px;
+            font-weight:700;
+            letter-spacing:.12em;
+            text-transform:uppercase;
+        }
+        .login-body {
+            padding:28px 32px 32px;
+        }
+        .login-desc {
+            margin:0 0 24px;
+            color:#8b9bab;
+            font-size:14px;
+            line-height:1.6;
+            text-align:center;
+        }
+        .form-group { margin-bottom:18px; }
+        .form-label {
+            display:block;
+            margin-bottom:8px;
+            color:#b9c6d4;
+            font-size:12px;
+            font-weight:600;
+            letter-spacing:.04em;
+            text-transform:uppercase;
+        }
+        .input-wrap {
+            position:relative;
+            display:flex;
+            align-items:center;
+        }
+        .input-wrap i {
+            position:absolute;
+            left:16px;
+            color:#6b7b8b;
+            font-size:15px;
+            pointer-events:none;
+        }
+        .form-control {
+            width:100%;
+            padding:14px 16px 14px 46px;
+            border:1px solid rgba(255,255,255,.12);
+            border-radius:12px;
+            color:#eef3f8;
+            background:rgba(255,255,255,.05);
+            font-size:14px;
+            transition:border-color .2s,background .2s,box-shadow .2s;
+        }
+        .form-control::placeholder { color:#6b7b8b; }
+        .form-control:focus {
+            outline:none;
+            border-color:#f28b45;
+            background:rgba(255,255,255,.08);
+            box-shadow:0 0 0 3px rgba(242,139,69,.15);
+        }
+        .btn-login {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            width:100%;
+            padding:15px 24px;
+            border:none;
+            border-radius:12px;
+            color:#1c1208;
+            font-size:15px;
+            font-weight:700;
+            cursor:pointer;
+            background:linear-gradient(135deg,#f28b45,#ffc178);
+            box-shadow:0 10px 25px rgba(242,139,69,.3),inset 0 1px rgba(255,255,255,.3);
+            transition:transform .2s,box-shadow .2s,filter .2s;
+        }
+        .btn-login:hover {
+            transform:translateY(-2px);
+            box-shadow:0 14px 32px rgba(242,139,69,.4),inset 0 1px rgba(255,255,255,.3);
+            filter:brightness(1.05);
+        }
+        .btn-login:active { transform:translateY(0); }
+        .btn-login:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+        .login-footer {
+            margin-top:24px;
+            padding-top:20px;
+            border-top:1px solid rgba(255,255,255,.08);
+            text-align:center;
+        }
+        .login-footer a {
+            color:#8b9bab;
+            font-size:13px;
+            text-decoration:none;
+            transition:color .2s;
+        }
+        .login-footer a:hover { color:#ffc178; }
+        .alert {
+            margin-bottom:20px;
+            padding:12px 16px;
+            border-radius:10px;
+            font-size:13px;
+            border:1px solid;
+        }
+        .alert-danger {
+            color:#fca5a5;
+            background:rgba(239,68,68,.12);
+            border-color:rgba(239,68,68,.3);
+        }
+        .alert-success {
+            color:#86efac;
+            background:rgba(34,197,94,.12);
+            border-color:rgba(34,197,94,.3);
+        }
+        @media (max-width:480px) {
+            .login-box { border-radius:20px; }
+            .login-visual { padding:28px 24px 22px; }
+            .login-body { padding:24px 24px 28px; }
+        }
+    </style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KHNWFZX5" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div class="login-box">
+    <div class="login-visual">
+        <div class="login-logo">
+            <div class="login-logo-mark">ATC</div>
+        </div>
+        <h1 class="login-title">Auto Technical Centre</h1>
+        <p class="login-subtitle">Панель управления</p>
+    </div>
+    <div class="login-body">
+        <p class="login-desc">Войдите для доступа к панели управления сайтом</p>
+
+        <div id="alert" class="alert" style="display: none;"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="username">Логин</label>
+                <div class="input-wrap">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-control" id="username" placeholder="Введите логин" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Пароль</label>
+                <div class="input-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" id="password" placeholder="Введите пароль" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <a href="/"><i class="fas fa-arrow-left"></i> Вернуться на сайт</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const loginHost = ['localhost','127.0.0.1','::1',''].includes(window.location.hostname);
+    const LOGIN_API_ROOT = loginHost
+      ? (window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '')
+      : 'https://at-c.netlify.app';
+    // Handle login form
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const alertDiv = document.getElementById('alert');
+
+        try {
+            const response = await fetch(`${LOGIN_API_ROOT}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('adminToken', data.token);
+                window.location.href = '/admin/';
+            } else {
+                alertDiv.textContent = data.error || 'Ошибка входа';
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.style.display = 'block';
+            }
+        } catch (error) {
+            alertDiv.textContent = 'Ошибка подключения к серверу';
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.style.display = 'block';
+        }
+    });
+
+    // Auto-focus on username field
+    document.getElementById('username').focus();
+</script>
+</body>
+</html>

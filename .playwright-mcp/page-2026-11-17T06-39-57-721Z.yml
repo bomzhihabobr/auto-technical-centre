@@ -1,0 +1,14 @@
+- generic [ref=e3]:
+  - heading "Server Error" [level=1] [ref=e4]
+  - generic [ref=e5]: "404"
+  - heading "Page Not Found" [level=2] [ref=e6]
+  - paragraph [ref=e7]: This page either doesn't exist, or it moved somewhere else.
+  - separator [ref=e8]
+  - paragraph [ref=e9]: That's what you can do
+  - generic [ref=e10]:
+    - link "Reload Page" [ref=e11] [cursor=pointer]:
+      - /url: javascript:location.reload();
+    - link "Back to Previous Page" [ref=e12] [cursor=pointer]:
+      - /url: javascript:history.back();
+    - link "Home Page" [ref=e13] [cursor=pointer]:
+      - /url: /

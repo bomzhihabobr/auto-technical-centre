@@ -6,4 +6,4 @@ Disallow: /login
 Disallow: /login.html
 Disallow: /api/
 
-Sitemap: https://at-c.netlify.app/sitemap.xml
+Sitemap: https://at-c.kz/sitemap.xml

@@ -3,8 +3,11 @@
   const $ = (s, p=document) => p.querySelector(s);
   const $$ = (s, p=document) => Array.from(p.querySelectorAll(s));
   const localHost = ['localhost','127.0.0.1','::1',''].includes(window.location.hostname);
-  const API_ROOT = localHost && window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '';
+  const API_ROOT = localHost
+    ? (window.location.port !== '3003' ? `http://${window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost'}:3003` : '')
+    : 'https://at-c.netlify.app';
   const apiFetch = (path, options) => fetch(`${API_ROOT}/api/${String(path).replace(/^\/+/, '')}`, options);
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
   // i18n dictionary RU / KZ (kk)
   const i18n = {
@@ -22,7 +25,7 @@
       'nav.book': 'Записаться',
 
       'hero.title': 'Техосмотр в Астане — быстро и без лишнего ожидания',
-      'hero.lead': 'Проверим автомобиль по требованиям и подскажем, что подготовить. Выберите свободное время онлайн — обычно осмотр занимает около 17 минут.',
+      'hero.lead': 'Проверим автомобиль по требованиям и подскажем, что подготовить. Выберите свободное время онлайн — среднее время осмотра около 17 минут.',
       'hero.kicker': 'ОФИЦИАЛЬНЫЙ ЦЕНТР · АСТАНА',
       'hero.visual.status': 'ЦЕНТР ПРИНИМАЕТ ЗАПИСИ',
       'hero.visual.timeLabel': 'ОСМОТР ОТ',
@@ -35,7 +38,7 @@
       'hero.cta': 'Записаться на ТО',
       'hero.call': 'Позвонить',
       'hero.badge.official': 'Официальный оператор ТО',
-      'hero.badge.fast': 'Быстро — от 17 минут',
+      'hero.badge.fast': 'Среднее время — 17 минут',
       'theme.toDark': 'Включить тёмную тему',
       'theme.toLight': 'Включить светлую тему',
 
@@ -46,7 +49,7 @@
       'required.subtitle': 'Информация подготовлена по действующим требованиям РК.',
       'required.must': 'ТЕХОСМОТР ОБЯЗАТЕЛЕН',
       'required.free': 'ТЕХОСМОТР НЕ ТРЕБУЕТСЯ',
-      'required.items.1': 'Легковые автомобили категории M1 от 7 лет, включая год выпуска, если не используются для предпринимательских перевозок.',
+      'required.items.1': 'Легковые автомобили категории M1 старше 7 лет (с учётом года выпуска).',
       'required.items.3': 'Изменение конструкции/замена основного компонента.',
       'required.items.4': 'Такси, автобусы и грузовые автомобили.',
       'free.items.1': 'Легковые автомобили категории M1 до 7 лет включительно, если не используются для предпринимательских перевозок.',
@@ -88,10 +91,9 @@
       'extra.diagnostics.text': 'Проверим электронные системы автомобиля и объясним результаты понятным языком.',
 
       'pricing.title': 'Прайс на наши услуги',
-      'pricing.subtitle': 'Стоимость зависит от категории транспортного средства и регламента осмотра. Оставьте заявку — подберем оптимальный тариф.',
+      'pricing.subtitle': 'Актуальные цены на технический осмотр по категориям транспорта. Точную стоимость уточняйте при записи — она зависит от категории и объёма работ. Цены указаны без НДС, действительны до изменения прейскуранта.',
+      'pricing.updated': 'Цены указаны в тенге за технический осмотр. Актуальный прайс уточняйте у менеджера или в WhatsApp.',
       'cta.book': 'Записаться',
-      'cta.askPrice': 'Уточнить цену',
-      'cta.askList': 'Запросить прайс',
 
       'testimonials.title': 'Отзывы наших клиентов',
       'testimonials.subtitle': 'Нас рекомендуют за скорость, качество и внимательное отношение.',
@@ -108,9 +110,9 @@
       'faq.q5': 'Проходить ли заново ТО на купленном авто?',
       'faq.a5': 'Не нужно. Обратитесь в ЦТО, где проверяли машину ранее, для переоформления свидетельства.',
       'faq.q6': 'Если мой автомобиль не пройдет ТО из‑за неисправности?',
-      'faq.a6': 'Выдается ДК с перечнем неисправностей. В течение 10 дней можно устранить и пройти повторный осмотр по проблемным пунктам.',
+      'faq.a6': 'Выдается ДК с перечнем неисправностей. В течение 10 календарных дней можно устранить их и пройти повторный осмотр — проверяются только проблемные позиции, оплата берётся за повторную проверку этих пунктов.',
       'faq.q7': 'Можно ли пройти техосмотр авто с российскими номерами в Казахстане?',
-      'faq.a7': 'Да, можно.',
+      'faq.a7': 'Да, для транспортных средств, участвующих в международном движении, техосмотр в РК не требуется в течение 90 календарных дней подряд с момента въезда. Если автомобиль планирует остаться дольше или не подпадает под эти условия, уточните порядок у менеджера.',
 
       'contacts.map.title': 'Карта проезда',
       'contacts.map.info': 'Нажмите на метку для подробной информации',
@@ -158,8 +160,11 @@
       'form.date.required': 'Выберите дату',
       'form.submit.error': 'Не удалось отправить заявку. Позвоните нам: +7 776 848 27 44.',
       'form.submit.connection': 'Не удалось связаться с сервером. Попробуйте ещё раз или позвоните: +7 776 848 27 44.',
-      'form.success.title': 'Заявка отправлена',
-      'form.success.body': 'Мы скоро свяжемся с вами для подтверждения. Номер заявки:',
+      'form.success.title': 'Заявка успешно принята',
+      'form.success.body': 'Мы получили вашу заявку на технический осмотр. Номер заявки:',
+      'form.success.statusLabel': 'Статус:',
+      'form.success.status': 'Ожидает подтверждения',
+      'form.success.note': 'Мы свяжемся с вами для подтверждения времени. Если удобнее — напишите нам в WhatsApp.',
       'form.success.new': 'Записать ещё один автомобиль',
       'form.time.selectDate': 'Сначала выберите дату',
       'form.time.loading': 'Загружаем свободное время…',
@@ -168,6 +173,7 @@
       'form.time.hint': 'Покажем свободное время после выбора даты',
       'form.time.selectSlot': 'Выберите время',
       'form.time.available': 'Свободных вариантов',
+      'form.time.booked': 'Это время уже забронировано',
       'form.submit.sending': 'Отправляем…',
       'form.time': 'Время',
       'form.comment': 'Комментарий',
@@ -212,28 +218,20 @@
       'privacy.law': 'Закон РК «О персональных данных и их защите»',
       'privacy.back': 'Вернуться на сайт',
       'contacts.address': 'г. Астана, Қобыз, 36',
-      'contacts.hours.value': 'Ежедневно с 09:00 до 19:00',
-      'pricing.passenger.title': 'Легковые / Мото',
-      'pricing.passenger.badge': 'Категории A, B',
-      'pricing.passenger.item1': 'Полная диагностика по регламенту',
-      'pricing.passenger.item2': 'Выдача диагностической карты',
-      'pricing.passenger.item3': 'Консультация по результатам',
-      'pricing.commercial.title': 'Коммерческий транспорт',
-      'pricing.commercial.badge': 'Такси, автобусы, грузовые',
-      'pricing.commercial.item1': 'Осмотр по требованиям для юрлиц',
-      'pricing.commercial.item2': 'Закрывающие документы',
-      'pricing.commercial.item3': 'Приоритетная запись',
-      'pricing.special.title': 'Специальные категории',
-      'pricing.special.badge': 'C1, D1, E и др.',
-      'pricing.special.item1': 'Индивидуальные условия',
-      'pricing.special.item2': 'Осмотр с учетом модификаций',
-      'pricing.special.item3': 'Сопровождение по вопросам ТО',
+      'contacts.hours.value': 'Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00',
+      'promo.modal.kicker': 'Специальное предложение',
+      'promo.modal.title': 'Акция для вас',
+      'promo.modal.cta': 'Записаться',
+      'promo.modal.later': 'Позже',
       'testimonials.review1': 'Обслуживаюсь в данной компании довольно таки давно, персонал хорошо и четко знает свою работу. Ребята молодцы, всё делают быстро и качественно.',
-      'testimonials.author1': '— Клиент ATC',
-      'testimonials.review2': 'В Auto Technical Centre я прохожу техосмотр уже три года. Внимательное отношение и слаженные действия — всё без проволочек и бюрократии.',
-      'testimonials.author2': '— Постоянный клиент',
-      'testimonials.review3': 'Сервис нравится, отношение к клиентам доброжелательное. Прохождение ТО заняло совсем немного времени, спасибо!',
-      'testimonials.author3': '— Владелец авто',
+      'testimonials.author1': '— Алексей',
+      'testimonials.review2': 'В Auto Technical Centre я прохожу техосмотр уже три года. Это очень удобный центр ТО. Внимательное отношение к клиенту, слаженные действия коллектива — всё без проволочек и бюрократии.',
+      'testimonials.author2': '— Валентина',
+      'testimonials.review3': 'Обслуживаюсь в компании уже два года. Сервис нравится, отношение к клиентам доброжелательное.',
+      'testimonials.author3': '— Георгий',
+      'testimonials.review4': 'Впечатления о компании остались очень хорошие. Впервые прохожу техосмотр в Auto Technical Centre. Хочу поблагодарить за оперативность и вежливость работников. Буду рекомендовать эту компанию своим знакомым.',
+      'testimonials.author4': '— Арман',
+      'testimonials.source': '2ГИС',
       'services.steering.title': 'Рулевое управление',
       'services.steering.item1': 'Люфт рулевого колеса (до 5° для легковых)',
       'services.steering.item2': 'Состояние рулевых тяг и наконечников',
@@ -258,20 +256,14 @@
       'services.visibility.item1': 'Светопропускание стекол по нормам',
       'services.visibility.item2': 'Направление пучка, сила света фар',
       'services.visibility.item3': 'Режимы работы и сигнализация',
-      'benefits.reliability.title': 'Надежность',
-      'benefits.reliability.text': 'Без посредников. Честные цены и прозрачный процесс.',
-      'benefits.official.title': 'Официально',
-      'benefits.official.text': 'Аккредитованный оператор ТО. Спецоборудование по стандартам.',
-      'benefits.speed.title': 'Скорость',
-      'benefits.speed.text': 'Работаем быстро, качественно и в срок — от 17 минут.',
-      'benefits.orgs.title': 'Для организаций',
-      'benefits.orgs.text': 'Сотрудничаем с юрлицами. Закрывающие документы.',
-      'benefits.value.title': 'Выгода',
-      'benefits.value.text': 'Оптимальные цены и акции для постоянных клиентов.',
-      'benefits.guarantee.title': 'Гарантии',
-      'benefits.guarantee.text': 'Выдача всех необходимых документов и консультация.',
-      'benefits.queue.title': 'Без очереди',
-      'benefits.queue.text': 'Онлайн-запись экономит ваше время.',
+      'benefits.official.title': 'Официальный оператор',
+      'benefits.official.text': 'Внесены в реестр операторов ТО РК. Осмотр проводим по регламенту.',
+      'benefits.speed.title': 'Быстрое обслуживание',
+      'benefits.speed.text': 'Среднее время осмотра — около 17 минут. Записываем вас на точное время.',
+      'benefits.orgs.title': 'Для всех клиентов',
+      'benefits.orgs.text': 'Физические и юридические лица. Наличный и безналичный расчёт, закрывающие документы.',
+      'benefits.reliability.title': 'Прозрачный результат',
+      'benefits.reliability.text': 'Диагностическая карта с результатом проверки по каждому пункту регламента.',
       'contacts.title': 'Контакты',
       'contacts.whatsapp': 'Написать в WhatsApp',
       'header.home.aria': 'На главную — Auto Technical Centre',
@@ -293,7 +285,7 @@
       'nav.book': 'Жазылу',
 
       'hero.title': 'Астанада автокөлік техбайқауы — жылдам әрі кезексіз',
-      'hero.lead': 'Көлікті талаптарға сай тексеріп, алдын ала не дайындау керегін түсіндіреміз. Бос уақытты онлайн таңдап, жазылыңыз.',
+      'hero.lead': 'Көлікті талаптарға сай тексеріп, алдын ала не дайындау керегін түсіндіреміз. Бос уақытты онлайн таңдап, жазылыңыз — тексерудің орташа уақыты шамамен 17 минут.',
       'hero.kicker': 'РЕСМИ ОРТАЛЫҚ · АСТАНА',
       'hero.visual.status': 'ОРТАЛЫҚ ЖАЗЫЛЫМ ҚАБЫЛДАЙДЫ',
       'hero.visual.timeLabel': 'ТЕКСЕРУ УАҚЫТЫ',
@@ -306,7 +298,7 @@
       'hero.cta': 'ТО-ға жазылу',
       'hero.call': 'Қоңырау шалу',
       'hero.badge.official': 'Ресми ТО операторы',
-      'hero.badge.fast': 'Тез — 17 минуттан бастап',
+      'hero.badge.fast': 'Орташа уақыт — 17 минут',
       'theme.toDark': 'Қараңғы тақырыпты қосу',
       'theme.toLight': 'Ашық тақырыпты қосу',
 
@@ -358,20 +350,14 @@
       'steps.3.text': 'Құжаттарды береміз және жөндеу бойынша кеңес береміз. Тез және ресми.',
 
       'benefits.title': 'Неліктен бізде техбайқаудан өту керек?',
-      'benefits.reliability.title': 'Сенімділік',
-      'benefits.reliability.text': 'Делдалсыз жұмыс. Әділ баға және ашық үдеріс.',
-      'benefits.official.title': 'Ресми қызмет',
-      'benefits.official.text': 'Аккредиттелген ТО операторы. Стандартқа сай арнайы жабдық.',
-      'benefits.speed.title': 'Жылдамдық',
-      'benefits.speed.text': 'Жылдам әрі сапалы қызмет — 17 минуттан бастап.',
-      'benefits.orgs.title': 'Ұйымдарға',
-      'benefits.orgs.text': 'Заңды тұлғалармен жұмыс істейміз. Қажетті құжаттарды береміз.',
-      'benefits.value.title': 'Тиімділік',
-      'benefits.value.text': 'Тұрақты клиенттерге тиімді баға мен жеңілдіктер.',
-      'benefits.guarantee.title': 'Кепілдік',
-      'benefits.guarantee.text': 'Қажетті құжаттар мен кеңес беріледі.',
-      'benefits.queue.title': 'Кезексіз',
-      'benefits.queue.text': 'Онлайн жазылу уақытыңызды үнемдейді.',
+      'benefits.official.title': 'Ресми оператор',
+      'benefits.official.text': 'ҚР ТО операторларының тізіліміне енгізілгенбіз. Тексеруді регламент бойынша жүргіземіз.',
+      'benefits.speed.title': 'Жылдам қызмет',
+      'benefits.speed.text': 'Тексерудің орташа уақыты — шамамен 17 минут. Сізді нақты уақытқа жазамыз.',
+      'benefits.orgs.title': 'Барлық клиенттерге',
+      'benefits.orgs.text': 'Жеке және заңды тұлғалар. Қолма-қол және қолма-қолсыз есеп айырысу, жабдықтау құжаттары.',
+      'benefits.reliability.title': 'Ашық нәтиже',
+      'benefits.reliability.text': 'Әрбір регламент тармағы бойынша тексеру нәтижесі көрсетілген диагностикалық карта.',
 
       'prepare.title': 'Техбайқауға не әкелу керек',
       'prepare.subtitle': 'Құжаттардың негізгі тізімі бірдей: көлікті және оның тіркеу куәлігін алып келіңіз.',
@@ -397,34 +383,21 @@
       'extra.diagnostics.text': 'Көліктің электрондық жүйелерін тексеріп, нәтижесін түсінікті тілмен айтамыз.',
 
       'pricing.title': 'Біздің қызмет бағалары',
-      'pricing.subtitle': 'Баға КҚ санатына және тексеру регламентіне байланысты. Өтінім қалдырыңыз — лайықты тариф ұсынамыз.',
+      'pricing.subtitle': 'Көлік санаттары бойынша техбайқаудың ағымдағы бағалары. Нақты құнын жазылу кезінде нақтылаңыз — ол санатқа және жұмыс көлеміне байланысты. Бағалар ҚҚС-сіз, прейскурант өзгергенге дейін жарамды.',
+      'pricing.updated': 'Бағалар теңгемен, техбайқауға. Ағымдағы прайсты менеджерден немесе WhatsApp арқылы нақтылаңыз.',
       'cta.book': 'Жазылу',
-      'cta.askPrice': 'Бағаны нақтылау',
-      'cta.askList': 'Прайсты сұрау',
 
       'testimonials.title': 'Клиент пікірлері',
       'testimonials.subtitle': 'Бізді жылдамдық, сапа және қамқорлық үшін ұсынады.',
-      'pricing.passenger.title': 'Жеңіл көлік / мотоцикл',
-      'pricing.passenger.badge': 'A, B санаттары',
-      'pricing.passenger.item1': 'Регламент бойынша толық диагностика',
-      'pricing.passenger.item2': 'Диагностикалық карта беру',
-      'pricing.passenger.item3': 'Нәтижесі бойынша кеңес',
-      'pricing.commercial.title': 'Коммерциялық көлік',
-      'pricing.commercial.badge': 'Такси, автобус, жүк көлігі',
-      'pricing.commercial.item1': 'Заңды тұлғалар талаптарына сай тексеру',
-      'pricing.commercial.item2': 'Қажетті құжаттарды рәсімдеу',
-      'pricing.commercial.item3': 'Кезектен тыс жазылу',
-      'pricing.special.title': 'Арнайы санаттар',
-      'pricing.special.badge': 'C1, D1, E және т.б.',
-      'pricing.special.item1': 'Жеке шарттар',
-      'pricing.special.item2': 'Өзгертілген көлікті тексеру',
-      'pricing.special.item3': 'ТО мәселелері бойынша қолдау',
       'testimonials.review1': 'Бұл компанияның қызметін көптен бері пайдаланамын. Қызметкерлер өз ісін жақсы біледі, бәрін жылдам әрі сапалы орындайды.',
-      'testimonials.author1': '— ATC клиенті',
-      'testimonials.review2': 'Auto Technical Centre-де үш жылдан бері техбайқаудан өтемін. Қызмет мұқият көрсетіледі, бәрі кідіріссіз және артық әуре-сарсаңсыз өтеді.',
-      'testimonials.author2': '— Тұрақты клиент',
-      'testimonials.review3': 'Қызмет ұнайды, мамандар клиенттерге жақсы қарайды. ТО аз уақытта аяқталды, рақмет!',
-      'testimonials.author3': '— Көлік иесі',
+      'testimonials.author1': '— Алексей',
+      'testimonials.review2': 'Auto Technical Centre-де үш жылдан бері техбайқаудан өтемін. Бұл өте ыңғайлы ТО орталығы. Клиентке мұқият қатынау және ұжымның үйлесімді жұмысы — бәрі кідіріссіз, бюрократиясыз өтеді.',
+      'testimonials.author2': '— Валентина',
+      'testimonials.review3': 'Компанияда екі жылдан бері қызмет көрсетемін. Қызмет ұнайды, клиенттерге досып қатынайды.',
+      'testimonials.author3': '— Георгий',
+      'testimonials.review4': 'Auto Technical Centre-де бірінші рет техбайқаудан өттім. Компания туралы пікірим өте жақсы. Жылдамдық пен қызметкерлердің сыпайылығына алғыс айтамын. Компанияны таныстарыма ұсынамын.',
+      'testimonials.author4': '— Арман',
+      'testimonials.source': '2ГИС',
 
       'faq.title': 'Жиі қойылатын сұрақтар',
       'faq.q1': 'ТО-дан өту үшін қандай құжаттар керек?',
@@ -432,18 +405,22 @@
       'faq.q2': 'Өткен жылдың көлік салығын төлемесем, ТО-дан өте аламын ба?',
       'faq.a2': 'Иә, ТО-дан өту үшін салықты төлеу міндетті емес.',
       'faq.q3': 'Жаңа көлікке ТО қажет пе?',
-      'faq.a3': 'Кәсіпкерлік тасымалдауда пайдаланылмайтын, жасы 7 жылдан аспайтын M1 санатындағы жеңіл көлікке ТО қажет емес.',
+      'faq.a3': 'Кәсіпкерлік тасымалдауда пайдаланылмайтын M1 санатындағы жеңіл көліктер 7 жасқа толғанша (шығарылған жылды қоса) міндетті техникалық тексеруден босатылады.',
       'faq.q4': 'Автокөлікті сатар алдында ТО қажет пе?',
       'faq.a4': 'Егер ТО мерзімі өтпеген болса — қайта өту қажет емес.',
       'faq.q5': 'Сатып алынған автоға қайтадан ТО өту керек пе?',
       'faq.a5': 'Қайта қажет емес. Бұрынғы ЦТО-ға жүгініп, куәлікті сіздің атыңызға рәсімдеңіз.',
       'faq.q6': 'Егер көлік ақауға байланысты ТО-дан өтпесе?',
-      'faq.a6': 'Ақаулар тізімі бар ДК беріледі. 10 күн ішінде жойып, тек проблемалық пункттер бойынша қайта өтуге болады.',
+      'faq.a6': 'Ақаулар тізімі бар ДК беріледі. 10 күнтізбелік күн ішінде оларды жойып, тек проблемалық тармақтар бойынша қайта тексеруден өтуге болады — тек сол тармақтар үшін төлем алынады.',
       'faq.q7': 'Ресей нөмірлі автоны Қазақстанда техбайқаудан өткізе аламын ба?',
-      'faq.a7': 'Иә, болады.',
+      'faq.a7': 'Иә. Халықаралық қозғалысқа қатысатын көлік құралдарына Қазақстанға кірген күннен бастап қатарынан 90 күнтізбелік күн ішінде техбайқау қажет емес. Көлік одан ұзақ қалуды жоспарласа немесе осы шарттарға сай келмесе, тәртіпті менеджерден нақтылаңыз.',
 
       'contacts.title': 'Байланыс деректері',
-      'contacts.hours.value': 'Күн сайын 09:00-ден 19:00-ге дейін',
+      'contacts.hours.value': 'Дс–Жм 09:00–20:00, сенбі 10:00–20:00, жексенбі 10:00–18:00',
+      'promo.modal.kicker': 'Арнайы ұсыныс',
+      'promo.modal.title': 'Сізге арна!',
+      'promo.modal.cta': 'Жазылу',
+      'promo.modal.later': 'Кейінірек',
       'contacts.address': 'Астана қ., Қобыз көшесі, 36',
       'contacts.whatsapp': 'WhatsApp-қа жазу',
       'contacts.map.title': 'Келу картасы',
@@ -492,8 +469,11 @@
       'form.date.required': 'Күнді таңдаңыз',
       'form.submit.error': 'Өтінімді жіберу мүмкін болмады. Қоңырау шалыңыз: +7 776 848 27 44.',
       'form.submit.connection': 'Сервермен байланысу мүмкін болмады. Қайталап көріңіз немесе қоңырау шалыңыз: +7 776 848 27 44.',
-      'form.success.title': 'Өтінім жіберілді',
-      'form.success.body': 'Растау үшін сізбен жақында хабарласамыз. Өтінім нөмірі:',
+      'form.success.title': 'Өтінім сәтті қабылданды',
+      'form.success.body': 'Сіздің техбайқауға өтініміңіз қабылданды. Өтінім нөмірі:',
+      'form.success.statusLabel': 'Күйі:',
+      'form.success.status': 'Расталуды күтуде',
+      'form.success.note': 'Уақытты растау үшін сізбен байланысамыз. Ыңғайлы болса — WhatsApp-қа жазыңыз.',
       'form.success.new': 'Тағы бір көлікке жазылу',
       'form.time.selectDate': 'Алдымен күнді таңдаңыз',
       'form.time.loading': 'Бос уақыт тексерілуде…',
@@ -502,6 +482,7 @@
       'form.time.hint': 'Күнді таңдағаннан кейін бос уақытты көрсетеміз',
       'form.time.selectSlot': 'Уақытты таңдаңыз',
       'form.time.available': 'Бос уақыт нұсқалары',
+      'form.time.booked': 'Бұл уақыт бос емес',
       'form.submit.sending': 'Жіберілуде…',
       'form.time': 'Уақыты',
       'form.comment': 'Пікір',
@@ -612,6 +593,34 @@
     setTheme(getTheme());
   };
 
+  function buildHoursLines(scheduleRaw, isKk) {
+    let schedule;
+    try { schedule = JSON.parse(scheduleRaw || ''); } catch { return []; }
+    if (!schedule || typeof schedule !== 'object') return [];
+    const order = [1, 2, 3, 4, 5, 6, 0];
+    const names = isKk ? { 1: 'Дс', 2: 'Сс', 3: 'Ср', 4: 'Бс', 5: 'Жм', 6: 'Сб', 0: 'Жк' } : { 1: 'Пн', 2: 'Вт', 3: 'Ср', 4: 'Чт', 5: 'Пт', 6: 'Сб', 0: 'Вс' };
+    const closedLabel = isKk ? 'демалы' : 'выходной';
+    const lines = [];
+    let group = null;
+    const flush = () => {
+      if (!group) return;
+      const first = names[group.days[0]], last = names[group.days[group.days.length - 1]];
+      const label = group.days.length > 1 ? `${first}–${last}` : first;
+      lines.push(group.closed ? `${label} — ${closedLabel}` : `${label} ${group.open}–${group.close}`);
+      group = null;
+    };
+    order.forEach(day => {
+      const entry = schedule[String(day)];
+      const closed = !entry || entry.closed === true;
+      const key = closed ? 'closed' : `${entry.open}|${entry.close}`;
+      if (group && group.key === key) { group.days.push(day); return; }
+      flush();
+      group = { key, days: [day], closed, open: closed ? '' : entry.open, close: closed ? '' : entry.close };
+    });
+    flush();
+    return lines;
+  }
+
   function applySiteSettings() {
     if (!siteSettings || !Object.keys(siteSettings).length) return;
     if (siteSettings.mainTitle) {
@@ -628,8 +637,11 @@
       $$('[data-site-address]').forEach(el => { el.textContent = address; });
     }
     if (siteSettings.email) $$('[data-site-email]').forEach(el => { el.textContent = siteSettings.email; el.href = `mailto:${siteSettings.email}`; });
-    if (siteSettings.workingHours) $$('[data-site-hours]').forEach(el => {
-      const hours = getLang() === 'kk' ? siteSettings.workingHours.replace(/^Ежедневно\s*/i, 'Күн сайын ').replace(/^Каждый день\s*/i, 'Күн сайын ') : siteSettings.workingHours;
+    const hoursLines = buildHoursLines(siteSettings.schedule, getLang() === 'kk');
+    if (hoursLines.length) {
+      $$('[data-site-hours]').forEach(el => { el.textContent = hoursLines.join('\n'); });
+    } else if (siteSettings.workingHours) $$('[data-site-hours]').forEach(el => {
+      const hours = getLang() === 'kk' ? (siteSettings.workingHoursKk || siteSettings.workingHours.replace(/^Ежедневно\s*/i, 'Күн сайын ').replace(/^Каждый день\s*/i, 'Күн сайын ')) : siteSettings.workingHours;
       el.textContent = hours;
     });
     const contactPhone = siteSettings.whatsappPhone || siteSettings.mainPhone;
@@ -658,6 +670,32 @@
     if (heroPromo) heroPromo.hidden = !promo;
     if (heroPromoText) heroPromoText.textContent = promo;
     if (pricingPromo) { pricingPromo.hidden = !promo; pricingPromo.textContent = promo; }
+    const promoModal = $('#promoModal');
+    const promoModalText = $('#promoModalText');
+    if (promoModalText) promoModalText.textContent = promo;
+    if (promoModal && promo && !applySiteSettings.promoModalShown) {
+      let seen = false;
+      try { seen = sessionStorage.getItem('atc-promo-seen') === '1'; } catch (_) {}
+      if (!seen) {
+        applySiteSettings.promoModalShown = true;
+        try { sessionStorage.setItem('atc-promo-seen', '1'); } catch (_) {}
+        setTimeout(() => { promoModal.hidden = false; }, 700);
+      }
+    }
+    const priceListBox = $('#priceList');
+    if (priceListBox && siteSettings.priceList) {
+      try {
+        const items = JSON.parse(siteSettings.priceList);
+        if (Array.isArray(items) && items.length) {
+          priceListBox.innerHTML = items.map(item => {
+            const name = getLang() === 'kk' ? (item.nameKk || item.nameRu) : (item.nameRu || item.nameKk);
+            const rawPrice = String(item.price || '').trim();
+            const amount = /[₸тг]/i.test(rawPrice) ? rawPrice : `${rawPrice} ₸`;
+            return `<div class="price-item"><span class="price-name">${escapeHtml(name)}</span><span class="price-amount">${escapeHtml(amount)}</span></div>`;
+          }).join('');
+        }
+      } catch (_) {}
+    }
   }
 
   apiFetch('public-settings').then(response => response.ok ? response.json() : null)
@@ -690,6 +728,13 @@
   applyLang();
   // Remove no-js flag
   document.body.classList.remove('no-js');
+
+  // Promo modal: close on button, backdrop or Escape; show once per session
+  const promoModalEl = $('#promoModal');
+  if (promoModalEl) {
+    promoModalEl.querySelectorAll('[data-promo-close]').forEach(el => el.addEventListener('click', () => { promoModalEl.hidden = true; }));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !promoModalEl.hidden) promoModalEl.hidden = true; });
+  }
 
   // Header scroll state
   const header = $('#header');
@@ -825,10 +870,44 @@
   }
 
   let availabilityRequest = 0;
+  const timeSlotsEl = $('#timeSlots');
+  const slotToast = $('#slotToast');
+  let slotToastTimer = null;
+  function showSlotToast(message) {
+    if (!slotToast) return;
+    slotToast.textContent = message;
+    slotToast.hidden = false;
+    clearTimeout(slotToastTimer);
+    slotToastTimer = setTimeout(() => { slotToast.hidden = true; }, 3000);
+  }
+  function clearTimeSlots() {
+    if (timeSlotsEl) timeSlotsEl.replaceChildren();
+    if (slotToast) slotToast.hidden = true;
+  }
+  function renderTimeSlots(allTimes, availableSet, bookedSet) {
+    if (!timeSlotsEl) return;
+    timeSlotsEl.replaceChildren();
+    allTimes.forEach(value => {
+      const booked = bookedSet.has(value);
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `time-slot${booked ? ' booked' : ''}`;
+      chip.textContent = value;
+      if (booked) chip.setAttribute('aria-disabled', 'true');
+      chip.addEventListener('click', () => {
+        if (booked) { showSlotToast(t('form.time.booked', 'Это время уже забронировано')); return; }
+        if (timeSelect) timeSelect.value = value;
+        timeSlotsEl.querySelectorAll('.time-slot').forEach(el => el.classList.toggle('selected', el === chip));
+      });
+      timeSlotsEl.appendChild(chip);
+    });
+  }
   async function loadAvailableTimes(date) {
     if (!timeSelect) return;
     const requestId = ++availabilityRequest;
     timeSelect.disabled = true;
+    timeSelect.value = '';
+    clearTimeSlots();
     timeSelect.replaceChildren(new Option(t('form.time.loading'), ''));
     if (!date) {
       timeSelect.replaceChildren(new Option(t('form.time.selectDate'), ''));
@@ -841,20 +920,27 @@
       const result = await response.json();
       if (requestId !== availabilityRequest) return;
       if (!response.ok) throw new Error(result.error || t('form.time.loadError'));
-      const values = (result.availableTimes || []).filter(value => /^\d{2}:\d{2}$/.test(value));
-      timeSelect.replaceChildren(new Option(values.length ? t('form.time.selectSlot', 'Выберите время') : t('form.time.none'), ''));
-      values.forEach(value => timeSelect.add(new Option(value, value)));
-      timeSelect.disabled = !values.length;
+      const valid = value => /^\d{2}:\d{2}$/.test(value);
+      const values = (result.availableTimes || []).filter(valid);
+      const booked = (result.bookedTimes || []).filter(valid);
+      const allTimes = [...new Set([...values, ...booked])].sort();
+      const availableSet = new Set(values);
+      const bookedSet = new Set(booked);
+      timeSelect.replaceChildren(new Option(allTimes.length ? t('form.time.selectSlot', 'Выберите время') : t('form.time.none'), ''));
+      allTimes.forEach(value => timeSelect.add(new Option(value, value)));
+      timeSelect.disabled = !allTimes.length;
+      renderTimeSlots(allTimes, availableSet, bookedSet);
       if (timeHint) timeHint.textContent = values.length ? `${t('form.time.available', 'Свободных вариантов')}: ${values.length}` : t('form.time.none');
     } catch (error) {
       if (requestId !== availabilityRequest) return;
       timeSelect.replaceChildren(new Option(t('form.time.loadError'), ''));
+      clearTimeSlots();
       if (timeHint) timeHint.textContent = t('form.time.loadError');
     }
   }
   $('#langToggle')?.addEventListener('click', () => {
     if (dateInput?.value) loadAvailableTimes(dateInput.value);
-    else if (timeSelect) timeSelect.replaceChildren(new Option(t('form.time.selectDate'), ''));
+    else if (timeSelect) { timeSelect.replaceChildren(new Option(t('form.time.selectDate'), '')); clearTimeSlots(); }
   });
 
   // Send the booking to the centre and confirm it on this page.
@@ -869,6 +955,7 @@
         timeSelect.disabled = true;
         timeSelect.replaceChildren(new Option(t('form.time.selectDate'), ''));
       }
+      clearTimeSlots();
     }, 0));
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -882,6 +969,10 @@
       if (!date) {
         dateDisplay?.setCustomValidity(t('form.date.required'));
         dateDisplay?.reportValidity();
+        return;
+      }
+      if (!time) {
+        showSlotToast(t('form.time.selectSlot', 'Выберите время'));
         return;
       }
       const comment = $('#comment')?.value?.trim() || '';
