@@ -215,7 +215,9 @@ export default async function handler(request) {
       const reserved = await db.sql`INSERT INTO booking_slots (date,time) VALUES (${b.date}::date,${b.time}) ON CONFLICT (date,time) DO NOTHING RETURNING id`;
       if (!reserved.length) return fail("Это время только что заняли. Выберите другой интервал.", 409);
       const id = reserved[0].id;
-      const message = [`Новая заявка на техосмотр №${id}`, `Имя: ${b.name}`, `Телефон: ${b.phone}`, `Автомобиль: ${b.car || "не указан"}`, `Категория: ${b.vehicleType}`, `Дата и время: ${b.date} ${b.time}`, `Комментарий: ${b.comment || "нет"}`].join("\n");
+      const [year, month, day] = b.date.split('-');
+      const formattedDate = `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year.slice(-2)}`;
+      const message = [`Новая заявка на техосмотр №${id}`, `Имя: ${b.name}`, `Телефон: ${b.phone}`, `Автомобиль: ${b.car || "не указан"}`, `Категория: ${b.vehicleType}`, `Дата и время: ${formattedDate} ${b.time}`, `Комментарий: ${b.comment || "нет"}`].join("\n");
       try {
         const telegram = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: message }) });
         const result = await telegram.json();
@@ -255,6 +257,13 @@ export default async function handler(request) {
     if (method === "DELETE" && bookingRoute) {
       const rows = await db.sql`DELETE FROM bookings WHERE id = ${Number(bookingRoute[1])} RETURNING id`;
       return rows.length ? respond({ ok: true }) : fail("Заявка не найдена", 404);
+    }
+    if (method === "POST" && path === "/admin/clear-test-bookings") {
+      const secret = clean(body.secret, 100);
+      if (secret !== process.env.ADMIN_CLEAR_SECRET) return fail("Доступ запрещён", 403);
+      const deleted = await db.sql`DELETE FROM bookings WHERE name ILIKE '%тест%' OR name ILIKE '%test%' OR phone = '+77000000000' RETURNING id`;
+      const slots = await db.sql`DELETE FROM booking_slots WHERE date = '2026-11-20'::date AND time IN ('10:00', '11:00', '12:00', '16:00') RETURNING id`;
+      return respond({ ok: true, deletedBookings: deleted.length, deletedSlots: slots.length });
     }
     if (method === "POST" && path === "/change-password") {
       const currentPassword = clean(body.currentPassword, 300);

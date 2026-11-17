@@ -173,7 +173,9 @@ app.post('/api/bookings', rateLimit('bookings', 60 * 1000, 20), (req, res) => {
       }
       if (!this.changes) return res.status(409).json({ error: 'Это время только что заняли. Выберите другой интервал.' });
       const bookingId = this.lastID;
-      const message = [`Новая заявка на техосмотр №${bookingId}`, `Имя: ${booking.name}`, `Телефон: ${booking.phone}`, `Автомобиль: ${booking.car || 'не указан'}`, `Категория: ${booking.vehicleType}`, `Дата и время: ${booking.date} ${booking.time}`, `Комментарий: ${booking.comment || 'нет'}`].join('\n');
+      const [year, month, day] = booking.date.split('-');
+      const formattedDate = `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year.slice(-2)}`;
+      const message = [`Новая заявка на техосмотр №${bookingId}`, `Имя: ${booking.name}`, `Телефон: ${booking.phone}`, `Автомобиль: ${booking.car || 'не указан'}`, `Категория: ${booking.vehicleType}`, `Дата и время: ${formattedDate} ${booking.time}`, `Комментарий: ${booking.comment || 'нет'}`].join('\n');
       try {
         const telegram = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: message }) });
         const result = await telegram.json();
@@ -243,6 +245,24 @@ app.delete('/api/bookings/:id', requireAdmin, (req, res) => {
     if (err) return res.status(500).json({ error: 'Не удалось удалить заявку' });
     if (!this.changes) return res.status(404).json({ error: 'Заявка не найдена' });
     res.json({ ok: true });
+  });
+});
+
+app.post('/api/admin/clear-test-bookings', requireAdmin, (req, res) => {
+  const secret = String(req.body?.secret || '').slice(0, 100);
+  if (secret !== process.env.ADMIN_CLEAR_SECRET) return res.status(403).json({ error: 'Доступ запрещён' });
+  db.all("SELECT id FROM bookings WHERE name ILIKE '%тест%' OR name ILIKE '%test%' OR phone = '+77000000000'", [], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Не удалось найти тестовые заявки' });
+    const ids = rows.map(r => r.id);
+    if (!ids.length) return res.json({ ok: true, deletedBookings: 0, deletedSlots: 0 });
+    const placeholders = ids.map(() => '?').join(',');
+    db.run(`DELETE FROM bookings WHERE id IN (${placeholders})`, ids, function (deleteErr) {
+      if (deleteErr) return res.status(500).json({ error: 'Не удалось удалить тестовые заявки' });
+      db.run("DELETE FROM booking_slots WHERE date = '2026-11-20' AND time IN ('10:00', '11:00', '12:00', '16:00')", [], function (slotErr) {
+        if (slotErr) return res.status(500).json({ error: 'Не удалось удалить слоты' });
+        res.json({ ok: true, deletedBookings: ids.length, deletedSlots: this.changes });
+      });
+    });
   });
 });
 
