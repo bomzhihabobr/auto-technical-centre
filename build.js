@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const root = __dirname;
 const output = path.join(root, 'dist');
-const pages = ['index.html', 'login.html', 'admin.html', 'privacy.html'];
+const pages = ['index.html', 'login.html', 'admin.html', 'privacy.html', 'yandex_4043fa8532298d0d.html'];
 const publicFiles = ['robots.txt', 'sitemap.xml', '.htaccess'];
 const folders = ['admin', 'login', 'privacy'];
 fs.rmSync(output, { recursive: true, force: true });
