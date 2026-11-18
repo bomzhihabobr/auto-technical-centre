@@ -14,4 +14,3 @@ for (const folder of folders) fs.cpSync(path.join(root, folder), path.join(outpu
 console.log(`Prepared Netlify static site in ${output}`);
 console.log(`Favicon sizes: 16, 32, 48, 64, 128, 192 px`);
 console.log(`Search logo: 512x512 and 1200x630`);
-console.log(`Hero image: hero-bg.jpeg`);
