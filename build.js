@@ -12,3 +12,5 @@ fs.cpSync(path.join(root, 'assets'), path.join(output, 'assets'), { recursive: t
 for (const file of publicFiles) fs.copyFileSync(path.join(root, file), path.join(output, file));
 for (const folder of folders) fs.cpSync(path.join(root, folder), path.join(output, folder), { recursive: true });
 console.log(`Prepared Netlify static site in ${output}`);
+console.log(`Favicon sizes: 16, 32, 48, 64, 128, 192 px`);
+console.log(`Search logo: 512x512 and 1200x630`);
