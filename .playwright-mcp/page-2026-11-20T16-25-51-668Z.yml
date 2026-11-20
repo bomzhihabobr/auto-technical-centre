@@ -1,0 +1,512 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - link " +7 776 848 27 44" [ref=e5] [cursor=pointer]:
+        - /url: tel:+77768482744
+        - generic [ref=e6]: 
+        - text: +7 776 848 27 44
+      - text: "|"
+      - link " +7 700 243 30 10" [ref=e7] [cursor=pointer]:
+        - /url: tel:+77002433010
+        - generic [ref=e8]: 
+        - text: +7 700 243 30 10
+      - text: "|"
+      - link " atc@at-c.kz" [ref=e9] [cursor=pointer]:
+        - /url: mailto:atc@at-c.kz
+        - generic [ref=e10]: 
+        - text: atc@at-c.kz
+    - link " WhatsApp" [ref=e12] [cursor=pointer]:
+      - /url: https://wa.me/77768482744
+      - generic [ref=e13]: 
+      - text: WhatsApp
+  - banner [ref=e14]:
+    - generic [ref=e15]:
+      - link "На главную — Auto Technical Centre" [ref=e16] [cursor=pointer]:
+        - /url: "#home"
+        - img "Auto Technical Centre" [ref=e17]
+        - generic [ref=e18]:
+          - strong [ref=e19]: Auto Technical Centre
+          - generic [ref=e20]: ЦЕНТР ТЕХОСМОТРА
+      - navigation "Главное меню":
+        - link "Услуги":
+          - /url: "#services"
+        - link "Прайс":
+          - /url: "#pricing"
+        - link "Отзывы":
+          - /url: "#testimonials"
+        - link "FAQ":
+          - /url: "#faq"
+        - link "Контакты":
+          - /url: "#contacts"
+        - generic:
+          - button "Қазақ тіліне ауыстыру": KZ
+          - button "Включить светлую тему" [pressed]:
+            - text: 
+            - generic: Тёмная тема
+          - link "Записаться":
+            - /url: "#booking"
+      - button "Открыть меню" [ref=e21] [cursor=pointer]
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - paragraph [ref=e29]:
+            - generic [ref=e31]: ОФИЦИАЛЬНЫЙ ЦЕНТР · АСТАНА
+          - heading "Техосмотр в Астане — быстро и без лишнего ожидания" [level=1] [ref=e32]
+          - paragraph [ref=e33]: Проверим автомобиль по требованиям и подскажем, что подготовить. Выберите свободное время онлайн — среднее время осмотра около 17 минут.
+          - generic [ref=e34]:
+            - link " Записаться на ТО" [ref=e35] [cursor=pointer]:
+              - /url: "#booking"
+              - generic [ref=e36]: 
+              - generic [ref=e37]: Записаться на ТО
+            - link " Позвонить" [ref=e38] [cursor=pointer]:
+              - /url: tel:+77768482744
+              - generic [ref=e39]: 
+              - generic [ref=e40]: Позвонить
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: 
+              - generic [ref=e44]: Официальный оператор ТО
+            - generic [ref=e45]:
+              - generic [ref=e46]: 
+              - generic [ref=e47]: Среднее время — 17 минут
+            - text: 
+        - generic [aria-hidden] [ref=e48]:
+          - generic [ref=e52]:
+            - generic [ref=e54]: ЦЕНТР ПРИНИМАЕТ ЗАПИСИ
+            - generic [ref=e55]: 
+          - generic [ref=e65]:
+            - generic [ref=e66]: 
+            - generic [ref=e68]:
+              - generic [ref=e69]: ОСМОТР ОТ
+              - strong [ref=e70]: 17 МИНУТ
+            - generic [ref=e71]: 
+          - generic [ref=e72]:
+            - generic [ref=e73]: 
+            - generic [ref=e75]:
+              - generic [ref=e76]: ПО РЕГЛАМЕНТУ
+              - strong [ref=e77]: Понятный результат
+          - generic [ref=e78]:
+            - generic [ref=e79]: ATC
+            - generic [ref=e80]: 51°08'05.8"N · 71°31'11.4"E
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - generic [ref=e83]: 
+          - generic [ref=e84]: Астана · Қобыз, 36
+        - generic [ref=e85]:
+          - generic [ref=e86]: 
+          - generic [ref=e87]: 3 простых шага
+        - generic [ref=e88]:
+          - generic [ref=e89]: 
+          - generic [ref=e90]: Свободное время онлайн
+      - text:  
+    - generic [ref=e94]:
+      - generic [ref=e95]:
+        - heading "Что мы проверяем" [level=2] [ref=e96]
+        - paragraph [ref=e97]: Комплексная диагностика узлов и систем в соответствии с регламентом ТО.
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - heading "Рулевое управление" [level=3] [ref=e100]
+          - list [ref=e101]:
+            - listitem [ref=e102]:  Люфт рулевого колеса (до 5° для легковых)
+            - listitem [ref=e103]:  Состояние рулевых тяг и наконечников
+            - listitem [ref=e104]:  Плавность вращения руля (без рывков)
+        - generic [ref=e105]:
+          - heading "Колеса, шины, подвеска" [level=3] [ref=e106]
+          - list [ref=e107]:
+            - listitem [ref=e108]:  Состояние шаровых опор и их люфт
+            - listitem [ref=e109]:  Крепления и износ шин
+            - listitem [ref=e110]:  Крепление кардана (для заднеприводных)
+        - generic [ref=e111]:
+          - heading "Шасси и агрегаты" [level=3] [ref=e112]
+          - list [ref=e113]:
+            - listitem [ref=e114]:  Крепления узлов и агрегатов
+            - listitem [ref=e115]:  Отсутствие подтеков и повреждений
+            - listitem [ref=e116]:  Состояние двигателя и систем
+        - generic [ref=e117]:
+          - heading "Прочее оборудование" [level=3] [ref=e118]
+          - list [ref=e119]:
+            - listitem [ref=e120]:  Огнетушитель, аптечка, знак аварийной остановки
+            - listitem [ref=e121]:  Зеркала, стекла, стеклоочистители
+            - listitem [ref=e122]:  Ремни безопасности, звуковой сигнал
+        - generic [ref=e123]:
+          - heading "Тормозная система" [level=3] [ref=e124]
+          - list [ref=e125]:
+            - listitem [ref=e126]:  Удельная тормозная сила, равномерность
+            - listitem [ref=e127]:  Герметичность шлангов и приводов
+            - listitem [ref=e128]:  Срабатывание сигнализации привода
+        - generic [ref=e129]:
+          - heading "Обзорность и свет" [level=3] [ref=e130]
+          - list [ref=e131]:
+            - listitem [ref=e132]:  Светопропускание стекол по нормам
+            - listitem [ref=e133]:  Направление пучка, сила света фар
+            - listitem [ref=e134]:  Режимы работы и сигнализация
+    - generic [ref=e136]:
+      - generic [ref=e137]:
+        - heading "Техосмотр обязателен / не требуется" [level=2] [ref=e138]
+        - paragraph [ref=e139]: Информация подготовлена по действующим требованиям РК.
+      - generic [ref=e140]:
+        - generic [ref=e141]:
+          - heading " ТЕХОСМОТР ОБЯЗАТЕЛЕН" [level=3] [ref=e142]:
+            - generic [ref=e143]: 
+            - text: ТЕХОСМОТР ОБЯЗАТЕЛЕН
+          - list [ref=e144]:
+            - listitem [ref=e145]:  Легковые автомобили категории M1 старше 7 лет (с учётом года выпуска).
+            - listitem [ref=e146]:  Изменение конструкции/замена основного компонента.
+            - listitem [ref=e147]:  Такси, автобусы и грузовые автомобили.
+        - generic [ref=e148]:
+          - heading " ТЕХОСМОТР НЕ ТРЕБУЕТСЯ" [level=3] [ref=e149]:
+            - generic [ref=e150]: 
+            - text: ТЕХОСМОТР НЕ ТРЕБУЕТСЯ
+          - list [ref=e151]:
+            - listitem [ref=e152]:  Легковые автомобили категории M1 до 7 лет включительно, если не используются для предпринимательских перевозок.
+            - listitem [ref=e153]:  Для коммерческих автомобилей и других категорий исключение по возрасту не применяется.
+            - listitem [ref=e154]:  Если категория или срок неочевидны, уточните необходимость ТО у менеджера.
+    - generic [ref=e156]:
+      - generic [ref=e157]:
+        - heading "Процесс получения диагностической карты" [level=2] [ref=e158]
+        - paragraph [ref=e159]: Всего 3 шага — прозрачно и удобно.
+      - generic [ref=e160]:
+        - generic [ref=e161]:
+          - generic [aria-hidden] [ref=e162]: "01"
+          - heading "Запишитесь на ТО" [level=3] [ref=e163]
+          - paragraph [ref=e164]: Оставьте заявку на сайте или позвоните по телефону. Выбирайте удобную дату и время.
+        - generic [ref=e165]:
+          - generic [aria-hidden] [ref=e166]: "02"
+          - heading "Предоставьте ТС для осмотра" [level=3] [ref=e167]
+          - paragraph [ref=e168]: Проведем техосмотр по регламенту в строго отведенное время. Без очереди.
+        - generic [ref=e169]:
+          - generic [aria-hidden] [ref=e170]: "03"
+          - heading "Получите карту ТО" [level=3] [ref=e171]
+          - paragraph [ref=e172]: Выдаем документы и консультируем по возможному ремонту. Быстро и официально.
+    - generic [ref=e174]:
+      - heading "Почему техосмотр нужно проходить у нас?" [level=2] [ref=e176]
+      - generic [ref=e177]:
+        - generic [ref=e178]:
+          - generic [ref=e179]: 
+          - heading "Официальный оператор" [level=3] [ref=e180]
+          - paragraph [ref=e181]: Внесены в реестр операторов ТО РК. Осмотр проводим по регламенту.
+        - generic [ref=e182]:
+          - generic [ref=e183]: 
+          - heading "Быстрое обслуживание" [level=3] [ref=e184]
+          - paragraph [ref=e185]: Среднее время осмотра — около 17 минут. Записываем вас на точное время.
+        - generic [ref=e186]:
+          - generic [ref=e187]: 
+          - heading "Для всех клиентов" [level=3] [ref=e188]
+          - paragraph [ref=e189]: Физические и юридические лица. Наличный и безналичный расчёт, закрывающие документы.
+        - generic [ref=e190]:
+          - generic [ref=e191]: 
+          - heading "Прозрачный результат" [level=3] [ref=e192]
+          - paragraph [ref=e193]: Диагностическая карта с результатом проверки по каждому пункту регламента.
+    - generic [ref=e195]:
+      - generic [ref=e196]:
+        - heading "Что взять на техосмотр" [level=2] [ref=e197]
+        - paragraph [ref=e198]: "Базовый комплект документов одинаковый: привезите транспортное средство и свидетельство о его регистрации."
+      - generic [ref=e199]:
+        - generic [ref=e200]:
+          - heading " Легковой автомобиль" [level=3] [ref=e201]:
+            - generic [ref=e202]: 
+            - text: Легковой автомобиль
+          - list [ref=e203]:
+            - listitem [ref=e204]:  Транспортное средство для осмотра
+            - listitem [ref=e205]:  Свидетельство о государственной регистрации ТС
+        - generic [ref=e206]:
+          - heading " Грузовой автомобиль или автобус" [level=3] [ref=e207]:
+            - generic [ref=e208]: 
+            - text: Грузовой автомобиль или автобус
+          - list [ref=e209]:
+            - listitem [ref=e210]:  Транспортное средство для осмотра
+            - listitem [ref=e211]:  Свидетельство о государственной регистрации ТС
+        - generic [ref=e212]:
+          - heading " Мотоцикл или прицеп" [level=3] [ref=e213]:
+            - generic [ref=e214]: 
+            - text: Мотоцикл или прицеп
+          - list [ref=e215]:
+            - listitem [ref=e216]:  Транспортное средство для осмотра
+            - listitem [ref=e217]:  Регистрационный документ именно на это ТС
+    - generic [ref=e219]:
+      - generic [ref=e220]:
+        - heading "Дополнительные услуги" [level=2] [ref=e221]
+        - paragraph [ref=e222]: Помогаем с автострахованием и компьютерной диагностикой — проконсультируем по услуге до записи.
+      - generic [ref=e223]:
+        - article [ref=e224]:
+          - generic [ref=e225]: 
+          - heading "ОГПО ВТС (автострахование)" [level=3] [ref=e227]
+          - paragraph [ref=e228]: Помогаем оформить обязательный страховой полис для автомобиля и подскажем, какие данные понадобятся.
+          - link "Уточнить условия" [ref=e229] [cursor=pointer]:
+            - /url: https://wa.me/87055998894?text=Здравствуйте!%20Хочу%20уточнить%20условия%20автострахования
+        - article [ref=e230]:
+          - generic [ref=e231]: 
+          - heading "Компьютерная диагностика" [level=3] [ref=e233]
+          - paragraph [ref=e234]: Проверим электронные системы автомобиля и объясним результаты понятным языком.
+          - link "Уточнить условия" [ref=e235] [cursor=pointer]:
+            - /url: "#contacts"
+    - generic [ref=e237]:
+      - generic [ref=e238]:
+        - heading "Прайс на наши услуги" [level=2] [ref=e239]
+        - paragraph [ref=e240]: Актуальные цены на технический осмотр по категориям транспорта. Точную стоимость уточняйте при записи — она зависит от категории и объёма работ. Цены указаны без НДС, действительны до изменения прейскуранта.
+      - generic [ref=e241]:
+        - generic [ref=e242]:
+          - generic [ref=e243]: Автомобиль легковой
+          - generic [ref=e244]: 10 000 ₸
+        - generic [ref=e245]:
+          - generic [ref=e246]: Внедорожник, кроссовер (повышенная проходимость)
+          - generic [ref=e247]: 12 000 ₸
+        - generic [ref=e248]:
+          - generic [ref=e249]: Микроавтобус (до 16 мест)
+          - generic [ref=e250]: 15 000 ₸
+        - generic [ref=e251]:
+          - generic [ref=e252]: Грузовое ТС (до 3,5 т)
+          - generic [ref=e253]: 15 000 ₸
+        - generic [ref=e254]:
+          - generic [ref=e255]: Грузовое ТС (категория C1)
+          - generic [ref=e256]: 20 000 ₸
+        - generic [ref=e257]:
+          - generic [ref=e258]: Прицеп
+          - generic [ref=e259]: 9 000 ₸
+        - generic [ref=e260]:
+          - generic [ref=e261]: Мототранспортное средство
+          - generic [ref=e262]: 9 000 ₸
+      - generic [ref=e263]:
+        - link "Записаться" [ref=e264] [cursor=pointer]:
+          - /url: "#booking"
+        - link " Написать в WhatsApp" [ref=e265] [cursor=pointer]:
+          - /url: https://wa.me/77768482744
+          - generic [ref=e266]: 
+          - generic [ref=e267]: Написать в WhatsApp
+      - paragraph [ref=e268]: Цены указаны в тенге за технический осмотр. Актуальный прайс уточняйте у менеджера или в WhatsApp.
+    - generic [ref=e270]:
+      - generic [ref=e271]:
+        - heading "Отзывы наших клиентов" [level=2] [ref=e272]
+        - paragraph [ref=e273]: Нас рекомендуют за скорость, качество и внимательное отношение.
+      - generic [ref=e274]:
+        - blockquote [ref=e275]:
+          - text: "\""
+          - paragraph [ref=e276]: Обслуживаюсь в данной компании довольно таки давно, персонал хорошо и четко знает свою работу. Ребята молодцы, всё делают быстро и качественно.
+          - generic [ref=e277]:
+            - generic [aria-hidden] [ref=e278]: А
+            - generic [ref=e279]: — Алексей
+            - link "2ГИС" [ref=e280] [cursor=pointer]:
+              - /url: https://2gis.kz/astana/firm/70000001035394120
+        - blockquote [ref=e281]:
+          - text: "\""
+          - paragraph [ref=e282]: В Auto Technical Centre я прохожу техосмотр уже три года. Это очень удобный центр ТО. Внимательное отношение к клиенту, слаженные действия коллектива — всё без проволочек и бюрократии.
+          - generic [ref=e283]:
+            - generic [aria-hidden] [ref=e284]: В
+            - generic [ref=e285]: — Валентина
+            - link "2ГИС" [ref=e286] [cursor=pointer]:
+              - /url: https://2gis.kz/astana/firm/70000001035394120
+        - blockquote [ref=e287]:
+          - text: "\""
+          - paragraph [ref=e288]: Обслуживаюсь в компании уже два года. Сервис нравится, отношение к клиентам доброжелательное.
+          - generic [ref=e289]:
+            - generic [aria-hidden] [ref=e290]: Г
+            - generic [ref=e291]: — Георгий
+            - link "2ГИС" [ref=e292] [cursor=pointer]:
+              - /url: https://2gis.kz/astana/firm/70000001035394120
+        - blockquote [ref=e293]:
+          - text: "\""
+          - paragraph [ref=e294]: Впечатления о компании остались очень хорошие. Впервые прохожу техосмотр в Auto Technical Centre. Хочу поблагодарить за оперативность и вежливость работников. Буду рекомендовать эту компанию своим знакомым.
+          - generic [ref=e295]:
+            - generic [aria-hidden] [ref=e296]: А
+            - generic [ref=e297]: — Арман
+            - link "2ГИС" [ref=e298] [cursor=pointer]:
+              - /url: https://2gis.kz/astana/firm/70000001035394120
+    - generic [ref=e300]:
+      - heading "Часто задаваемые вопросы" [level=2] [ref=e302]
+      - generic [ref=e303]:
+        - group [ref=e304]:
+          - generic "Для прохождения ТО какие требуются документы? " [ref=e305] [cursor=pointer]
+        - group [ref=e306]:
+          - generic "Я не уплатил налог на транспорт за прошлый год, могу ли я пройти ТО? " [ref=e307] [cursor=pointer]
+        - group [ref=e308]:
+          - generic "У меня новая машина — нужен ли мне ТО? " [ref=e309] [cursor=pointer]
+        - group [ref=e310]:
+          - generic "Нужно ли проходить ТО перед продажей авто? " [ref=e311] [cursor=pointer]
+        - group [ref=e312]:
+          - generic "Проходить ли заново ТО на купленном авто? " [ref=e313] [cursor=pointer]
+        - group [ref=e314]:
+          - generic "Если мой автомобиль не пройдет ТО из‑за неисправности? " [ref=e315] [cursor=pointer]
+        - group [ref=e316]:
+          - generic "Можно ли пройти техосмотр авто с российскими номерами в Казахстане? " [ref=e317] [cursor=pointer]
+    - generic [ref=e319]:
+      - generic [ref=e320]:
+        - generic [ref=e321]: Auto Technical Centre
+        - heading "Приезжайте — мы рядом" [level=2] [ref=e322]
+        - paragraph [ref=e323]: Ответим на вопросы и подберём удобное время для техосмотра.
+      - generic [ref=e324]:
+        - generic [ref=e325]:
+          - generic [ref=e326]:
+            - generic [ref=e327]: 
+            - generic [ref=e329]:
+              - text: Свяжитесь с нами
+              - heading "Контакты" [level=2] [ref=e330]
+          - list [ref=e331]:
+            - listitem [ref=e332]:
+              - generic [ref=e333]: 
+              - generic [ref=e334]:
+                - generic [ref=e335]: Адрес
+                - strong [ref=e336]: г. Астана, Қобыз, 36
+            - listitem [ref=e337]:
+              - generic [ref=e338]: 
+              - generic [ref=e339]:
+                - generic [ref=e340]: Позвоните нам
+                - link "+7 776 848 27 44" [ref=e341] [cursor=pointer]:
+                  - /url: tel:+77768482744
+            - listitem [ref=e342]:
+              - generic [ref=e343]: 
+              - generic [ref=e344]:
+                - generic [ref=e345]: Дополнительный номер
+                - link "+7 700 243 30 10" [ref=e346] [cursor=pointer]:
+                  - /url: tel:+77002433010
+            - listitem [ref=e347]:
+              - generic [ref=e348]: 
+              - generic [ref=e349]:
+                - generic [ref=e350]: Электронная почта
+                - link "atc@at-c.kz" [ref=e351] [cursor=pointer]:
+                  - /url: mailto:atc@at-c.kz
+            - listitem [ref=e352]:
+              - generic [ref=e353]: 
+              - generic [ref=e354]:
+                - generic [ref=e355]: Время работы
+                - strong [ref=e356]: Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00
+          - link " Написать в WhatsApp +7 776 848 27 44 " [ref=e357] [cursor=pointer]:
+            - /url: https://wa.me/77768482744
+            - generic [ref=e358]: 
+            - generic [ref=e359]: Написать в WhatsApp
+            - generic [ref=e360]: +7 776 848 27 44
+            - generic [ref=e361]: 
+          - generic [ref=e362]:
+            - generic [ref=e363]: 
+            - generic [ref=e364]: Точная локация доступна в 2ГИС. Парковка для клиентов.
+        - generic [ref=e365]:
+          - generic [ref=e366]:
+            - generic [ref=e367]:
+              - text: Ждём вас в гости
+              - heading "Карта проезда" [level=3] [ref=e368]
+            - link "Открыть адрес в 2ГИС" [ref=e369] [cursor=pointer]:
+              - /url: https://2gis.kz/astana/search/%D2%9A%D0%BE%D0%B1%D1%8B%D0%B7%2036
+              - generic [ref=e370]: 
+          - paragraph [ref=e372]:
+            - generic [ref=e373]: 
+            - generic [ref=e374]: г. Астана, Қобыз, 36
+        - generic [ref=e375]:
+          - generic [ref=e376]:
+            - generic [ref=e377]: 
+            - generic [ref=e379]:
+              - text: Всего пара минут
+              - heading "Запись на техосмотр" [level=2] [ref=e380]
+          - paragraph [ref=e381]: Оставьте контакты — мы подтвердим удобное время.
+          - generic [ref=e382]:
+            - generic [ref=e383]:
+              - generic [ref=e384]: Имя
+              - textbox "Имя" [ref=e385]:
+                - /placeholder: Ваше имя
+            - generic [ref=e386]:
+              - generic [ref=e387]: Телефон
+              - textbox "Телефон" [ref=e388]:
+                - /placeholder: +7 (___) ___-__-__
+              - generic [ref=e389]: "Формат: +7 (700) 123-45-67"
+            - generic [ref=e390]:
+              - generic [ref=e391]: Марка и модель
+              - textbox "Марка и модель" [ref=e392]:
+                - /placeholder: "Напр.: Toyota Camry"
+            - generic [ref=e393]:
+              - generic [ref=e394]: Тип транспорта
+              - combobox "Тип транспорта" [ref=e395]:
+                - option "Выберите тип" [selected]
+                - option "Легковой автомобиль"
+                - option "Грузовой автомобиль"
+                - option "Автобус"
+                - option "Мотоцикл"
+                - option "Прицеп"
+            - generic [ref=e396]:
+              - generic [ref=e397]:
+                - text: Дата
+                - generic [ref=e398]:
+                  - textbox "Дата записи" [ref=e399] [cursor=pointer]:
+                    - /placeholder: ДД.ММ.ГГГГ
+                  - button "Выбрать дату" [ref=e400] [cursor=pointer]:
+                    - generic [ref=e401]: 
+                  - textbox [aria-hidden]
+                - text: Выберите дату в календаре
+              - generic [ref=e402]:
+                - text: Время
+                - group "Свободное время записи"
+                - text: Покажем свободное время после выбора даты
+            - generic [ref=e403]:
+              - generic [ref=e404]: Комментарий
+              - textbox "Комментарий" [ref=e405]:
+                - /placeholder: Удобно после 18:00, нужны консультации и т.п.
+            - generic [ref=e406]:
+              - button " Отправить заявку" [ref=e407]:
+                - generic [ref=e408]: 
+                - generic [ref=e409]: Отправить заявку
+              - button " Позвонить" [ref=e410]:
+                - generic [ref=e411]: 
+                - generic [ref=e412]: Позвонить
+            - generic [ref=e413]:
+              - checkbox "Я согласен(на) на обработку данных для оформления записи. Политика обработки данных" [ref=e414]
+              - generic [ref=e415]:
+                - text: Я согласен(на) на обработку данных для оформления записи.
+                - link "Политика обработки данных" [ref=e416] [cursor=pointer]:
+                  - /url: /privacy/
+          - text:  
+  - contentinfo [ref=e417]:
+    - generic [ref=e418]:
+      - generic [ref=e419]:
+        - generic [ref=e420]:
+          - link "На главную" [ref=e421] [cursor=pointer]:
+            - /url: "#home"
+            - img "Auto Technical Centre" [ref=e422]
+            - generic [ref=e423]:
+              - strong [ref=e424]: Auto Technical Centre
+              - generic [ref=e425]: ЦЕНТР ТЕХОСМОТРА
+          - paragraph [ref=e426]: Профессиональный техосмотр в Астане. Быстро, удобно, по правилам.
+        - generic [ref=e427]:
+          - heading "Навигация" [level=2] [ref=e428]
+          - navigation "Ссылки в подвале" [ref=e429]:
+            - link "Услуги" [ref=e430] [cursor=pointer]:
+              - /url: "#services"
+            - link "Обязателен" [ref=e431] [cursor=pointer]:
+              - /url: "#required"
+            - link "Вопросы и ответы" [ref=e432] [cursor=pointer]:
+              - /url: "#faq"
+            - link "Политика обработки данных" [ref=e433] [cursor=pointer]:
+              - /url: /privacy/
+        - generic [ref=e434]:
+          - heading "Контакты" [level=2] [ref=e435]
+          - generic [ref=e436]:
+            - link " +7 776 848 27 44" [ref=e437] [cursor=pointer]:
+              - /url: tel:+77768482744
+              - generic [ref=e438]: 
+              - generic [ref=e439]: +7 776 848 27 44
+            - link " atc@at-c.kz" [ref=e440] [cursor=pointer]:
+              - /url: mailto:atc@at-c.kz
+              - generic [ref=e441]: 
+              - text: atc@at-c.kz
+            - generic [ref=e442]:
+              - generic [ref=e443]: 
+              - generic [ref=e444]: г. Астана, Қобыз, 36
+            - generic [ref=e445]:
+              - generic [ref=e446]: 
+              - generic [ref=e447]: Пн–Пт 09:00–20:00, Сб 10:00–20:00, Вс 10:00–18:00
+        - generic [ref=e448]:
+          - generic [ref=e449]: Мы рядом
+          - heading "Запишитесь на техосмотр" [level=2] [ref=e450]
+          - paragraph [ref=e451]: Выберите свободное время — мы подтвердим запись.
+          - link "Записаться" [ref=e452] [cursor=pointer]:
+            - /url: "#booking"
+          - link " Написать в WhatsApp" [ref=e453] [cursor=pointer]:
+            - /url: https://wa.me/77768482744
+            - generic [ref=e454]: 
+            - generic [ref=e455]: Написать в WhatsApp
+          - link " Открыть маршрут в 2ГИС" [ref=e456] [cursor=pointer]:
+            - /url: https://2gis.kz/astana/search/%D2%9A%D0%BE%D0%B1%D1%8B%D0%B7%2036
+            - generic [ref=e457]: 
+            - generic [ref=e458]: Открыть маршрут в 2ГИС
+      - generic [ref=e459]:
+        - generic [ref=e460]: © 2026 Auto Technical Centre · Астана, Қобыз, 36
+        - link "Наверх ↑" [ref=e461] [cursor=pointer]:
+          - /url: "#home"
+  - text:   
